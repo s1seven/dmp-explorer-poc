@@ -1,8 +1,30 @@
 {
   "name": "@receiver-product/source",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
-  "scripts": {},
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "start:frontend:dev": "nx run composer:serve:development",
+    "start:backend:dev": "nx run backend:serve:development",
+    "lint": "nx run-many --target=lint --all",
+    "build": "nx run-many --target=build --projects=composer,backend",
+    "build:all": "nx run-many --target=build --all",
+    "test": "nx run-many --target=test --all",
+    "ng:component": "npx nx generate @nx/angular:component",
+    "ng:lib": "nx generate @nx/angular:library",
+    "lint:fix": "npx eslint --ext .ts --fix",
+    "prettier": "npx prettier --write .",
+    "format": "npm run prettier && npm run lint:fix",
+    "start:docker": "docker-compose up -d",
+    "stop:docker": "docker-compose down",
+    "openapi:ng-extract": "node tools/openapi/extract-api.js",
+    "heroku-postbuild": "npm run openapi:ng-extract && npm run build && npm run typeorm:build-config",
+    "typeorm:build-config": "npx tsc apps/backend/typeorm.config.ts --outDir ./dist",
+    "typeorm:generate-migrations": "npx typeorm -d dist/typeorm.config.js migration:generate",
+    "typeorm:run-migrations": "npx typeorm -d dist/typeorm.config.js migration:run"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~17.3.0",
@@ -14,12 +36,21 @@
     "@angular/platform-browser-dynamic": "~17.3.0",
     "@angular/router": "~17.3.0",
     "@nestjs/common": "^10.0.2",
+    "@nestjs/config": "^3.2.1",
     "@nestjs/core": "^10.0.2",
+    "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.2",
+    "@nestjs/swagger": "^7.3.1",
+    "@nestjs/typeorm": "^10.0.2",
     "axios": "^1.6.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
+    "ts-mixer": "^6.0.4",
     "tslib": "^2.3.0",
+    "typeorm": "^0.3.20",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
@@ -67,5 +98,11 @@
     "ts-node": "10.9.1",
     "typescript": "~5.4.2",
     "webpack-cli": "^5.1.4"
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts}": [
+      "prettier --write --ignore-unknown",
+      "git add"
+    ]
   }
 }
