@@ -8,6 +8,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -20,6 +21,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ReturnUserDto } from './dto/return-user.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('users')
 @Controller('users')
@@ -45,6 +47,7 @@ export class UsersController {
     type: () => ReturnUserDto,
     isArray: false,
   })
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findOneById(
     @Param('id', ParseIntPipe) id: number,
@@ -59,6 +62,7 @@ export class UsersController {
     type: () => User,
     isArray: false,
   })
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   remove(
     @Param('id', ParseIntPipe) id: number,
