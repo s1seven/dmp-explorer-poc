@@ -14,7 +14,7 @@ import { join } from 'node:path';
     UsersModule,
     AuthModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../../dist/apps/composer/'),
+      rootPath: join(__dirname, '../../../dist/apps/frontend/'),
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
