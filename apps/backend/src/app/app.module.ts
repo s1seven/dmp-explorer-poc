@@ -1,18 +1,21 @@
 import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { validate } from '../common/config/env.validation';
 import { AuthModule } from '../auth/auth.module';
-import { Auth0Module } from './auth0/auth0.module';
+import { join } from 'node:path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ validate }),
     UsersModule,
     AuthModule,
-    // Auth0Module,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../../dist/apps/composer/'),
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
