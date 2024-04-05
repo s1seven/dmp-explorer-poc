@@ -1,5 +1,4 @@
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
@@ -16,7 +15,7 @@ describe('UsersController', () => {
       providers: [
         UsersService,
         ConfigService,
-        JwtService,
+        Auth0Module,
         {
           provide: getRepositoryToken(User),
           useValue: jest.fn(),
