@@ -8,11 +8,7 @@ import { UsersService } from './users.service';
 import { Auth0Module } from '../auth0/auth0.module';
 
 @Module({
-  imports: [
-    Auth0Module,
-    ConfigModule,
-    TypeOrmModule.forFeature([User]),
-  ],
+  imports: [Auth0Module, ConfigModule, TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],
