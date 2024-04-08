@@ -1,10 +1,19 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NxWelcomeComponent } from './nx-welcome.component';
+import { LoginButtonComponent } from './app-login-button/app-login-button.component';
+import { LogoutButtonComponent } from './app-logout-button/app-logout-button.component';
+import { UserProfileComponent } from './app-user-profile/app-user-profile.component';
 
 @Component({
   standalone: true,
-  imports: [NxWelcomeComponent, RouterModule],
+  imports: [
+    NxWelcomeComponent,
+    RouterModule,
+    LoginButtonComponent,
+    LogoutButtonComponent,
+    UserProfileComponent,
+  ],
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
