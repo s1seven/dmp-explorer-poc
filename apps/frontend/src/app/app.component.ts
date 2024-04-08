@@ -4,6 +4,7 @@ import { NxWelcomeComponent } from './nx-welcome.component';
 import { LoginButtonComponent } from './app-login-button/app-login-button.component';
 import { LogoutButtonComponent } from './app-logout-button/app-logout-button.component';
 import { UserProfileComponent } from './app-user-profile/app-user-profile.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @Component({
   standalone: true,
@@ -13,6 +14,7 @@ import { UserProfileComponent } from './app-user-profile/app-user-profile.compon
     LoginButtonComponent,
     LogoutButtonComponent,
     UserProfileComponent,
+    NavbarComponent,
   ],
   selector: 'app-root',
   templateUrl: './app.component.html',
