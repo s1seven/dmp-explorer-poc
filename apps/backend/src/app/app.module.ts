@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { validate } from '../common/config/env.validation';
 import { AuthModule } from '../auth/auth.module';
 import { join } from 'node:path';
+import { BatchesModule } from './batches/batches.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { join } from 'node:path';
       }),
       inject: [ConfigService],
     }),
+    BatchesModule,
   ],
   controllers: [],
   providers: [],

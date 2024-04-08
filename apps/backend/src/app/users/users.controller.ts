@@ -50,7 +50,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findOneById(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: string,
     @CurrentUser() user: ReqUser
   ): Promise<ReturnUserDto> {
     return this.usersService.findOneById(id, user);
@@ -65,7 +65,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   remove(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: string,
     @CurrentUser() user: ReqUser
   ): Promise<ReturnUserDto> {
     return this.usersService.remove(id, user);

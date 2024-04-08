@@ -1,18 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column } from 'typeorm';
+import {
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 export class BaseEntity {
-  @ApiProperty({
-    type: 'string',
-    format: 'date-time',
-  })
-  @Column()
-  createdOn: Date;
+  @PrimaryGeneratedColumn('uuid')
+  id: string = undefined;
 
   @ApiProperty({
     type: 'string',
     format: 'date-time',
   })
-  @Column({ nullable: true })
-  updatedOn: Date;
+  @CreateDateColumn({
+    type: 'timestamptz',
+  })
+  createdAt?: Date;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'date-time',
+  })
+  @UpdateDateColumn({
+    type: 'timestamptz',
+  })
+  updatedAt?: Date;
 }

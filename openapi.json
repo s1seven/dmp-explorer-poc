@@ -41,7 +41,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -69,7 +69,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -88,6 +88,102 @@
         "tags": [
           "users"
         ]
+      }
+    },
+    "/api/batches": {
+      "post": {
+        "operationId": "BatchesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "operationId": "BatchesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/batches/{id}": {
+      "get": {
+        "operationId": "BatchesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "BatchesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "BatchesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
       }
     }
   },
@@ -162,19 +258,59 @@
       "User": {
         "type": "object",
         "properties": {
-          "createdOn": {
+          "createdAt": {
             "type": "string",
             "format": "date-time"
           },
-          "updatedOn": {
+          "updatedAt": {
             "type": "string",
             "format": "date-time"
           }
         },
         "required": [
-          "createdOn",
-          "updatedOn"
+          "createdAt",
+          "updatedAt"
         ]
+      },
+      "CreateBatchDto": {
+        "type": "object",
+        "properties": {
+          "lotNumber": {
+            "type": "string"
+          },
+          "leadContent": {
+            "type": "number"
+          },
+          "mercuryContent": {
+            "type": "number"
+          },
+          "cadmiumContent": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "lotNumber",
+          "leadContent",
+          "mercuryContent",
+          "cadmiumContent"
+        ]
+      },
+      "UpdateBatchDto": {
+        "type": "object",
+        "properties": {
+          "lotNumber": {
+            "type": "string"
+          },
+          "leadContent": {
+            "type": "number"
+          },
+          "mercuryContent": {
+            "type": "number"
+          },
+          "cadmiumContent": {
+            "type": "number"
+          }
+        }
       }
     }
   }

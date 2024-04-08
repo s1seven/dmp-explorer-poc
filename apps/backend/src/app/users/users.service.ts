@@ -42,11 +42,8 @@ export class UsersService {
     if (existingUser) {
       throw new BadRequestException('User already exists');
     }
-    const createdOn = new Date();
     let baseUser = this.userRepository.create({
       ...createUserDto,
-      createdOn,
-      updatedOn: createdOn,
     });
     let auth0UserId: string;
 
@@ -72,9 +69,9 @@ export class UsersService {
     return this.auth0Service.getUsers();
   }
 
-  async findOneById(id: number, user: ReqUser): Promise<ReturnUserDto> {
+  async findOneById(id: string, user: ReqUser): Promise<ReturnUserDto> {
     const { sub: currentUserId } = user;
-    if (id !== +currentUserId) {
+    if (id !== currentUserId) {
       throw new UnauthorizedException();
     }
     const foundUser = await this.userRepository.findOne({
@@ -91,14 +88,14 @@ export class UsersService {
       where: { email },
     });
     if (!foundUser) {
-      throw new NotFoundException(`User #${email} not found`);
+      throw new NotFoundException(`User ${email} not found`);
     }
     return foundUser;
   }
 
-  async remove(id: number, user: ReqUser): Promise<ReturnUserDto> {
+  async remove(id: string, user: ReqUser): Promise<ReturnUserDto> {
     const { sub: currentUserId } = user;
-    if (id !== +currentUserId) {
+    if (id !== currentUserId) {
       throw new UnauthorizedException();
     }
     const foundUser = await this.userRepository.findOne({
