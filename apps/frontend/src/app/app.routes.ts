@@ -11,8 +11,24 @@ export const appRoutes: Route[] = [
   {
     path: 'profile',
     loadComponent: () =>
-      import('./app-user-profile/app-user-profile.component').then(
+      import('./components/app-user-profile.component').then(
         (mod) => mod.UserProfileComponent
+      ),
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'batch',
+    loadComponent: () =>
+      import('./components/batch-form.component').then(
+        (mod) => mod.BatchFormComponent
+      ),
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'batches',
+    loadComponent: () =>
+      import('./components/batches.component').then(
+        (mod) => mod.BatchesComponent
       ),
     canActivate: [AuthGuard],
   },

@@ -79,7 +79,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/UserEntity"
                 }
               }
             }
@@ -255,7 +255,7 @@
           "id"
         ]
       },
-      "User": {
+      "UserEntity": {
         "type": "object",
         "properties": {
           "createdAt": {

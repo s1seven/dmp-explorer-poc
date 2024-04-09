@@ -19,7 +19,7 @@ import { TokenUserDto } from '../../common/dto/token-user';
 import { ReqUser } from '../constants/constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ReturnUserDto } from './dto/return-user.dto';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -59,7 +59,7 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Delete',
-    type: () => User,
+    type: () => UserEntity,
     isArray: false,
   })
   @UseGuards(AuthGuard('jwt'))

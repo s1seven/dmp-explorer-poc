@@ -12,7 +12,7 @@ import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { ReqUser } from '../constants/constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ReturnUserDto } from './dto/return-user.dto';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 import { Auth0Service } from '../auth0/auth0.service';
 import { runInTransaction } from '../../common/helpers/transaction';
 
@@ -22,7 +22,7 @@ export class UsersService {
 
   constructor(
     @InjectDataSource() private readonly connection: DataSource,
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     private readonly auth0Service: Auth0Service
   ) {}
 
@@ -83,7 +83,7 @@ export class UsersService {
     return plainToInstance(ReturnUserDto, foundUser);
   }
 
-  async findOne(email: string): Promise<User> {
+  async findOne(email: string): Promise<UserEntity> {
     const foundUser = await this.userRepository.findOne({
       where: { email },
     });

@@ -1,25 +1,32 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcomeComponent } from './nx-welcome.component';
-import { LoginButtonComponent } from './app-login-button/app-login-button.component';
-import { LogoutButtonComponent } from './app-logout-button/app-logout-button.component';
-import { UserProfileComponent } from './app-user-profile/app-user-profile.component';
-import { NavbarComponent } from './navbar/navbar.component';
+import { LoginButtonComponent } from './components/app-login-button.component';
+import { LogoutButtonComponent } from './components/app-logout-button.component';
+import { UserProfileComponent } from './components/app-user-profile.component';
+import { NavbarComponent } from './components/navbar.component';
+import { AuthService } from '@auth0/auth0-angular';
+import { CommonModule } from '@angular/common';
+import { PageLoaderComponent } from './components/page-loader.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   standalone: true,
   imports: [
-    NxWelcomeComponent,
+    CommonModule,
+    PageLoaderComponent,
     RouterModule,
     LoginButtonComponent,
     LogoutButtonComponent,
     UserProfileComponent,
     NavbarComponent,
+    HttpClientModule,
   ],
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styles: '',
 })
 export class AppComponent {
-  title = 'frontend';
+  isAuth0Loading$ = this.authService.isLoading$;
+
+  constructor(private authService: AuthService) {}
 }
