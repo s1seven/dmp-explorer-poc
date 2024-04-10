@@ -11,6 +11,7 @@ import {
   provideHttpClient,
   withFetch,
 } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 
 export const appConfig: ApplicationConfig = {
@@ -23,14 +24,9 @@ export const appConfig: ApplicationConfig = {
     },
     provideRouter(appRoutes),
     provideAuth0({
-      domain: 'receiver-local.eu.auth0.com',
-      clientId: '3MG27kBT9VL5t2OMrPOpW2zOKq3hMUEU',
-      authorizationParams: {
-        audience: 'https://api.s1seven-receiver.local',
-        redirect_uri: window.location.origin,
-      },
+      ...environment.auth0,
       httpInterceptor: {
-        allowedList: [`http://localhost:3000/api/batches`],
+        allowedList: [`${environment.api.serverUrl}/api/batches`],
       },
     }),
     provideAnimationsAsync(),

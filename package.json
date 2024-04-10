@@ -6,10 +6,11 @@
     "node": "20.x"
   },
   "scripts": {
-    "start:frontend:dev": "nx run frontend:serve:development",
+    "env": "node set-env.js",
+    "start:frontend:dev": "npm run env && nx run frontend:serve:development",
     "start:backend:dev": "nx run backend:serve:development",
     "lint": "nx run-many --target=lint --all",
-    "build": "nx run-many --target=build --projects=frontend,backend",
+    "build": "npm run env && nx run-many --target=build --projects=frontend,backend",
     "build:all": "nx run-many --target=build --all",
     "test": "nx run-many --target=test --all",
     "ng:component": "npx nx generate @nx/angular:component",

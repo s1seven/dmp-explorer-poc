@@ -14,7 +14,7 @@ export class Auth0Service {
   constructor() {
     const authenticationClientOptions: AuthenticationClientOptions = {
       domain: process.env.AUTH0_DOMAIN,
-      clientId: process.env.CLIENT_ID,
+      clientId: process.env.AUTH0_CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
     };
     this.authenticationClient = new AuthenticationClient(
