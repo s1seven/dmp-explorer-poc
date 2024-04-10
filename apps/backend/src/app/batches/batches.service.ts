@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { BatchEntity } from './entities/batch.entity';
@@ -12,6 +12,8 @@ const MAX_CADMIUM_CONTENT = 0.01;
 
 @Injectable()
 export class BatchesService {
+  private readonly logger = new Logger(BatchesService.name);
+
   constructor(
     @InjectRepository(BatchEntity)
     private readonly batchRepository: Repository<BatchEntity>,
@@ -30,10 +32,12 @@ export class BatchesService {
       isRoHSCompliant,
       owner: user,
     });
+    this.logger.log(`Creating batch: `, newBatch);
     return this.batchRepository.save(newBatch);
   }
 
   findAll(email: string) {
+    this.logger.log(`Fetching batches for ${email}`);
     return this.batchRepository.find({ where: { owner: { email } } });
   }
 

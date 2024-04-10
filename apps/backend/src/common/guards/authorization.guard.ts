@@ -28,10 +28,12 @@ export class AuthorizationGuard implements CanActivate {
     // TODO: improve this process
     const email = updatedJwtPayload[`${process.env.AUTH0_NAMESPACE}/email`];
     request.user = { email };
+    // eslint-disable-next-line no-console
+    console.log('AuthorizationGuard', email);
     const validateAccessToken = promisify(
       auth({
-        audience: 'https://api.s1seven-receiver.local',
-        issuerBaseURL: 'https://receiver-local.eu.auth0.com/',
+        audience: process.env.AUTH0_AUDIENCE,
+        issuerBaseURL: process.env.AUTH0_DOMAIN,
         tokenSigningAlg: 'RS256',
       })
     );
