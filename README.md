@@ -66,3 +66,8 @@ It will show tasks that you can run with Nx.
 First run `npm run typeorm:build-config` to create a datasource file. You may need to export a `DATABASE_URL` variable.
 Then run `typeorm migration:generate <migration-name> -d dist/typeorm.config.js`. If this fails, you may first need to run `typeorm migration:create apps/backend/src/migrations/<migration-name>`. Move the migration file to `apps/backend/src/migrations`.
 Then import the generated migration into `app.module.ts`.
+
+# Adding users
+
+When a user signs up with auth0, their email is automatically added to the database via a Post User Registration Flow.
+Locally users emails need to be added to the database manually. Ideally we would create them by sending a request from the frontend when signing up locally, but for now it is not necessary.
