@@ -1,6 +1,6 @@
 const { resolve } = require('path');
 
-const { writeFile } = require('fs/promises');
+const { writeFile, mkdir } = require('fs/promises');
 
 const dotenv = require('dotenv');
 
@@ -51,7 +51,12 @@ const envConfigFile = `export const environment = {
   try {
     await writeFile(targetPath, envConfigFile);
   } catch (err) {
-    console.error(err);
-    throw err;
+    if (err.code === 'ENOENT') {
+      await mkdir(targetPath);
+      await writeFile(targetPath, envConfigFile);
+    } else {
+      console.error(err);
+      throw err;
+    }
   }
 })();
