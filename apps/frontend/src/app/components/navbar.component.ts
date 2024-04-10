@@ -25,7 +25,7 @@ import { AuthService } from '@auth0/auth0-angular';
   ],
   standalone: true,
   template: `
-    <mat-toolbar color="primary">
+    <mat-toolbar class="bg-blue-500" color="primary">
       <mat-toolbar-row class="flex flex-row justify-between">
         <!-- <button
           mat-icon-button
@@ -37,9 +37,8 @@ import { AuthService } from '@auth0/auth0-angular';
         <span>Receiver product</span>
         <span class="menu-spacer"></span>
         <!-- <div class="hidden sm:block"> -->
-        <div>
+        <div class="flex flex-row justify-between">
           <!-- The following menu items will be hidden on both SM and XS screen sizes -->
-          <app-login-button></app-login-button>
           <a *ngIf="auth.user$ | async as user" mat-button routerLink="/profile"
             >Profile</a
           >
@@ -49,6 +48,7 @@ import { AuthService } from '@auth0/auth0-angular';
           <a *ngIf="auth.user$ | async as user" mat-button routerLink="/batches"
             >Batches</a
           >
+          <app-login-button></app-login-button>
         </div>
       </mat-toolbar-row>
     </mat-toolbar>
