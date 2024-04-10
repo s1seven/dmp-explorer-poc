@@ -43,7 +43,7 @@ const envConfigFile = `export const environment = {
     },
   },
   api: {
-    serverUrl: '${process.env['API_SERVER_URL'] + ':' + process.env['PORT']}',
+    serverUrl: '${process.env['API_SERVER_URL']}',
   },
 };
 `;
