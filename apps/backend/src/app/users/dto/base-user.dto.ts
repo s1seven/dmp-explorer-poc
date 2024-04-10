@@ -7,9 +7,4 @@ export class BaseUserDto {
   @IsNotEmpty()
   @ApiProperty()
   readonly email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty()
-  readonly password: string;
 }

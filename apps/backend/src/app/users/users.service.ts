@@ -34,7 +34,7 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const { email, password } = createUserDto;
+    const { email } = createUserDto;
     this.logger.log(`Creating user ${email}`);
 
     const existingUser = await this.userRepository.findOne({
@@ -43,27 +43,30 @@ export class UsersService {
     if (existingUser) {
       throw new BadRequestException('User already exists');
     }
-    let baseUser = this.userRepository.create({
+    const baseUser = this.userRepository.create({
       ...createUserDto,
     });
-    let auth0UserId: string;
+    await this.userRepository.save(baseUser);
+    this.logger.log(`Created user ${baseUser.email}`);
 
-    try {
-      const transactionRunner = this.getTransactionManager();
-      return await transactionRunner(async (qr) => {
-        baseUser = await qr.manager.save(baseUser);
-        auth0UserId = await this.auth0Service.createUser({ email, password });
-        this.logger.verbose(`Created user ${baseUser.email}`);
-      });
-    } catch (e) {
-      this.logger.verbose(
-        `Failed to create user ${baseUser.email}, reverting changes...`
-      );
-      // If auth0UserId is assigned, the user was created in Auth0 before the error occurred, so we need to delete it
-      if (auth0UserId) {
-        await this.auth0Service.deleteUser(auth0UserId);
-      }
-    }
+    // let auth0UserId: string;
+
+    // try {
+    //   const transactionRunner = this.getTransactionManager();
+    //   return await transactionRunner(async (qr) => {
+    //     baseUser = await qr.manager.save(baseUser);
+    //     auth0UserId = await this.auth0Service.createUser({ email, password });
+    //     this.logger.verbose(`Created user ${baseUser.email}`);
+    //   });
+    // } catch (e) {
+    //   this.logger.verbose(
+    //     `Failed to create user ${baseUser.email}, reverting changes...`
+    //   );
+    //   // If auth0UserId is assigned, the user was created in Auth0 before the error occurred, so we need to delete it
+    //   if (auth0UserId) {
+    //     await this.auth0Service.deleteUser(auth0UserId);
+    //   }
+    // }
   }
 
   async getUsers() {

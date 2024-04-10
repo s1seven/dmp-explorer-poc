@@ -207,14 +207,10 @@
         "properties": {
           "email": {
             "type": "string"
-          },
-          "password": {
-            "type": "string"
           }
         },
         "required": [
-          "email",
-          "password"
+          "email"
         ]
       },
       "TokenUserDto": {
@@ -242,16 +238,12 @@
           "email": {
             "type": "string"
           },
-          "password": {
-            "type": "string"
-          },
           "id": {
             "type": "number"
           }
         },
         "required": [
           "email",
-          "password",
           "id"
         ]
       },
