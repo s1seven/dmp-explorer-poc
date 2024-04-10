@@ -60,3 +60,9 @@ It will show tasks that you can run with Nx.
 - [Join the community](https://nx.dev/community)
 - [Subscribe to the Nx Youtube Channel](https://www.youtube.com/@nxdevtools)
 - [Follow us on Twitter](https://twitter.com/nxdevtools)
+
+# Generating migrations
+
+First run `npm run typeorm:build-config` to create a datasource file. You may need to export a `DATABASE_URL` variable.
+Then run `typeorm migration:generate <migration-name> -d dist/typeorm.config.js`. If this fails, you may first need to run `typeorm migration:create apps/backend/src/migrations/<migration-name>`. Move the migration file to `apps/backend/src/migrations`.
+Then import the generated migration into `app.module.ts`.
