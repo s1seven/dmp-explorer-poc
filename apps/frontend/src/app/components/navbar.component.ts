@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { LogoutButtonComponent } from './app-logout-button.component';
+import { LoginButtonComponent } from './app-login-button.component';
 import { UserProfileComponent } from './app-user-profile.component';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
@@ -20,7 +20,7 @@ import { AuthService } from '@auth0/auth0-angular';
     MatSidenavModule,
     MatListModule,
     MatIconModule,
-    LogoutButtonComponent,
+    LoginButtonComponent,
     UserProfileComponent,
   ],
   standalone: true,
@@ -36,9 +36,10 @@ import { AuthService } from '@auth0/auth0-angular';
         </button> -->
         <span>Receiver product</span>
         <span class="menu-spacer"></span>
-        <div class="hidden sm:block">
+        <!-- <div class="hidden sm:block"> -->
+        <div>
           <!-- The following menu items will be hidden on both SM and XS screen sizes -->
-          <app-logout-button></app-logout-button>
+          <app-login-button></app-login-button>
           <a *ngIf="auth.user$ | async as user" mat-button routerLink="/profile"
             >Profile</a
           >
@@ -56,7 +57,7 @@ import { AuthService } from '@auth0/auth0-angular';
       <mat-sidenav #sidenav>
         <mat-nav-list> -->
           <!-- <a (click)="sidenav.toggle()" href="" mat-list-item>Close</a> -->
-          <!-- <app-logout-button></app-logout-button>
+          <!-- <app-login-button></app-login-button>
           <a *ngIf="auth.user$ | async as user" mat-button routerLink="/profile"
             >Profile</a
           >

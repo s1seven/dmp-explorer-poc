@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LoginButtonComponent } from './components/app-login-button.component';
-import { LogoutButtonComponent } from './components/app-logout-button.component';
 import { UserProfileComponent } from './components/app-user-profile.component';
 import { NavbarComponent } from './components/navbar.component';
 import { AuthService } from '@auth0/auth0-angular';
@@ -16,7 +15,6 @@ import { HttpClientModule } from '@angular/common/http';
     PageLoaderComponent,
     RouterModule,
     LoginButtonComponent,
-    LogoutButtonComponent,
     UserProfileComponent,
     NavbarComponent,
     HttpClientModule,
