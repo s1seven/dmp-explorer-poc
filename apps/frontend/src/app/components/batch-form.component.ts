@@ -63,7 +63,7 @@ export class BatchFormComponent implements OnInit {
   onSubmit() {
     const newBatch = this.batchForm.value;
     this.http
-      .post('http://localhost:3000/api/batches', newBatch)
+      .post('api/batches', newBatch)
       .subscribe((batch) => {
         console.log('Updated batch:', batch);
       });

@@ -12,11 +12,17 @@ import {
   withFetch,
 } from '@angular/common/http';
 import { environment } from '../environments/environment';
+import { APIInterceptor } from './interceptors/api.interceptor';
 
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(withFetch()),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: APIInterceptor,
+      multi: true,
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHttpInterceptor,

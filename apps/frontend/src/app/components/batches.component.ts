@@ -60,7 +60,7 @@ export class BatchesComponent implements OnInit {
     // eslint-disable-next-line no-console
     console.log('Fetching batches');
     this.batchesArray$ = this.http.get<any[]>(
-      'http://localhost:3000/api/batches'
+      'api/batches'
     );
   }
 }
