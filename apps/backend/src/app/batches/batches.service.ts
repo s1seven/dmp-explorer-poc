@@ -28,12 +28,19 @@ export class BatchesService {
       throw new Error(`User with email ${email} not found`);
     }
 
+    const { lotNumber } = createBatchDto;
+    const existingBatch = await this.batchRepository.findOne({ where: { lotNumber } });
+
+    if (existingBatch) {
+      throw new Error(`Batch with lot number ${lotNumber} already exists`);
+    }
+
     const newBatch = this.batchRepository.create({
       ...createBatchDto,
       isRoHSCompliant,
       owner: user,
     });
-    
+
     this.logger.log(`Creating batch: `, newBatch);
     return this.batchRepository.save(newBatch);
   }
