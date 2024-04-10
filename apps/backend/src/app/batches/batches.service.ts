@@ -21,10 +21,7 @@ export class BatchesService {
     private readonly userRepository: Repository<UserEntity>
   ) {}
   async create(createBatchDto: CreateBatchDto, email: string) {
-    const isRoHSCompliant =
-      createBatchDto.leadContent <= MAX_LEAD_CONTENT &&
-      createBatchDto.mercuryContent <= MAX_MERCURY_CONTENT &&
-      createBatchDto.cadmiumContent <= MAX_CADMIUM_CONTENT;
+    const isRoHSCompliant = this.isRoHSCompliant(createBatchDto);
     const user = await this.userRepository.findOne({ where: { email } });
 
     const newBatch = this.batchRepository.create({
@@ -34,6 +31,14 @@ export class BatchesService {
     });
     this.logger.log(`Creating batch: `, newBatch);
     return this.batchRepository.save(newBatch);
+  }
+
+  private isRoHSCompliant(batch: CreateBatchDto) {
+    return (
+      batch.leadContent <= MAX_LEAD_CONTENT &&
+      batch.mercuryContent <= MAX_MERCURY_CONTENT &&
+      batch.cadmiumContent <= MAX_CADMIUM_CONTENT
+    );
   }
 
   findAll(email: string) {
