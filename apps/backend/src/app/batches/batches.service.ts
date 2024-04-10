@@ -24,11 +24,16 @@ export class BatchesService {
     const isRoHSCompliant = this.isRoHSCompliant(createBatchDto);
     const user = await this.userRepository.findOne({ where: { email } });
 
+    if (!user) {
+      throw new Error(`User with email ${email} not found`);
+    }
+
     const newBatch = this.batchRepository.create({
       ...createBatchDto,
       isRoHSCompliant,
       owner: user,
     });
+    
     this.logger.log(`Creating batch: `, newBatch);
     return this.batchRepository.save(newBatch);
   }
