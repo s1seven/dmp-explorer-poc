@@ -3,6 +3,7 @@ const { resolve } = require('path');
 const { writeFile, mkdir } = require('fs/promises');
 
 const dotenv = require('dotenv');
+const { execSync } = require('child_process');
 
 dotenv.config();
 
@@ -52,7 +53,10 @@ const envConfigFile = `export const environment = {
     await writeFile(targetPath, envConfigFile);
   } catch (err) {
     if (err.code === 'ENOENT') {
-      await mkdir(targetPath);
+      await mkdir(resolve(
+        __dirname,
+        'apps/frontend/src/environments'
+      ), { recursive: true });
       await writeFile(targetPath, envConfigFile);
     } else {
       console.error(err);
