@@ -4,9 +4,10 @@ import { BatchesController } from './batches.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BatchEntity } from './entities/batch.entity';
 import { UserEntity } from '../users/entities/user.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BatchEntity, UserEntity])],
+  imports: [ConfigModule, TypeOrmModule.forFeature([BatchEntity, UserEntity])],
   controllers: [BatchesController],
   providers: [BatchesService],
 })

@@ -9,7 +9,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 
-import { ReqUser } from '../constants/constants';
+import { ReqUser } from '../../common/constants/constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ReturnUserDto } from './dto/return-user.dto';
 import { UserEntity } from './entities/user.entity';

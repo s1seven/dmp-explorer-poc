@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   AuthenticationClient,
   AuthenticationClientOptions,
@@ -10,12 +11,18 @@ import {
 export class Auth0Service {
   private authenticationClient: AuthenticationClient;
   private logger = new Logger(Auth0Service.name);
+  private readonly AUTH0_DOMAIN =
+    this.configService.get<string>('AUTH0_DOMAIN');
+  private readonly AUTH0_CLIENT_ID =
+    this.configService.get<string>('AUTH0_CLIENT_ID');
+  private readonly CLIENT_SECRET =
+    this.configService.get<string>('CLIENT_SECRET');
 
-  constructor() {
+  constructor(private configService: ConfigService) {
     const authenticationClientOptions: AuthenticationClientOptions = {
-      domain: process.env.AUTH0_DOMAIN,
-      clientId: process.env.AUTH0_CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
+      domain: this.AUTH0_DOMAIN,
+      clientId: this.AUTH0_CLIENT_ID,
+      clientSecret: this.CLIENT_SECRET,
     };
     this.authenticationClient = new AuthenticationClient(
       authenticationClientOptions
@@ -25,7 +32,7 @@ export class Auth0Service {
   getManagementClient(token: string) {
     return new ManagementClient({
       token,
-      domain: process.env.AUTH0_DOMAIN,
+      domain: this.AUTH0_DOMAIN,
     });
   }
 

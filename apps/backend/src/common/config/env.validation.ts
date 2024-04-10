@@ -1,8 +1,10 @@
 import { plainToInstance, Transform } from 'class-transformer';
 import {
   IsInt,
+  IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   Max,
   Min,
   MinLength,
@@ -28,9 +30,31 @@ class EnvironmentVariables {
   @MinLength(10)
   DATABASE_URL: string;
 
-  // @IsString()
-  // @MinLength(10)
-  // JWT_SECRET: string;
+  @IsString()
+  @IsNotEmpty()
+  @IsUrl()
+  AUTH0_ISSUER_URL: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AUTH0_AUDIENCE: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsUrl()
+  AUTH0_DOMAIN: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AUTH0_CLIENT_ID: string;
+
+  @IsString()
+  @IsNotEmpty()
+  CLIENT_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AUTH0_NAMESPACE = 'https://receiver-product.s1seven.com';
 }
 
 export function validate(

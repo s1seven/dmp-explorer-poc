@@ -6,22 +6,20 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  private auth0Audience = this.configService.get<string>('AUTH0_AUDIENCE');
-  private auth0IssuerURL = this.configService.get<string>('AUTH0_ISSUER_URL');
-
-  // TODO: get the auth0Audience and auth0IssuerURL from the configService
   constructor(private readonly configService: ConfigService) {
     super({
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: `${process.env.AUTH0_ISSUER_URL}.well-known/jwks.json`,
+        jwksUri: `${configService.get<string>(
+          'AUTH0_ISSUER_URL'
+        )}.well-known/jwks.json`,
       }),
 
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      audience: process.env.AUTH0_AUDIENCE,
-      issuer: `${process.env.AUTH0_ISSUER_URL}`,
+      audience: configService.get<string>('AUTH0_AUDIENCE'),
+      issuer: configService.get<string>('AUTH0_ISSUER_URL'),
       algorithms: ['RS256'],
     });
   }

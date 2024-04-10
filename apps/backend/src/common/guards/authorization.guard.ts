@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import {
   auth,
@@ -16,6 +17,12 @@ import { promisify } from 'util';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
+  private AUTH0_NAMESPACE = this.configService.get<string>('AUTH0_NAMESPACE');
+  private AUTH0_AUDIENCE = this.configService.get<string>('AUTH0_AUDIENCE');
+  private AUTH0_DOMAIN = this.configService.get<string>('AUTH0_DOMAIN');
+
+  constructor(private configService: ConfigService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const response = context.switchToHttp().getResponse<Response>();
@@ -24,16 +31,13 @@ export class AuthorizationGuard implements CanActivate {
       throw new UnauthorizedException('Requires authentication');
     }
     const updatedJwtPayload = this.decodeToken(token);
-    
     // TODO: improve this process
-    const email = updatedJwtPayload[`${process.env.AUTH0_NAMESPACE}/email`];
+    const email = updatedJwtPayload[`${this.AUTH0_NAMESPACE}/email`];
     request.user = { email };
-    // eslint-disable-next-line no-console
-    console.log('AuthorizationGuard', email);
     const validateAccessToken = promisify(
       auth({
-        audience: process.env.AUTH0_AUDIENCE,
-        issuerBaseURL: process.env.AUTH0_DOMAIN,
+        audience: this.AUTH0_AUDIENCE,
+        issuerBaseURL: this.AUTH0_DOMAIN,
         tokenSigningAlg: 'RS256',
       })
     );

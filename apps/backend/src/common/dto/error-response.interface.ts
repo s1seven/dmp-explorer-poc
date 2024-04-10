@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Environment } from '../../app/constants/constants';
+import { Environment } from '../constants/constants';
 
 export class ErrorResponse extends Error {
   constructor(

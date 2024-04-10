@@ -16,7 +16,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
 import { TokenUserDto } from '../../common/dto/token-user';
-import { ReqUser } from '../constants/constants';
+import { ReqUser } from '../../common/constants/constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ReturnUserDto } from './dto/return-user.dto';
 import { UserEntity } from './entities/user.entity';
