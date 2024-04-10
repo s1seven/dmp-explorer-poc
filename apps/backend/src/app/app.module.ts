@@ -8,6 +8,7 @@ import { validate } from '../common/config/env.validation';
 import { AuthModule } from '../auth/auth.module';
 import { join } from 'node:path';
 import { BatchesModule } from './batches/batches.module';
+import { InitialMigration1712761023143 } from '../migrations/1712761023143-InitialMigration';
 
 @Module({
   imports: [
@@ -22,7 +23,6 @@ import { BatchesModule } from './batches/batches.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: ['dist/apps/backend/**/*.entity.js'],
         autoLoadEntities: true,
         ssl: configService.get<string>('NODE_ENV') === 'production',
         extra: configService.get<string>('NODE_ENV') === 'production' && {
@@ -30,8 +30,11 @@ import { BatchesModule } from './batches/batches.module';
             rejectUnauthorized: false,
           },
         },
-        synchronize: configService.get<string>('NODE_ENV') !== 'production',
-        migrations: [],
+        synchronize: false,
+        logging: true,
+        migrationsTableName: 'typeorm_migrations',
+        migrations: [InitialMigration1712761023143],
+        migrationsRun: true,
       }),
       inject: [ConfigService],
     }),

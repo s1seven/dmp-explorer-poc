@@ -24,7 +24,7 @@ export class AuthorizationGuard implements CanActivate {
       throw new UnauthorizedException('Requires authentication');
     }
     const updatedJwtPayload = this.decodeToken(token);
-
+    
     // TODO: improve this process
     const email = updatedJwtPayload[`${process.env.AUTH0_NAMESPACE}/email`];
     request.user = { email };

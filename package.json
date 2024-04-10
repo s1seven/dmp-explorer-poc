@@ -21,7 +21,7 @@
     "start:docker": "docker-compose up -d",
     "stop:docker": "docker-compose down",
     "heroku-postbuild": "npm run build && npm run typeorm:build-config",
-    "typeorm:build-config": "npx tsc apps/backend/typeorm.config.ts --outDir ./dist",
+    "typeorm:build-config": "npx tsc --experimentalDecorators  --emitDecoratorMetadata apps/backend/typeorm.config.ts --outDir ./dist",
     "typeorm:generate-migrations": "npx typeorm -d dist/typeorm.config.js migration:generate",
     "typeorm:run-migrations": "npx typeorm -d dist/typeorm.config.js migration:run"
   },
