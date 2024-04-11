@@ -3,13 +3,12 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { Observable, of } from 'rxjs';
-import { PageLayoutComponent } from './page-layout.component';
 
 @Component({
   selector: 'app-batches',
   standalone: true,
-  imports: [CommonModule, MatTableModule, PageLayoutComponent],
-  template: ` <app-page-layout>
+  imports: [CommonModule, MatTableModule],
+  template: `
     <table mat-table [dataSource]="batchesArray$">
       <!-- Lot Number Column -->
       <ng-container matColumnDef="lotNumber">
@@ -57,7 +56,7 @@ import { PageLayoutComponent } from './page-layout.component';
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
-  </app-page-layout>`,
+  `,
   styles: ``,
 })
 export class BatchesComponent implements OnInit {

@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { LoginButtonComponent } from './components/app-login-button.component';
-import { UserProfileComponent } from './components/app-user-profile.component';
-import { NavbarComponent } from './components/navbar.component';
+import { LoginButtonComponent } from './layout/app-login-button.component';
+import { UserProfileComponent } from './profile/app-user-profile.component';
+import { NavbarComponent } from './layout/navbar.component';
 import { AuthService } from '@auth0/auth0-angular';
 import { CommonModule } from '@angular/common';
-import { PageLoaderComponent } from './components/page-loader.component';
+import { PageLoaderComponent } from './shared/page-loader.component';
 import { HttpClientModule } from '@angular/common/http';
 
 @Component({
@@ -20,7 +20,15 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
   ],
   selector: 'app-root',
-  templateUrl: './app.component.html',
+  template: `<div
+      class="page-layout"
+      *ngIf="isAuth0Loading$ | async; else auth0Loaded"
+    >
+      <app-page-loader></app-page-loader>
+    </div>
+    <ng-template #auth0Loaded>
+      <router-outlet></router-outlet>
+    </ng-template>`,
   styles: '',
 })
 export class AppComponent {

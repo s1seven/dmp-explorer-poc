@@ -6,7 +6,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { LoginButtonComponent } from './app-login-button.component';
-import { UserProfileComponent } from './app-user-profile.component';
+import { UserProfileComponent } from '../profile/app-user-profile.component';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
 

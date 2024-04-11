@@ -71,3 +71,22 @@ Then import the generated migration into `app.module.ts`.
 
 When a user signs up with auth0, their email is automatically added to the database via a Post User Registration Flow.
 Locally users emails need to be added to the database manually. Ideally we would create them by sending a request from the frontend when signing up locally, but for now it is not necessary.
+
+# Gneerate angular component
+nx g @nx/angular:component --name=shell --directory=apps/frontend/src/app --changeDetection=OnPush --inlineStyle=true --inlineTemplate=true --nameAndDirectoryFormat=as-provided --style=scss
+
+
+
+BATCHES
+- getBatches
+- assignBatch
+- createBatch
+- acceptBatch
+
+PROFILES
+- createCompany
+- getInvitation
+- getCompany
+- createInvitation
+- acceptInvitation
+- declineInvitation

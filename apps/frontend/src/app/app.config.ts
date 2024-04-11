@@ -11,8 +11,8 @@ import {
   provideHttpClient,
   withFetch,
 } from '@angular/common/http';
+import { APIInterceptor } from './shared/api.interceptor';
 import { environment } from '../environments/environment';
-import { APIInterceptor } from './interceptors/api.interceptor';
 
 
 export const appConfig: ApplicationConfig = {
@@ -32,7 +32,7 @@ export const appConfig: ApplicationConfig = {
     provideAuth0({
       ...environment.auth0,
       httpInterceptor: {
-        allowedList: [`${environment.api.serverUrl}/api/batches`],
+        allowedList: [`${environment.api.serverUrl}/api/*`],
       },
     }),
     provideAnimationsAsync(),
