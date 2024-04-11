@@ -1,7 +1,8 @@
-import { BaseEntity } from "../../../common/entities/base-entity";
-import { Column, Entity, ManyToOne } from "typeorm";
-import { UserEntity } from "../../users/entities/user.entity";
-import { ApiProperty } from "@nestjs/swagger";
+import { BaseEntity } from '../../../common/entities/base-entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { UserEntity } from '../../users/entities/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { Unit } from '../../../common/constants/constants';
 
 @Entity()
 export class BatchEntity extends BaseEntity {
@@ -25,4 +26,10 @@ export class BatchEntity extends BaseEntity {
 
   @Column()
   isRoHSCompliant: boolean;
+
+  @Column()
+  quantity: number;
+
+  @Column({ type: 'enum', enum: Unit })
+  unit: Unit;
 }

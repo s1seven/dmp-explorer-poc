@@ -35,10 +35,23 @@ import { PageLayoutComponent } from './page-layout.component';
         <td mat-cell *matCellDef="let batch">{{ batch.cadmiumContent }}</td>
       </ng-container>
 
-      <!-- Cadmium Content Column -->
+      <!-- RoHS Compliance Column -->
       <ng-container matColumnDef="isRoHSCompliant">
-        <th mat-header-cell *matHeaderCellDef>RoHS Complient</th>
+        <th mat-header-cell *matHeaderCellDef>RoHS Compliance</th>
         <td mat-cell *matCellDef="let batch">{{ batch.isRoHSCompliant }}</td>
+      </ng-container>
+
+      // TODO: combine quantity and unit
+      <!-- Quantity Column -->
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef>Quantity</th>
+        <td mat-cell *matCellDef="let batch">{{ batch.quantity }}</td>
+      </ng-container>
+
+      <!-- Cadmium Content Column -->
+      <ng-container matColumnDef="unit">
+        <th mat-header-cell *matHeaderCellDef>Unit</th>
+        <td mat-cell *matCellDef="let batch">{{ batch.unit }}</td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -55,6 +68,8 @@ export class BatchesComponent implements OnInit {
     'mercuryContent',
     'cadmiumContent',
     'isRoHSCompliant',
+    'quantity',
+    'unit',
   ];
 
   constructor(private http: HttpClient) {}

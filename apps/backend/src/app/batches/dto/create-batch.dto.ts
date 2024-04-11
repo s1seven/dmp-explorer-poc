@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Unit } from '../../../common/constants/constants';
 
 export class CreateBatchDto {
   @IsString()
@@ -21,4 +22,14 @@ export class CreateBatchDto {
   @IsNotEmpty()
   @ApiProperty()
   cadmiumContent: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty()
+  quantity: number;
+
+  @IsEnum(Unit)
+  @IsNotEmpty()
+  @ApiProperty()
+  unit: Unit;
 }

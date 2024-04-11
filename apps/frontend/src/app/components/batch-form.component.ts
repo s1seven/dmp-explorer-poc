@@ -48,6 +48,14 @@ import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
           <mat-label>Cadmium Content</mat-label>
           <input matInput type="number" formControlName="cadmiumContent" />
         </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Quantity</mat-label>
+          <input matInput type="number" formControlName="quantity" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Unit</mat-label>
+          <input matInput type="text" formControlName="unit" />
+        </mat-form-field>
         <!-- </div> -->
         <div class="flex-col flex gap-8 items-center">
           <button
@@ -75,6 +83,8 @@ export class BatchFormComponent implements OnInit, OnDestroy {
       leadContent: new FormControl('', Validators.required),
       mercuryContent: new FormControl('', Validators.required),
       cadmiumContent: new FormControl('', Validators.required),
+      quantity: new FormControl('', Validators.required),
+      unit: new FormControl('', Validators.required),
     });
   }
 

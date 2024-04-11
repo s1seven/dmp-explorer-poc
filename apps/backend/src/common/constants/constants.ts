@@ -18,3 +18,9 @@ export enum Environment {
   Staging = 'staging',
   Test = 'test',
 }
+
+export enum Unit {
+  KG = 'kg',
+  TO = 'to',
+  M = 'm',
+}

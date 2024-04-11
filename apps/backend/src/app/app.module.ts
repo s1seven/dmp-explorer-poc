@@ -9,6 +9,7 @@ import { AuthModule } from '../auth/auth.module';
 import { join } from 'node:path';
 import { BatchesModule } from './batches/batches.module';
 import { InitialMigration1712761023143 } from '../migrations/1712761023143-InitialMigration';
+import { UpdateBatches1712836157665 } from '../migrations/1712836157665-UpdateBatches';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { InitialMigration1712761023143 } from '../migrations/1712761023143-Initi
         synchronize: false,
         logging: true,
         migrationsTableName: 'typeorm_migrations',
-        migrations: [InitialMigration1712761023143],
+        migrations: [InitialMigration1712761023143, UpdateBatches1712836157665],
         migrationsRun: true,
       }),
       inject: [ConfigService],

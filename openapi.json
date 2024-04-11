@@ -278,13 +278,21 @@
           },
           "cadmiumContent": {
             "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "object"
           }
         },
         "required": [
           "lotNumber",
           "leadContent",
           "mercuryContent",
-          "cadmiumContent"
+          "cadmiumContent",
+          "quantity",
+          "unit"
         ]
       },
       "UpdateBatchDto": {
@@ -301,6 +309,12 @@
           },
           "cadmiumContent": {
             "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "object"
           }
         }
       }
