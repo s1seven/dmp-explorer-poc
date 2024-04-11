@@ -1,5 +1,7 @@
-import { Route } from '@angular/router';
+import { inject } from '@angular/core';
+import { Route, Router } from '@angular/router';
 import { AuthGuard } from '@auth0/auth0-angular';
+import { ProfileService } from './profile/profile.service';
 
 export const appRoutes: Route[] = [
   {
@@ -16,7 +18,14 @@ export const appRoutes: Route[] = [
         canActivate: [AuthGuard],
       },
       {
-        canActivate: [() => true],
+        canActivate: [
+          async () => {
+            const router = inject(Router);
+            const profileService = inject(ProfileService);
+            const companies = await profileService.getCompanies();
+            return companies.length ? true : router.createUrlTree(['/profile']);
+          },
+        ],
         path: '',
         children: [
           {
@@ -30,7 +39,9 @@ export const appRoutes: Route[] = [
           {
             path: 'batches',
             loadComponent: () =>
-              import('./batches/batches.component').then((mod) => mod.BatchesComponent),
+              import('./batches/batches.component').then(
+                (mod) => mod.BatchesComponent
+              ),
             canActivate: [AuthGuard],
           },
         ],
