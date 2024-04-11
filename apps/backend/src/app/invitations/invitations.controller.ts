@@ -14,6 +14,7 @@ import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { AuthorizationGuard } from '../../common/guards/authorization.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ReqUser } from '../../common/constants/constants';
 
 @Controller('invitations')
 @UseGuards(AuthorizationGuard)
@@ -24,9 +25,7 @@ export class InvitationsController {
   create(
     @Body() createInvitationDto: CreateInvitationDto,
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
-    user: {
-      email: string;
-    }
+    user: ReqUser
   ) {
     const { email } = user;
     return this.invitationsService.create(createInvitationDto, email);

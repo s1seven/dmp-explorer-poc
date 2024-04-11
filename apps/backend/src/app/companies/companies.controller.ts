@@ -12,6 +12,7 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { AuthorizationGuard } from '../../common/guards/authorization.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CompanyEntity } from './entities/company.entity';
+import { ReqUser } from '../../common/constants/constants';
 
 @Controller('companies')
 @UseGuards(AuthorizationGuard)
@@ -22,9 +23,7 @@ export class CompaniesController {
   create(
     @Body() createCompanyDto: CreateCompanyDto,
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
-    user: {
-      email: string;
-    }
+    user: ReqUser
   ) {
     const { email } = user;
     return this.companiesService.create(createCompanyDto, email);
@@ -33,9 +32,7 @@ export class CompaniesController {
   @Get()
   findAll(
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
-    user: {
-      email: string;
-    }
+    user: ReqUser
   ): Promise<CompanyEntity[]> {
     const { email } = user;
     return this.companiesService.findAll(email);
@@ -45,9 +42,7 @@ export class CompaniesController {
   findOne(
     @Param('id') id: string,
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
-    user: {
-      email: string;
-    }
+    user: ReqUser
   ) {
     const { email } = user;
     return this.companiesService.findOne(email, id);

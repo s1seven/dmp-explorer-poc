@@ -32,64 +32,6 @@
         ]
       }
     },
-    "/api/users/{id}": {
-      "get": {
-        "operationId": "UsersController_findOneById",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Get by id",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReturnUserDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "users"
-        ]
-      },
-      "delete": {
-        "operationId": "UsersController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Delete",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserEntity"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "users"
-        ]
-      }
-    },
     "/api/batches": {
       "post": {
         "operationId": "BatchesController_create",
@@ -376,38 +318,6 @@
           "email",
           "id",
           "accessToken"
-        ]
-      },
-      "ReturnUserDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "id": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "email",
-          "id"
-        ]
-      },
-      "UserEntity": {
-        "type": "object",
-        "properties": {
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "createdAt",
-          "updatedAt"
         ]
       },
       "CreateBatchDto": {

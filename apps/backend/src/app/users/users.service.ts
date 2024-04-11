@@ -3,15 +3,11 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { plainToInstance } from 'class-transformer';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 
-import { ReqUser } from '../../common/constants/constants';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ReturnUserDto } from './dto/return-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { Auth0Service } from '../auth0/auth0.service';
 import { runInTransaction } from '../../common/helpers/transaction';
@@ -73,19 +69,19 @@ export class UsersService {
     return this.auth0Service.getUsers();
   }
 
-  async findOneById(id: string, user: ReqUser): Promise<ReturnUserDto> {
-    const { sub: currentUserId } = user;
-    if (id !== currentUserId) {
-      throw new UnauthorizedException();
-    }
-    const foundUser = await this.userRepository.findOne({
-      where: { id },
-    });
-    if (!foundUser) {
-      throw new NotFoundException(`User #${id} not found`);
-    }
-    return plainToInstance(ReturnUserDto, foundUser);
-  }
+  // async findOneById(id: string, user: ReqUser): Promise<ReturnUserDto> {
+  //   const { sub: currentUserId } = user;
+  //   if (id !== currentUserId) {
+  //     throw new UnauthorizedException();
+  //   }
+  //   const foundUser = await this.userRepository.findOne({
+  //     where: { id },
+  //   });
+  //   if (!foundUser) {
+  //     throw new NotFoundException(`User #${id} not found`);
+  //   }
+  //   return plainToInstance(ReturnUserDto, foundUser);
+  // }
 
   async findOne(email: string): Promise<UserEntity> {
     const foundUser = await this.userRepository.findOne({
@@ -97,18 +93,18 @@ export class UsersService {
     return foundUser;
   }
 
-  async remove(id: string, user: ReqUser): Promise<ReturnUserDto> {
-    const { sub: currentUserId } = user;
-    if (id !== currentUserId) {
-      throw new UnauthorizedException();
-    }
-    const foundUser = await this.userRepository.findOne({
-      where: { id },
-    });
-    if (!foundUser) {
-      throw new NotFoundException(`Prefil data #${id} not found`);
-    }
-    const removedUser = this.userRepository.remove(foundUser);
-    return plainToInstance(ReturnUserDto, removedUser);
-  }
+  // async remove(id: string, user: ReqUser): Promise<ReturnUserDto> {
+  //   const { sub: currentUserId } = user;
+  //   if (id !== currentUserId) {
+  //     throw new UnauthorizedException();
+  //   }
+  //   const foundUser = await this.userRepository.findOne({
+  //     where: { id },
+  //   });
+  //   if (!foundUser) {
+  //     throw new NotFoundException(`Prefil data #${id} not found`);
+  //   }
+  //   const removedUser = this.userRepository.remove(foundUser);
+  //   return plainToInstance(ReturnUserDto, removedUser);
+  // }
 }

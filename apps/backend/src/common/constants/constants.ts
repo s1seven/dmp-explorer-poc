@@ -1,7 +1,7 @@
 import type { Request } from 'express';
 
 export type ReqUser = {
-  sub: string;
+  // sub: string;
   email: string;
 };
 

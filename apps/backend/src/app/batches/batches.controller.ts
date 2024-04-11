@@ -14,6 +14,7 @@ import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { AuthorizationGuard } from '../../common/guards/authorization.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ReqUser } from '../../common/constants/constants';
 
 @Controller('batches')
 export class BatchesController {
@@ -24,9 +25,7 @@ export class BatchesController {
   create(
     @Body() createBatchDto: CreateBatchDto,
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
-    user: {
-      email: string;
-    }
+    user: ReqUser
   ) {
     const { email } = user;
     return this.batchesService.create(createBatchDto, email);
@@ -36,9 +35,7 @@ export class BatchesController {
   @Get()
   findAll(
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
-    user: {
-      email: string;
-    }
+    user: ReqUser
   ) {
     const { email } = user;
     return this.batchesService.findAll(email);
