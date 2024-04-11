@@ -32,8 +32,12 @@ export class InvitationsController {
   }
 
   @Get()
-  findAll() {
-    return this.invitationsService.findAll();
+  findAll(
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.invitationsService.findAll(email);
   }
 
   @Get(':id')

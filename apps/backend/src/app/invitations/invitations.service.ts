@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { Repository } from 'typeorm';
@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class InvitationsService {
+  private readonly logger = new Logger(InvitationsService.name);
+
   constructor(
     @InjectRepository(InvitationEntity)
     private invitationRespository: Repository<InvitationEntity>,
@@ -32,13 +34,14 @@ export class InvitationsService {
       ...createInvitationDto,
       company,
     });
-    return this.invitationRespository.save(
-      createdInvitation
-    );
+    return this.invitationRespository.save(createdInvitation);
   }
 
-  findAll() {
-    return `This action returns all invitations`;
+  findAll(email: string) {
+    this.logger.log(`Getting all invitations for ${email}`);
+    return this.invitationRespository.find({
+      where: { emailToInvite: email },
+    });
   }
 
   findOne(id: number) {

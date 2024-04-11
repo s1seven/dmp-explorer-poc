@@ -14,8 +14,11 @@ import { tap } from 'rxjs';
   standalone: true,
   imports: [CommonModule],
   selector: 'app-company',
-  template: `Company: {{ company() | json }}<br />
-    Invitation: {{ invitation() | json }}<br /> `,
+  template: `
+    <h2>Company</h2>
+    Company: {{ (company() | json) ?? 'none' }}<br />
+    Invitation: {{ (invitation() | json) ?? 'none' }}<br />
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CompanyComponent {
