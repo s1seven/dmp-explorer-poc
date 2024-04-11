@@ -12,7 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   template: `
     <div class="flex gap-4 items-center mb-10" *ngIf="user() as user">
       <img
-        class="shadow-sm w-28 h-28 rounded-full"
+        class="shadow-sm w-24 h-24 rounded-full"
         [src]="user.picture"
         alt="Profile"
       />
@@ -20,14 +20,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
         <span><strong>Name:</strong> {{ user.name }}</span>
         <span><strong>Nickname:</strong> {{ user.nickname }}</span>
         <span><strong>Email:</strong> {{ user.email }}</span>
-        <p class="text-gray-700 mb-0">
+        <!-- <p class="text-gray-700 mb-0">
           If you need to update your information, please
           <a
             class="underline underline-offset-2"
             href="mailto: contact@s1seven.com"
             >contact S1SEVEN</a
           >.
-        </p>
+        </p> -->
       </div>
     </div>
 

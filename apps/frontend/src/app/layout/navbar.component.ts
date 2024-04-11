@@ -27,7 +27,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   ],
   standalone: true,
   template: `
-    <mat-toolbar class="bg-primary-50 text-primary-500">
+    <mat-toolbar class="bg-primary-50/50 text-primary-500 shadow-sm border-b border-primary-100/80">
       <mat-toolbar-row class="flex flex-row justify-between">
         <a class="flex gap-2 items-center" href="/">
           <svg
@@ -49,7 +49,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
               fill="currentColor"
             ></path>
           </svg>
-          <span>Receiver product</span>
+          <span>DMP</span>
+          <span class="font-thin -ml-1">Explorer</span>
         </a>
 
         <span class="flex-1"></span>

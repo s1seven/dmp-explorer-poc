@@ -14,16 +14,23 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
+import { CreateCompanyComponent } from './create-company.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    CreateCompanyComponent,
+  ],
   selector: 'app-company',
   template: `
-    <!-- Company: {{ (company() | json) ?? 'none' }}<br />
-    Invitation: {{ (invitation() | json) ?? 'none' }}<br /> -->
+    <app-create-company></app-create-company>
+
+    <!-- invitation: -->
     <div
-      class="mat-h3 grid grid-cols-[min-content_1fr] items-center gap-4 p-4 border border-orange-400 bg-orange-50"
+      class="rounded-md p-4 border max-w-3xl border-orange-400 bg-orange-50 grid grid-cols-[min-content_1fr] items-center gap-4"
     >
       <mat-icon fontIcon="mail"></mat-icon>
       <div class="flex-1">
@@ -37,9 +44,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
       </div>
       <div></div>
       <div class="flex gap-3">
-        <button mat-stroked-button (click)="declineDialog()">
-          Decline
-        </button>
+        <button mat-stroked-button (click)="declineDialog()">Decline</button>
         <button mat-raised-button color="primary">Accept</button>
       </div>
     </div>
