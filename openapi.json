@@ -185,6 +185,152 @@
           }
         }
       }
+    },
+    "/api/companies": {
+      "post": {
+        "operationId": "CompaniesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "operationId": "CompaniesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/companies/{id}": {
+      "get": {
+        "operationId": "CompaniesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/invitations": {
+      "post": {
+        "operationId": "InvitationsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvitationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "operationId": "InvitationsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/invitations/{id}": {
+      "get": {
+        "operationId": "InvitationsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "InvitationsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInvitationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "InvitationsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "info": {
@@ -270,6 +416,9 @@
           "lotNumber": {
             "type": "string"
           },
+          "parentLotNumber": {
+            "type": "string"
+          },
           "leadContent": {
             "type": "number"
           },
@@ -288,6 +437,7 @@
         },
         "required": [
           "lotNumber",
+          "parentLotNumber",
           "leadContent",
           "mercuryContent",
           "cadmiumContent",
@@ -299,6 +449,9 @@
         "type": "object",
         "properties": {
           "lotNumber": {
+            "type": "string"
+          },
+          "parentLotNumber": {
             "type": "string"
           },
           "leadContent": {
@@ -317,6 +470,18 @@
             "type": "object"
           }
         }
+      },
+      "CreateCompanyDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateInvitationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateInvitationDto": {
+        "type": "object",
+        "properties": {}
       }
     }
   }

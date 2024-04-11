@@ -10,6 +10,9 @@ import { join } from 'node:path';
 import { BatchesModule } from './batches/batches.module';
 import { InitialMigration1712761023143 } from '../migrations/1712761023143-InitialMigration';
 import { UpdateBatches1712836157665 } from '../migrations/1712836157665-UpdateBatches';
+import { CompaniesModule } from './companies/companies.module';
+import { InvitationsModule } from './invitations/invitations.module';
+import { CreateCompaniesAndInvitations1712844738662 } from '../migrations/1712844738662-CreateCompaniesAndInvitations';
 
 @Module({
   imports: [
@@ -34,12 +37,18 @@ import { UpdateBatches1712836157665 } from '../migrations/1712836157665-UpdateBa
         synchronize: false,
         logging: true,
         migrationsTableName: 'typeorm_migrations',
-        migrations: [InitialMigration1712761023143, UpdateBatches1712836157665],
+        migrations: [
+          InitialMigration1712761023143,
+          UpdateBatches1712836157665,
+          CreateCompaniesAndInvitations1712844738662,
+        ],
         migrationsRun: true,
       }),
       inject: [ConfigService],
     }),
     BatchesModule,
+    CompaniesModule,
+    InvitationsModule,
   ],
   controllers: [],
   providers: [],

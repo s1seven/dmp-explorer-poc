@@ -1,13 +1,15 @@
 import { BaseEntity } from '../../../common/entities/base-entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { UserEntity } from '../../users/entities/user.entity';
-import { ApiProperty } from '@nestjs/swagger';
 import { Unit } from '../../../common/constants/constants';
+import { CompanyEntity } from '../../companies/entities/company.entity';
 
 @Entity()
 export class BatchEntity extends BaseEntity {
   @Column({ type: 'varchar', unique: true })
   lotNumber: string;
+
+  @Column({ nullable: true })
+  parentLotNumber: string;
 
   @Column()
   leadContent: number;
@@ -18,11 +20,8 @@ export class BatchEntity extends BaseEntity {
   @Column()
   cadmiumContent: number;
 
-  @ApiProperty({
-    type: () => UserEntity,
-  })
-  @ManyToOne(() => UserEntity, (user) => user.batches)
-  owner: UserEntity;
+  @ManyToOne(() => CompanyEntity, (company) => company.batches)
+  company: CompanyEntity;
 
   @Column()
   isRoHSCompliant: boolean;

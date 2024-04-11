@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Unit } from '../../../common/constants/constants';
 
 export class CreateBatchDto {
@@ -7,6 +13,11 @@ export class CreateBatchDto {
   @IsNotEmpty()
   @ApiProperty()
   lotNumber: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  parentLotNumber: string;
 
   @IsNumber()
   @IsNotEmpty()

@@ -21,24 +21,32 @@ export class BatchesService {
     private readonly userRepository: Repository<UserEntity>
   ) {}
   async create(createBatchDto: CreateBatchDto, email: string) {
+    this.logger.log(
+      `Creating batch:  ${createBatchDto.lotNumber} for user ${email}`
+    );
     const isRoHSCompliant = this.isRoHSCompliant(createBatchDto);
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
+      this.logger.error(`User with email ${email} not found`);
       throw new Error(`User with email ${email} not found`);
     }
 
     const { lotNumber } = createBatchDto;
-    const existingBatch = await this.batchRepository.findOne({ where: { lotNumber } });
+    const existingBatch = await this.batchRepository.findOne({
+      where: { lotNumber },
+    });
 
     if (existingBatch) {
+      this.logger.error(`Batch with lot number ${lotNumber} already exists`);
       throw new Error(`Batch with lot number ${lotNumber} already exists`);
     }
 
+    const { company } = user;
     const newBatch = this.batchRepository.create({
       ...createBatchDto,
       isRoHSCompliant,
-      owner: user,
+      company,
     });
 
     this.logger.log(`Creating batch: `, newBatch);
@@ -53,9 +61,11 @@ export class BatchesService {
     );
   }
 
-  findAll(email: string) {
+  async findAll(email: string) {
     this.logger.log(`Fetching batches for ${email}`);
-    return this.batchRepository.find({ where: { owner: { email } } });
+    const user = await this.userRepository.findOne({ where: { email } });
+    const { company } = user;
+    return this.batchRepository.find({ where: { company } });
   }
 
   findOne(id: number) {
