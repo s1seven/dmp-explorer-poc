@@ -12,7 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   template: `
     <div class="flex gap-4 items-center mb-10" *ngIf="user() as user">
       <img
-        class="shadow-md w-28 h-28 rounded-full"
+        class="shadow-sm w-28 h-28 rounded-full"
         [src]="user.picture"
         alt="Profile"
       />

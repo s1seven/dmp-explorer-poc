@@ -6,7 +6,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { UserProfileComponent } from '../profile/app-user-profile.component';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
 import { MatMenuModule } from '@angular/material/menu';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -16,6 +16,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   imports: [
     CommonModule,
     RouterLink,
+    RouterLinkActive,
     MatToolbarModule,
     MatButtonModule,
     MatSidenavModule,
@@ -52,8 +53,20 @@ import { toSignal } from '@angular/core/rxjs-interop';
         </a>
 
         <span class="flex-1"></span>
-        <a class="text-inherit" mat-button routerLink="/profile">Profile</a>
-        <a class="text-inherit" mat-button routerLink="/batches">Batches</a>
+        <a
+          class="text-inherit"
+          mat-button
+          routerLinkActive="bg-primary-100"
+          routerLink="/profile"
+          >Profile</a
+        >
+        <a
+          class="text-inherit"
+          mat-button
+          routerLink="/batches"
+          routerLinkActive="bg-primary-100"
+          >Batches</a
+        >
         <button class="text-inherit" mat-button [matMenuTriggerFor]="menu">
           <mat-icon fontIcon="arrow_drop_down"></mat-icon>
           {{ user()?.email }}
