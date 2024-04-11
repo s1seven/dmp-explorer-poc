@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
@@ -14,6 +14,10 @@ export class ProfileService {
     );
     this.companies.set(companies);
     return companies;
+  }
+
+  getInvitations(): Observable<any[]> {
+    return this.httpClient.get<any>('/api/invitations');
   }
 }
 
