@@ -8,7 +8,7 @@ export class ProfileService {
 
   constructor(private readonly httpClient: HttpClient) {}
 
-  async getCompanies(reload = false): Promise<any[]> {
+  async getCompanies(): Promise<any[]> {
     const companies = await firstValueFrom(
       this.httpClient.get<any>('/api/companies')
     );

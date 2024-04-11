@@ -9,52 +9,44 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./layout/shell.component').then((mod) => mod.ShellComponent),
     canActivate: [AuthGuard],
+    resolve: {
+      companies: async () => {
+        const profileService = inject(ProfileService);
+        return profileService.getCompanies();
+      },
+    },
     children: [
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./profile/app-user-profile.component').then(
+            (mod) => mod.UserProfileComponent
+          ),
+      },
       {
         path: '',
         canActivate: [
           async () => {
             const profileService = inject(ProfileService);
-            await profileService.getCompanies();
-            return true;
+            const companies = profileService.companies();
+            if (companies.length) return true;
+            return inject(Router).createUrlTree(['/profile']);
           },
         ],
         children: [
           {
-            path: 'profile',
+            path: 'create-batch',
             loadComponent: () =>
-              import('./profile/app-user-profile.component').then(
-                (mod) => mod.UserProfileComponent
+              import('./batches/batch-form.component').then(
+                (mod) => mod.BatchFormComponent
               ),
           },
           {
-            path: '',
-            canActivate: [
-              async () => {
-                const router = inject(Router);
-                const profileService = inject(ProfileService);
-                const companies = profileService.companies();
-                return companies.length
-                  ? true
-                  : router.createUrlTree(['/profile']);
-              },
-            ],
-            children: [
-              {
-                path: 'create-batch',
-                loadComponent: () =>
-                  import('./batches/batch-form.component').then(
-                    (mod) => mod.BatchFormComponent
-                  ),
-              },
-              {
-                path: 'batches',
-                loadComponent: () =>
-                  import('./batches/batches.component').then(
-                    (mod) => mod.BatchesComponent
-                  ),
-              },
-            ],
+            path: 'batches',
+            loadComponent: () =>
+              import('./batches/batches.component').then(
+                (mod) => mod.BatchesComponent
+              ),
           },
         ],
       },
