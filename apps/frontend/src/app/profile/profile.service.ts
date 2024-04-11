@@ -1,6 +1,22 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class ProfileService {
+  readonly companies = signal<any[]>([]);
+
+  constructor(private readonly httpClient: HttpClient) {}
+
+  async getCompanies(reload = false): Promise<any[]> {
+    const companies = await firstValueFrom(
+      this.httpClient.get<any>('/api/companies')
+    );
+    this.companies.set(companies);
+    return companies;
+  }
+}
+
 // BATCHES
 // - getBatches
 // - assignBatch
@@ -14,14 +30,3 @@ import { firstValueFrom } from 'rxjs';
 // - createInvitation
 // - acceptInvitation
 // - declineInvitation
-@Injectable({ providedIn: 'root' })
-export class ProfileService {
-  readonly http = inject(HttpClient);
-  constructor() {}
-
-  async getCompanies(): Promise<any[]> {
-    const companies = await firstValueFrom(this.http.get<any>('/api/companies'));  
-    console.log(companies);
-    return companies;
-  }
-}

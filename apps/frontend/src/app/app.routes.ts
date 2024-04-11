@@ -8,41 +8,53 @@ export const appRoutes: Route[] = [
     path: '',
     loadComponent: () =>
       import('./layout/shell.component').then((mod) => mod.ShellComponent),
+    canActivate: [AuthGuard],
     children: [
       {
-        path: 'profile',
-        loadComponent: () =>
-          import('./profile/app-user-profile.component').then(
-            (mod) => mod.UserProfileComponent
-          ),
-        canActivate: [AuthGuard],
-      },
-      {
+        path: '',
         canActivate: [
           async () => {
-            const router = inject(Router);
             const profileService = inject(ProfileService);
-            const companies = await profileService.getCompanies();
-            return companies.length ? true : router.createUrlTree(['/profile']);
+            await profileService.getCompanies();
+            return true;
           },
         ],
-        path: '',
         children: [
           {
-            path: 'create-batch',
+            path: 'profile',
             loadComponent: () =>
-              import('./batches/batch-form.component').then(
-                (mod) => mod.BatchFormComponent
+              import('./profile/app-user-profile.component').then(
+                (mod) => mod.UserProfileComponent
               ),
-            canActivate: [AuthGuard],
           },
           {
-            path: 'batches',
-            loadComponent: () =>
-              import('./batches/batches.component').then(
-                (mod) => mod.BatchesComponent
-              ),
-            canActivate: [AuthGuard],
+            path: '',
+            canActivate: [
+              async () => {
+                const router = inject(Router);
+                const profileService = inject(ProfileService);
+                const companies = profileService.companies();
+                return companies.length
+                  ? true
+                  : router.createUrlTree(['/profile']);
+              },
+            ],
+            children: [
+              {
+                path: 'create-batch',
+                loadComponent: () =>
+                  import('./batches/batch-form.component').then(
+                    (mod) => mod.BatchFormComponent
+                  ),
+              },
+              {
+                path: 'batches',
+                loadComponent: () =>
+                  import('./batches/batches.component').then(
+                    (mod) => mod.BatchesComponent
+                  ),
+              },
+            ],
           },
         ],
       },
