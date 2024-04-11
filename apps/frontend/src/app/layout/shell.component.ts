@@ -8,7 +8,7 @@ import { NavbarComponent } from './navbar.component';
   standalone: true,
   template: `<div>
     <app-navbar></app-navbar>
-    <div class="container mx-auto py-8 bg-primary-500 overflow-hidden">
+    <div class="container mx-auto py-8 overflow-hidden">
       <router-outlet></router-outlet>
     </div>
     <!-- <app-footer></app-footer> -->

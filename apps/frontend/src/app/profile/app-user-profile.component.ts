@@ -7,7 +7,10 @@ import { CompanyComponent } from './company.component';
 @Component({
   selector: 'app-user-profile',
   imports: [CommonModule, CompanyComponent],
-  template: ` <app-company></app-company>
+  template: ` <h2>Company</h2>
+    <app-company></app-company>
+
+    <h2>Profile</h2>
 
     <div class="content-layout">
       <h1 id="page-title" class="content__title">Profile Page</h1>

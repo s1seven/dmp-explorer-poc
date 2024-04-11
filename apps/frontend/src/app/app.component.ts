@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { LoginButtonComponent } from './layout/app-login-button.component';
 import { UserProfileComponent } from './profile/app-user-profile.component';
 import { NavbarComponent } from './layout/navbar.component';
 import { AuthService } from '@auth0/auth0-angular';
@@ -13,7 +12,6 @@ import { PageLoaderComponent } from './shared/page-loader.component';
     CommonModule,
     PageLoaderComponent,
     RouterModule,
-    LoginButtonComponent,
     UserProfileComponent,
     NavbarComponent,
   ],

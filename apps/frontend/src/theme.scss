@@ -1,0 +1,74 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+// Define custom Material palettes
+$custom-primary: mat.define-palette(
+  (
+    50: map-get($colors, primary-50),
+    100: map-get($colors, primary-100),
+    200: map-get($colors, primary-200),
+    300: map-get($colors, primary-300),
+    400: map-get($colors, primary-400),
+    500: map-get($colors, primary-500),
+    // Typically the default choice
+    600: map-get($colors, primary-600),
+    700: map-get($colors, primary-700),
+    800: map-get($colors, primary-800),
+    900: map-get($colors, primary-900),
+    contrast: (
+      50: map-get($colors, black),
+      100: map-get($colors, black),
+      200: map-get($colors, white),
+      300: map-get($colors, white),
+      400: map-get($colors, white),
+      500: map-get($colors, white),
+      600: map-get($colors, white),
+      700: map-get($colors, white),
+      800: map-get($colors, white),
+      900: map-get($colors, white),
+    ),
+  )
+);
+
+$custom-accent: mat.define-palette(
+  (
+    50: map-get($colors, secondary-50),
+    100: map-get($colors, secondary-100),
+    200: map-get($colors, secondary-200),
+    300: map-get($colors, secondary-300),
+    400: map-get($colors, secondary-400),
+    500: map-get($colors, secondary-500),
+    // Typically the default choice
+    600: map-get($colors, secondary-600),
+    700: map-get($colors, secondary-700),
+    800: map-get($colors, secondary-800),
+    900: map-get($colors, secondary-900),
+    contrast: (
+      50: map-get($colors, black),
+      100: map-get($colors, black),
+      200: map-get($colors, black),
+      300: map-get($colors, black),
+      400: map-get($colors, black),
+      500: map-get($colors, white),
+      600: map-get($colors, white),
+      700: map-get($colors, white),
+      800: map-get($colors, white),
+      900: map-get($colors, white),
+    ),
+  )
+);
+
+$custom-warn: mat.define-palette(mat.$red-palette);
+
+$custom-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $custom-primary,
+      accent: $custom-accent,
+      warn: $custom-warn,
+    ),
+  )
+);
+
+@include mat.all-component-themes($custom-theme);
