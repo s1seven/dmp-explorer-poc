@@ -21,15 +21,9 @@ export class ProfileService {
     return this.httpClient.get<InvitationDto[]>('/api/invitations');
   }
 
-  declineInvitation(invitation: InvitationDto): Observable<void> {
+  respondToInvitation(invitation: InvitationDto, accepted: boolean) {
     return this.httpClient.post<void>(`/api/invitations/${invitation.id}`, {
-      accepted: false,
-    });
-  }
-
-  acceptInvitation(invitation: InvitationDto): Observable<void> {
-    return this.httpClient.post<void>(`/api/invitations/${invitation.id}`, {
-      accepted: true,
+      accepted,
     });
   }
 }

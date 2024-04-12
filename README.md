@@ -76,17 +76,34 @@ Locally users emails need to be added to the database manually. Ideally we would
 nx g @nx/angular:component --name=shell --directory=apps/frontend/src/app --changeDetection=OnPush --inlineStyle=true --inlineTemplate=true --nameAndDirectoryFormat=as-provided --style=scss
 
 
+# Database Model
+erDiagram
+    USER }o--o| COMPANY : "belongs to"
+    COMPANY ||--o{ INVITATION : "sends" 
+    INVITATION {
+        string email
+    }
+    USER {
+        string email
+    }
+    COMPANY ||--|{ BATCH : "owns"
+    COMPANY {
+        string name
+        string VAT
+    }
+    BATCH {
+        string lotNumber
+        number leadContent
+        number mercuryContent
+        number cadmiumContent
+        boolean isRoHSCompliant
+        BATCH parent    
+    }
+    BATCH o|--o{BATCH: "has" 
 
-BATCHES
-- getBatches
-- assignBatch
-- createBatch
-- acceptBatch
 
-PROFILES
-- createCompany
-- getInvitation
-- getCompany
-- createInvitation
-- acceptInvitation
-- declineInvitation
+# Routes
+/ (redirect to batches)
+├── profile
+├── create-batch
+└── batches 

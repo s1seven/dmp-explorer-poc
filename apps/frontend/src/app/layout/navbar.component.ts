@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +10,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
 import { MatMenuModule } from '@angular/material/menu';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ProfileService } from '../profile/profile.service';
 
 @Component({
   selector: 'app-navbar',
@@ -53,6 +54,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
           <span class="font-thin -ml-1">Explorer</span>
         </a>
 
+        <!-- TODO: Change this styling. This is just for demo purposes... -->
+        <span
+          style="margin-left: 2rem;"
+          >{{ this.companyName() ? this.companyName() : 'No Company'}}</span
+        >
+        
         <span class="flex-1"></span>
         <a
           class="text-inherit"
@@ -81,6 +88,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 })
 export class NavbarComponent {
   private readonly auth = inject(AuthService);
+  private readonly profileService = inject(ProfileService);
+  readonly companyName = computed(() => this.profileService.companies()[0]?.name);
   readonly user = toSignal(this.auth.user$);
 
   logout() {

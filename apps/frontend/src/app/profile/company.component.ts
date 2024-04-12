@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 import { CreateCompanyComponent } from './create-company.component';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -28,8 +29,13 @@ import { CreateCompanyComponent } from './create-company.component';
   template: `
     <app-create-company *ngIf="!company"></app-create-company>
 
+    <p *ngIf="this.company">
+      {{ this.company() | json }}
+    </p>
+
     <!-- invitation: -->
     <div
+      *ngIf="!this.company()"
       class="rounded-md p-4 border max-w-3xl border-orange-400 bg-orange-50 grid grid-cols-[min-content_1fr] items-center gap-4"
     >
       <mat-icon fontIcon="mail"></mat-icon>
@@ -45,7 +51,9 @@ import { CreateCompanyComponent } from './create-company.component';
       <div></div>
       <div class="flex gap-3">
         <button mat-stroked-button (click)="declineDialog()">Decline</button>
-        <button mat-raised-button color="primary">Accept</button>
+        <button (click)="acceptInvitation()" mat-raised-button color="primary">
+          Accept
+        </button>
       </div>
     </div>
   `,
@@ -56,6 +64,7 @@ export class CompanyComponent {
   readonly company = computed(() => this.profileService.companies()?.[0]);
   readonly invitation = signal<InvitationDto | null>(null);
   private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
 
   constructor() {
     effect(
@@ -76,7 +85,11 @@ export class CompanyComponent {
   }
 
   acceptInvitation() {
-    this.profileService.acceptInvitation(this.invitation()!)
+    const sub = this.profileService
+      .acceptInvitation(this.invitation()!)
+      .pipe(tap(async () => (await this.profileService.getCompanies())[0]))
+      .subscribe();
+    return () => sub.unsubscribe();
   }
 
   declineInvitation() {
