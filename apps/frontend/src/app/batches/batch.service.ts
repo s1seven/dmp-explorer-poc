@@ -24,25 +24,27 @@ export class BatchService {
 
   sendBatch(batch: BatchDto, vatId: string): Promise<BatchDto> {
     return firstValueFrom(
-      this.httpClient.post<BatchDto>('/api/batches/send', { batch, vatId })
+      this.httpClient.patch<BatchDto>(`/api/batches/${batch.id}/accept`, {
+        vatId,
+      })
     );
   }
 
   acceptBatch(batch: BatchDto): Promise<BatchDto> {
     return firstValueFrom(
-      this.httpClient.post<BatchDto>('/api/batches/accept', batch)
+      this.httpClient.get<BatchDto>(`/api/batches/${batch.id}/accept`)
     );
   }
 
   declineBatch(batch: BatchDto): Promise<BatchDto> {
     return firstValueFrom(
-      this.httpClient.post<BatchDto>('/api/batches/decline', batch)
+      this.httpClient.get<BatchDto>(`/api/batches/${batch.id}/decline`)
     );
   }
 
   reclaimBatch(batch: BatchDto): Promise<BatchDto> {
     return firstValueFrom(
-      this.httpClient.post<BatchDto>('/api/batches/reclaim', batch)
+      this.httpClient.get<BatchDto>(`/api/batches/${batch.id}/reclaim`)
     );
   }
 }

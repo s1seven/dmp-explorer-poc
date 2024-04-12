@@ -12,6 +12,7 @@ export interface CompanyDto {
 }
 
 export interface BatchDto {
+  id: string;
   lotNumber: string;
   parentLotNumber: string;
   leadContent: number;
