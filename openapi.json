@@ -209,6 +209,34 @@
       }
     },
     "/api/invitations/{id}": {
+      "post": {
+        "operationId": "InvitationsController_acceptInvitation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptInvitationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      },
       "get": {
         "operationId": "InvitationsController_findOne",
         "parameters": [
@@ -386,6 +414,10 @@
         "properties": {}
       },
       "CreateInvitationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AcceptInvitationDto": {
         "type": "object",
         "properties": {}
       },

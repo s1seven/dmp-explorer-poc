@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { InvitationEntity } from './entities/invitation.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 
 @Injectable()
 export class InvitationsService {
@@ -37,15 +38,54 @@ export class InvitationsService {
     return this.invitationRespository.save(createdInvitation);
   }
 
+  async acceptInvitation(
+    id: string,
+    acceptInvitationDto: AcceptInvitationDto,
+    email: string
+  ) {
+    const { accepted } = acceptInvitationDto;
+    const foundInvitation = await this.invitationRespository.findOne({
+      where: { id },
+      relations: ['company'],
+    });
+    if (foundInvitation.emailToInvite !== email) {
+      throw new Error('You are not allowed to accept this invitation');
+    }
+    if (!foundInvitation) {
+      throw new Error('Invitation not found');
+    }
+    const { company } = foundInvitation;
+    if (accepted) {
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+      // TODO: handle case where multiple companies are present
+      const updatedUser = await this.userRepository.save({
+        ...user,
+        company,
+      });
+      // eslint-disable-next-line no-console
+      console.log('updatedUser', updatedUser);
+    }
+
+    return this.invitationRespository.delete(id);
+  }
+
   findAll(email: string) {
-    this.logger.log(`Getting all invitations for ${email}`);
     return this.invitationRespository.find({
       where: { emailToInvite: email },
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} invitation`;
+  async findOne(id: string, email: string) {
+    this.logger.log(`Getting all invitations for ${email}`);
+    const foundInvitation = await this.invitationRespository.findOne({
+      where: { id },
+    });
+    if (foundInvitation.emailToInvite !== email) {
+      throw new Error('You are not allowed to see this invitation');
+    }
+    return [foundInvitation];
   }
 
   update(id: number, updateInvitationDto: UpdateInvitationDto) {
