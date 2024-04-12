@@ -42,10 +42,8 @@ export class BatchesComponent implements OnInit {
   // Batches that:
   // - have been sent to you but not accepted
   // - you sent to someone but they have declined
-  readonly inbox = computed<BatchInbox[]>(() => {
-    const batches = this.batches();
-    if (!batches) return [];
-    return batches
+  readonly inbox = computed<BatchInbox[]>(() =>
+    this.batches()
       .filter((batch) => batch.status !== Status.ACCEPTED)
       .map((batch) => ({
         batch,
@@ -53,8 +51,8 @@ export class BatchesComponent implements OnInit {
           batch.status === Status.PENDING
             ? BatchInboxType.ACCEPT
             : BatchInboxType.RECLAIM,
-      }));
-  });
+      }))
+  );
 
   private readonly batchService = inject(BatchService);
 
