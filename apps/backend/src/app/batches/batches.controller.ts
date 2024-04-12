@@ -15,6 +15,7 @@ import { UpdateBatchDto } from './dto/update-batch.dto';
 import { AuthorizationGuard } from '../../common/guards/authorization.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ReqUser } from '../../common/constants/constants';
+import { SendBatchDto } from './dto/send-batch.dto';
 
 @Controller('batches')
 export class BatchesController {
@@ -43,16 +44,42 @@ export class BatchesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.batchesService.findOne(+id);
+    return this.batchesService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
-    return this.batchesService.update(+id, updateBatchDto);
+    return this.batchesService.update(id, updateBatchDto);
+  }
+
+  @Patch(':id/accept')
+  accept(
+    @Param('id') id: string,
+    @Body() updateBatchDto: UpdateBatchDto,
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.batchesService.accept(id, updateBatchDto, email);
+  }
+
+  @Patch(':id/send')
+  send(@Param('id') id: string, @Body() sendBatchDto: SendBatchDto) {
+    return this.batchesService.send(id, sendBatchDto);
+  }
+
+  @Patch(':id/decline')
+  decline(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
+    return this.batchesService.decline(id, updateBatchDto);
+  }
+
+  @Patch(':id/reclaim')
+  reclaim(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
+    return this.batchesService.reclaim(id, updateBatchDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.batchesService.remove(+id);
+    return this.batchesService.remove(id);
   }
 }

@@ -3,6 +3,12 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { Unit } from '../../../common/constants/constants';
 import { CompanyEntity } from '../../companies/entities/company.entity';
 
+export enum Status {
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  DECLINED = 'declined',
+}
+
 @Entity()
 export class BatchEntity extends BaseEntity {
   @Column({ type: 'varchar', unique: true })
@@ -31,4 +37,7 @@ export class BatchEntity extends BaseEntity {
 
   @Column({ type: 'enum', enum: Unit })
   unit: Unit;
+
+  @Column({ type: 'enum', enum: Status })
+  status: Status = Status.ACCEPTED;
 }
