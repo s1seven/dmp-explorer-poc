@@ -25,14 +25,15 @@ export const appRoutes: Route[] = [
       },
       {
         path: '',
-        canActivate: [
-          async () => {
-            const profileService = inject(ProfileService);
-            const companies = profileService.companies();
-            if (companies.length) return true;
-            return inject(Router).createUrlTree(['/profile']);
-          },
-        ],
+        // User needs to have at least one company.
+        // canActivate: [
+        //   async () => {
+        //     const profileService = inject(ProfileService);
+        //     const companies = profileService.companies();
+        //     if (companies.length) return true;
+        //     return inject(Router).createUrlTree(['/profile']);
+        //   },
+        // ],
         children: [
           {
             path: 'create-batch',
