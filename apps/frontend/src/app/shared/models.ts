@@ -13,6 +13,12 @@ export interface CompanyDto {
   invitation?: InvitationDto;
 }
 
+export enum Status {
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  DECLINED = 'declined',
+}
+
 export interface BatchDto {
   id: string;
   lotNumber: string;
@@ -23,6 +29,7 @@ export interface BatchDto {
   isRoHSCompliant: boolean;
   quantity: number;
   unit: Unit;
+  status: Status;
   parentLotNumber?: string;
 }
 
