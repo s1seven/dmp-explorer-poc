@@ -25,6 +25,7 @@ export const appRoutes: Route[] = [
       },
       {
         path: '',
+        // User needs to have at least one company.
         canActivate: [
           async () => {
             const profileService = inject(ProfileService);
@@ -37,8 +38,8 @@ export const appRoutes: Route[] = [
           {
             path: 'create-batch',
             loadComponent: () =>
-              import('./batches/batch-form.component').then(
-                (mod) => mod.BatchFormComponent
+              import('./batches/create-batch.component').then(
+                (mod) => mod.CreateBatchComponent
               ),
           },
           {

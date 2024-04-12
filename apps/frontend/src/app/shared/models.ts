@@ -13,6 +13,7 @@ export interface CompanyDto {
 }
 
 export interface BatchDto {
+  id: string;
   lotNumber: string;
   parentLotNumber: string;
   leadContent: number;
@@ -22,6 +23,16 @@ export interface BatchDto {
   isRoHSCompliant: boolean;
   quantity: number;
   unit: Unit;
+}
+
+export interface CreateBatchDto {
+  lotNumber: string;
+  leadContent: number;
+  mercuryContent: number;
+  cadmiumContent: number;
+  quantity: number;
+  unit: Unit;
+  parentLotNumber?: string;
 }
 
 export enum Unit {
