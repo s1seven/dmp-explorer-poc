@@ -24,6 +24,16 @@ export interface BatchDto {
   unit: Unit;
 }
 
+export interface CreateBatchDto {
+  lotNumber: string;
+  leadContent: number;
+  mercuryContent: number;
+  cadmiumContent: number;
+  quantity: number;
+  unit: Unit;
+  parentLotNumber?: string;
+}
+
 export enum Unit {
   KG = 'kg',
   TO = 'to',
