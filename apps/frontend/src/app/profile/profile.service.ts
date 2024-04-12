@@ -1,31 +1,25 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
+import { CompanyDto, InvitationDto } from '../shared/models';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
-  readonly companies = signal<any[]>([]);
+  readonly companies = signal<CompanyDto[]>([]);
+  private readonly httpClient = inject(HttpClient);
 
-  constructor(private readonly httpClient: HttpClient) {}
-
-  async getCompanies(): Promise<any[]> {
+  async getCompanies(): Promise<CompanyDto[]> {
     const companies = await firstValueFrom(
-      this.httpClient.get<any>('/api/companies')
+      this.httpClient.get<CompanyDto[]>('/api/companies')
     );
     this.companies.set(companies);
     return companies;
   }
 
-  getInvitations(): Observable<any[]> {
-    return this.httpClient.get<any>('/api/invitations');
+  getInvitations(): Observable<InvitationDto[]> {
+    return this.httpClient.get<InvitationDto[]>('/api/invitations');
   }
 }
-
-// BATCHES
-// - getBatches
-// - assignBatch
-// - createBatch
-// - acceptBatch
 
 // PROFILES
 // - createCompany

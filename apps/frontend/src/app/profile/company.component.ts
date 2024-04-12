@@ -54,13 +54,7 @@ import { CreateCompanyComponent } from './create-company.component';
 export class CompanyComponent {
   private readonly profileService = inject(ProfileService);
   readonly company = computed(() => this.profileService.companies()?.[0]);
-  readonly invitation = signal<InvitationDto | null>({
-    company: {
-      name: 'BASF',
-      VAT: '1231234234',
-    },
-    emailToInvite: 'asasd',
-  });
+  readonly invitation = signal<InvitationDto | null>(null);
   private readonly dialog = inject(MatDialog);
 
   constructor() {
