@@ -1,4 +1,5 @@
 export interface InvitationDto {
+  id: string;
   emailToInvite: string;
   company: CompanyDto;
 }

@@ -26,7 +26,7 @@ import { CreateCompanyComponent } from './create-company.component';
   ],
   selector: 'app-company',
   template: `
-    <app-create-company></app-create-company>
+    <app-create-company *ngIf="!company"></app-create-company>
 
     <!-- invitation: -->
     <div
@@ -75,9 +75,23 @@ export class CompanyComponent {
     );
   }
 
+  acceptInvitation() {
+    this.profileService.acceptInvitation(this.invitation()!)
+  }
+
+  declineInvitation() {
+    this.profileService.declineInvitation(this.invitation()!);
+  }
+
   declineDialog(): void {
     this.dialog.open(ConfirmDialogComponent, {
       width: '250px',
+      data: {
+        title: 'Decline Invitation',
+        message: 'Are you sure you want to decline this invitation?',
+        cancel: 'Cancel',
+        confirm: 'Confirm',
+      },
     });
   }
 }

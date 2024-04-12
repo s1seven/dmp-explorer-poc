@@ -13,6 +13,7 @@ import { UpdateBatches1712836157665 } from '../migrations/1712836157665-UpdateBa
 import { CompaniesModule } from './companies/companies.module';
 import { InvitationsModule } from './invitations/invitations.module';
 import { CreateCompaniesAndInvitations1712846805692 } from '../migrations/1712846805692-CreateCompaniesAndInvitations';
+import { AddStatusToBatches1712920767138 } from '../migrations/1712920767138-AddStatusToBatches';
 
 @Module({
   imports: [
@@ -34,13 +35,14 @@ import { CreateCompaniesAndInvitations1712846805692 } from '../migrations/171284
             rejectUnauthorized: false,
           },
         },
-        synchronize: true,
+        synchronize: false,
         logging: true,
         migrationsTableName: 'typeorm_migrations',
         migrations: [
           InitialMigration1712761023143,
           UpdateBatches1712836157665,
-          CreateCompaniesAndInvitations1712846805692
+          CreateCompaniesAndInvitations1712846805692,
+          AddStatusToBatches1712920767138,
         ],
         migrationsRun: true,
       }),
