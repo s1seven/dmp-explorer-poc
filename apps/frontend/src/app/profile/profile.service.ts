@@ -6,6 +6,7 @@ import { CompanyDto, InvitationDto } from '../shared/models';
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
   readonly companies = signal<CompanyDto[]>([]);
+  readonly invitations = signal<InvitationDto[]>([]);
   private readonly httpClient = inject(HttpClient);
 
   async getCompanies(): Promise<CompanyDto[]> {
@@ -18,6 +19,18 @@ export class ProfileService {
 
   getInvitations(): Observable<InvitationDto[]> {
     return this.httpClient.get<InvitationDto[]>('/api/invitations');
+  }
+
+  declineInvitation(invitation: InvitationDto): Observable<void> {
+    return this.httpClient.post<void>(`/api/invitations/${invitation.id}`, {
+      accepted: false,
+    });
+  }
+
+  acceptInvitation(invitation: InvitationDto): Observable<void> {
+    return this.httpClient.post<void>(`/api/invitations/${invitation.id}`, {
+      accepted: true,
+    });
   }
 }
 

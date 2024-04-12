@@ -44,6 +44,7 @@ export class CompaniesService {
       where: { email },
       relations: ['company'],
     });
+    console.log(foundUser);
     if (!foundUser.company) {
       return [];
     }
