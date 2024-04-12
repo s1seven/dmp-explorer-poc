@@ -1,14 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { Observable, of } from 'rxjs';
+import { BatchDto, Unit } from '../shared/models';
+import { ProfileService } from '../profile/profile.service';
+
+export enum BatchInboxType {
+  RECLAIM = 'RECLAIM',
+  ACCEPT = 'ACCEPT',
+  DECLINE = 'DECLINE',
+}
+
+export interface BatchInbox {
+  type: BatchInboxType;
+  batch: BatchDto;
+}
 
 @Component({
   selector: 'app-batches',
   standalone: true,
   imports: [CommonModule, MatTableModule],
   template: `
+    <h2>Inbox</h2>
+
     <table mat-table [dataSource]="batchesArray$">
       <!-- Lot Number Column -->
       <ng-container matColumnDef="lotNumber">
@@ -60,6 +75,47 @@ import { Observable, of } from 'rxjs';
   styles: ``,
 })
 export class BatchesComponent implements OnInit {
+  private readonly profileService = inject(ProfileService);
+  private readonly company = computed(
+    () => this.profileService.companies()?.[0]
+  );
+  readonly batches = signal<BatchDto[]>([
+    {
+      lotNumber: '1234',
+      leadContent: 0.1,
+      mercuryContent: 0.2,
+      cadmiumContent: 0.3,
+      isRoHSCompliant: true,
+      quantity: 10,
+      unit: 'kg' as Unit,
+      id: '',
+      parentLotNumber: '',
+      company: {
+        VAT: '',
+        name: '',
+        id: '',
+      },
+    },
+  ]);
+  readonly inbox = computed<BatchInbox[]>(() => {
+    const batches = this.batches();
+    const myCompanyId = this.company()?.id;
+
+    if (!batches) return [];
+    return batches
+    .filter(batch => batch.type !== )
+    .map((batch) => 
+      {
+        
+      }
+      
+      
+      ({
+      type: BatchInboxType.RECLAIM,
+      batch,
+    }));
+  });
+
   batchesArray$: Observable<any[]> = of([]);
   displayedColumns: string[] = [
     'lotNumber',

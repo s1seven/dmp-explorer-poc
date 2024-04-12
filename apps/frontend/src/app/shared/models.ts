@@ -4,6 +4,7 @@ export interface InvitationDto {
 }
 
 export interface CompanyDto {
+  id: string;
   VAT: string;
   name: string;
   batches?: BatchDto;
@@ -14,7 +15,6 @@ export interface CompanyDto {
 export interface BatchDto {
   id: string;
   lotNumber: string;
-  parentLotNumber: string;
   leadContent: number;
   mercuryContent: number;
   cadmiumContent: number;
@@ -22,6 +22,7 @@ export interface BatchDto {
   isRoHSCompliant: boolean;
   quantity: number;
   unit: Unit;
+  parentLotNumber?: string;
 }
 
 export interface CreateBatchDto {
