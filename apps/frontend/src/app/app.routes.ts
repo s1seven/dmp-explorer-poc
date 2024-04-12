@@ -37,8 +37,8 @@ export const appRoutes: Route[] = [
           {
             path: 'create-batch',
             loadComponent: () =>
-              import('./batches/batch-form.component').then(
-                (mod) => mod.BatchFormComponent
+              import('./batches/create-batch.component').then(
+                (mod) => mod.CreateBatchComponent
               ),
           },
           {

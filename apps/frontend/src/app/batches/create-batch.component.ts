@@ -57,7 +57,7 @@ import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
   `,
   styles: [],
 })
-export class BatchFormComponent implements OnDestroy {
+export class CreateBatchComponent implements OnDestroy {
   readonly batchForm = new FormGroup({
     lotNumber: new FormControl('', Validators.required),
     leadContent: new FormControl('', Validators.required),
