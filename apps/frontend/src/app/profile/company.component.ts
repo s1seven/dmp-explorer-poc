@@ -35,7 +35,7 @@ import { Router } from '@angular/router';
 
     <!-- invitation: -->
     <div
-      *ngIf="!this.company()"
+      *ngIf="this.invitation() as invitation"
       class="rounded-md p-4 border max-w-3xl border-orange-400 bg-orange-50 grid grid-cols-[min-content_1fr] items-center gap-4"
     >
       <mat-icon fontIcon="mail"></mat-icon>
@@ -43,15 +43,15 @@ import { Router } from '@angular/router';
         <h3 class="mat-h4 font-bold mb-0">Company Invitation</h3>
         <p class="mat-body-2 mb-0">
           The company
-          <strong>{{ invitation()?.company?.name }}</strong> with the VAT number
-          <strong>{{ invitation()?.company?.VAT }}</strong> has invited you to
+          <strong>{{ invitation.company.name }}</strong> with the VAT number
+          <strong>{{ invitation.company.VAT }}</strong> has invited you to
           join their team.
         </p>
       </div>
       <div></div>
       <div class="flex gap-3">
         <button mat-stroked-button (click)="declineDialog()">Decline</button>
-        <button (click)="acceptInvitation()" mat-raised-button color="primary">
+        <button (click)="acceptInvitation(invitation)" mat-raised-button color="primary">
           Accept
         </button>
       </div>
@@ -89,7 +89,6 @@ export class CompanyComponent {
       .acceptInvitation(this.invitation()!)
       .pipe(tap(async () => (await this.profileService.getCompanies())[0]))
       .subscribe();
-    return () => sub.unsubscribe();
   }
 
   declineInvitation() {
