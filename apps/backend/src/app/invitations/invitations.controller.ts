@@ -15,6 +15,7 @@ import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { AuthorizationGuard } from '../../common/guards/authorization.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ReqUser } from '../../common/constants/constants';
+import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 
 @Controller('invitations')
 @UseGuards(AuthorizationGuard)
@@ -31,6 +32,21 @@ export class InvitationsController {
     return this.invitationsService.create(createInvitationDto, email);
   }
 
+  @Post(':id')
+  acceptInvitation(
+    @Param('id') id: string,
+    @Body() acceptInvitationDto: AcceptInvitationDto,
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.invitationsService.acceptInvitation(
+      id,
+      acceptInvitationDto,
+      email
+    );
+  }
+
   @Get()
   findAll(
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
@@ -41,8 +57,13 @@ export class InvitationsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.invitationsService.findOne(+id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.invitationsService.findOne(id, email);
   }
 
   @Patch(':id')
