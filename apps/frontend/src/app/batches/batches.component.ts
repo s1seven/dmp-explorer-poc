@@ -11,6 +11,7 @@ import { MatTableModule } from '@angular/material/table';
 import { BatchDto, Status } from '../shared/models';
 import { ProfileService } from '../profile/profile.service';
 import { BatchService } from './batch.service';
+import { BatchesTableComponent } from './batches-table.component';
 
 export enum BatchInboxType {
   RECLAIM = 'RECLAIM',
@@ -25,12 +26,13 @@ export interface BatchInbox {
 @Component({
   selector: 'app-batches',
   standalone: true,
-  imports: [CommonModule, MatTableModule],
+  imports: [CommonModule, MatTableModule, BatchesTableComponent],
   template: `
     <h2>Inbox</h2>
-    {{ inbox() | json }}
+    <app-batches-table *ngIf="inbox().length" [batches]="inbox()"></app-batches-table>
+    <p *ngIf="!inbox().length">Your inbox is currently empty.</p>
     <h2>Batches</h2>
-    {{ batches() | json }}
+    <app-batches-table [batches]="batches()"></app-batches-table>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -42,79 +44,23 @@ export class BatchesComponent implements OnInit {
   // Batches that:
   // - have been sent to you but not accepted
   // - you sent to someone but they have declined
-  readonly inbox = computed<BatchInbox[]>(() =>
-    this.batches()
+  // TODO: return BatchInbox[]
+  readonly inbox = computed<BatchDto[]>(() => {
+    return this.batches()
       .filter((batch) => batch.status !== Status.ACCEPTED)
-      .map((batch) => ({
-        batch,
-        type:
-          batch.status === Status.PENDING
-            ? BatchInboxType.ACCEPT
-            : BatchInboxType.RECLAIM,
-      }))
-  );
+      // .map((batch) => ({
+      //   batch,
+      //   type:
+      //     batch.status === Status.PENDING
+      //       ? BatchInboxType.ACCEPT
+      //       : BatchInboxType.RECLAIM,
+      // }));
+  });
 
   private readonly batchService = inject(BatchService);
 
-  ngOnInit() {
-    this.batchService.getBatches();
+  async ngOnInit() {
+    const batches = await this.batchService.getBatches();
+    this.batches.set(batches);
   }
 }
-
-// displayedColumns: string[] = [
-//   'lotNumber',
-//   'leadContent',
-//   'mercuryContent',
-//   'cadmiumContent',
-//   'isRoHSCompliant',
-//   'quantity',
-//   'unit',
-// ];
-
-// <table mat-table [dataSource]="batchesArray$">
-// <!-- Lot Number Column -->
-// <ng-container matColumnDef="lotNumber">
-//   <th mat-header-cell *matHeaderCellDef>Lot Number</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.lotNumber }}</td>
-// </ng-container>
-
-// <!-- Lead Content Column -->
-// <ng-container matColumnDef="leadContent">
-//   <th mat-header-cell *matHeaderCellDef>Lead Content</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.leadContent }}</td>
-// </ng-container>
-
-// <!-- Mercury Content Column -->
-// <ng-container matColumnDef="mercuryContent">
-//   <th mat-header-cell *matHeaderCellDef>Mercury Content</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.mercuryContent }}</td>
-// </ng-container>
-
-// <!-- Cadmium Content Column -->
-// <ng-container matColumnDef="cadmiumContent">
-//   <th mat-header-cell *matHeaderCellDef>Cadmium Content</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.cadmiumContent }}</td>
-// </ng-container>
-
-// <!-- RoHS Compliance Column -->
-// <ng-container matColumnDef="isRoHSCompliant">
-//   <th mat-header-cell *matHeaderCellDef>RoHS Compliance</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.isRoHSCompliant }}</td>
-// </ng-container>
-
-// // TODO: combine quantity and unit
-// <!-- Quantity Column -->
-// <ng-container matColumnDef="quantity">
-//   <th mat-header-cell *matHeaderCellDef>Quantity</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.quantity }}</td>
-// </ng-container>
-
-// <!-- Cadmium Content Column -->
-// <ng-container matColumnDef="unit">
-//   <th mat-header-cell *matHeaderCellDef>Unit</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.unit }}</td>
-// </ng-container>
-
-// <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-// <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-// </table>

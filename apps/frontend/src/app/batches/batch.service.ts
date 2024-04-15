@@ -1,18 +1,16 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { BatchDto } from '../shared/models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class BatchService {
-  readonly batches = signal<BatchDto[]>([]);
   private readonly httpClient = inject(HttpClient);
 
   async getBatches(): Promise<BatchDto[]> {
     const batches = await firstValueFrom(
       this.httpClient.get<BatchDto[]>('/api/batches')
     );
-    this.batches.set(batches);
     return batches;
   }
 
