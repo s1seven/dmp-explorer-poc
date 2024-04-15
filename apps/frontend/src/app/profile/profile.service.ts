@@ -17,6 +17,10 @@ export class ProfileService {
     return companies;
   }
 
+  createCompany(company: CompanyDto): Observable<CompanyDto> {
+    return this.httpClient.post<CompanyDto>('/api/companies', company);
+  }
+
   getInvitations(): Observable<InvitationDto[]> {
     return this.httpClient.get<InvitationDto[]>('/api/invitations');
   }

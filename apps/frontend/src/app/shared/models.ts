@@ -5,7 +5,7 @@ export interface InvitationDto {
 }
 
 export interface CompanyDto {
-  id: string;
+  id?: string;
   VAT: string;
   name: string;
   batches?: BatchDto;
