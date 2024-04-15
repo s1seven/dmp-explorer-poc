@@ -24,36 +24,28 @@ export class BatchesService {
     @InjectRepository(CompanyEntity)
     private readonly companyRepository: Repository<CompanyEntity>
   ) {}
+
   async create(createBatchDto: CreateBatchDto, email: string) {
+    // TODO: verify that the quantity of all sub-batches is equal to or less than the parent batch
     this.logger.log(
       `Creating batch:  ${createBatchDto.lotNumber} for user ${email}`
     );
     const isRoHSCompliant = this.isRoHSCompliant(createBatchDto);
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.checkUserExists(email);
+    await this.checkBatchDoesNotExist(createBatchDto.lotNumber);
+    await this.checkParentBatchBelongsToUser(
+      createBatchDto.parentLotNumber,
+      user.id
+    );
+    this.checkUserHasCompany(user);
 
-    if (!user) {
-      this.logger.error(`User with email ${email} not found`);
-      throw new Error(`User with email ${email} not found`);
-    }
-
-    const { lotNumber } = createBatchDto;
-    const existingBatch = await this.batchRepository.findOne({
-      where: { lotNumber },
-    });
-
-    if (existingBatch) {
-      this.logger.error(`Batch with lot number ${lotNumber} already exists`);
-      throw new Error(`Batch with lot number ${lotNumber} already exists`);
-    }
-
-    const { company } = user;
     const newBatch = this.batchRepository.create({
       ...createBatchDto,
       isRoHSCompliant,
-      company,
+      company: user.company,
     });
 
-    this.logger.log(`Creating batch: `, newBatch);
+    this.logger.log(`Creating batch: `, JSON.stringify(newBatch));
     return this.batchRepository.save(newBatch);
   }
 
@@ -76,6 +68,7 @@ export class BatchesService {
     // TODO: check that the batch belongs to the current user
     const batch = await this.batchRepository.findOne({ where: { id } });
     // check that the vat is not the current company?
+    // TODO: add better error handling
     const company = await this.companyRepository.findOneOrFail({
       where: { VAT: sendBatchDto.VAT },
     });
@@ -90,6 +83,10 @@ export class BatchesService {
   async accept(id: string, _body: unknown, email: string) {
     // TODO: check that the batch belongs to the current user
     const batch = await this.batchRepository.findOne({ where: { id } });
+    if (!batch.parentLotNumber) {
+      this.logger.error(`Batch ${id} has no parent`);
+      throw new Error(`You can only send sub-batches`);
+    }
     const updatedBatch = await this.batchRepository.save({
       ...batch,
       status: Status.ACCEPTED,
@@ -128,5 +125,52 @@ export class BatchesService {
 
   remove(id: string) {
     return `This action removes a #${id} batch`;
+  }
+
+  async checkUserExists(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['company'],
+    });
+
+    if (!user) {
+      this.logger.error(`User with email ${email} not found`);
+      throw new Error(`User with email ${email} not found`);
+    }
+
+    return user;
+  }
+
+  async checkBatchDoesNotExist(lotNumber: string) {
+    const existingBatch = await this.batchRepository.findOne({
+      where: { lotNumber },
+    });
+
+    if (existingBatch) {
+      this.logger.error(`Batch with lot number ${lotNumber} already exists`);
+      throw new Error(`Batch with lot number ${lotNumber} already exists`);
+    }
+  }
+
+  async checkParentBatchBelongsToUser(parentLotNumber: string, userId: string) {
+    const parentBatch = await this.batchRepository.findOne({
+      where: { lotNumber: parentLotNumber },
+    });
+
+    if (parentBatch && parentBatch.company.id !== userId) {
+      this.logger.error(
+        `Parent batch ${parentLotNumber} does not belong to user ${userId}`
+      );
+      throw new Error(
+        `Parent batch ${parentLotNumber} does not belong to user ${userId}`
+      );
+    }
+  }
+
+  async checkUserHasCompany(user) {
+    if (!user.company) {
+      this.logger.error(`User with email ${user.email} has no company`);
+      throw new Error(`User with email ${user.email} has no company`);
+    }
   }
 }
