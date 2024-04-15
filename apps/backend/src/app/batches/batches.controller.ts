@@ -18,10 +18,10 @@ import { ReqUser } from '../../common/constants/constants';
 import { SendBatchDto } from './dto/send-batch.dto';
 
 @Controller('batches')
+@UseGuards(AuthorizationGuard)
 export class BatchesController {
   constructor(private readonly batchesService: BatchesService) {}
 
-  @UseGuards(AuthorizationGuard)
   @Post()
   create(
     @Body() createBatchDto: CreateBatchDto,
@@ -32,7 +32,6 @@ export class BatchesController {
     return this.batchesService.create(createBatchDto, email);
   }
 
-  @UseGuards(AuthorizationGuard)
   @Get()
   findAll(
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
