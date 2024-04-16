@@ -91,7 +91,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
       </div>
       <div></div>
       <div class="flex gap-3">
-        <button mat-stroked-button (click)="declineDialog(invitation)">Decline</button>
+        <button mat-stroked-button (click)="declineDialog(invitation)">
+          Decline
+        </button>
         <button
           (click)="acceptInvitation(invitation)"
           mat-raised-button
@@ -171,15 +173,22 @@ export class CompanyComponent {
   }
 
   declineDialog(invitation: InvitationDto): void {
-    this.dialog.open(ConfirmDialogComponent, {
-      width: '250px',
-      data: {
-        title: 'Decline Invitation',
-        message: 'Are you sure you want to decline this invitation?',
-        cancel: 'Cancel',
-        confirm: 'Confirm',
-        invitation,
-      },
-    });
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        width: '250px',
+        data: {
+          title: 'Decline Invitation',
+          message: 'Are you sure you want to decline this invitation?',
+          cancel: 'Cancel',
+          confirm: 'Confirm',
+          invitation,
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result === true) {
+          this.declineInvitation(invitation);
+        }
+      });
   }
 }

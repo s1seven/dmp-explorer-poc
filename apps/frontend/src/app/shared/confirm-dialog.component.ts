@@ -1,4 +1,4 @@
-import { Component, Inject, Signal } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import {
   MatDialogRef,
   MatDialogActions,
@@ -8,9 +8,6 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { ProfileService } from '../profile/profile.service';
-import { InvitationDto } from './models';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -29,7 +26,7 @@ import { firstValueFrom } from 'rxjs';
       <button mat-button mat-dialog-close>
         {{ data.cancel }}
       </button>
-      <button mat-button mat-dialog-close (click)="cancel()" cdkFocusInitial>
+      <button mat-button [mat-dialog-close]="true" cdkFocusInitial>
         {{ data.confirm }}
       </button>
     </mat-dialog-actions>`,
@@ -43,20 +40,6 @@ export class ConfirmDialogComponent {
       message: string;
       cancel: string;
       confirm: string;
-      invitation: Signal<InvitationDto>;
-    },
-    private readonly profileService: ProfileService
+    }
   ) {}
-
-  async cancel() {
-    await firstValueFrom(
-      this.profileService.respondToInvitation(
-        this.data.invitation() as InvitationDto,
-        false
-      )
-    );
-    // TODO: how can I set the invitation to null in the parent component?
-    // this.data.invitation().set(null);
-    this.dialogRef.close();
-  }
 }
