@@ -79,6 +79,7 @@ import { MatButtonModule } from '@angular/material/button';
   `,
 })
 export class CreateBatchComponent implements OnDestroy {
+  // TODO: prefil content from parent lot
   readonly batchForm = new FormGroup({
     parentLotNumber: new FormControl(''),
     lotNumber: new FormControl('', Validators.required),

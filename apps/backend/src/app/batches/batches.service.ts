@@ -3,7 +3,7 @@ import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { BatchEntity, Status } from './entities/batch.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository, getTreeRepository } from 'typeorm';
 import { UserEntity } from '../users/entities/user.entity';
 import { SendBatchDto } from './dto/send-batch.dto';
 import { CompanyEntity } from '../companies/entities/company.entity';
@@ -22,7 +22,8 @@ export class BatchesService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(CompanyEntity)
-    private readonly companyRepository: Repository<CompanyEntity>
+    private readonly companyRepository: Repository<CompanyEntity>,
+    private dataSource: DataSource
   ) {}
 
   async create(createBatchDto: CreateBatchDto, email: string) {
@@ -37,14 +38,22 @@ export class BatchesService {
       createBatchDto.parentLotNumber,
       user.id
     );
+    // TODO: ensure that this error does not crash the app
     this.checkUserHasCompany(user);
 
+    let parent = null;
+    if (createBatchDto.parentLotNumber) {
+      parent = await this.batchRepository.findOne({
+        where: { lotNumber: createBatchDto.parentLotNumber },
+      });
+    }
+    // TODO: inherit isRoHSCompliant from parent batch
     const newBatch = this.batchRepository.create({
       ...createBatchDto,
       isRoHSCompliant,
+      parent,
       company: user.company,
     });
-
     this.logger.log(`Creating batch: `, JSON.stringify(newBatch));
     return this.batchRepository.save(newBatch);
   }
@@ -59,9 +68,21 @@ export class BatchesService {
 
   async findAll(email: string) {
     this.logger.log(`Fetching batches for ${email}`);
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['company'],
+    });
     const { company } = user;
-    return this.batchRepository.find({ where: { company } });
+    const batchRepository = this.dataSource.getTreeRepository(BatchEntity);
+
+    const roots = await batchRepository.find({
+      where: { company: { id: company.id } },
+    });
+    const treePromises = roots.map((root) =>
+      batchRepository.findDescendantsTree(root, { depth: 1 })
+    );
+
+    return Promise.all(treePromises);
   }
 
   async send(id: string, sendBatchDto: SendBatchDto) {
@@ -83,10 +104,10 @@ export class BatchesService {
   async accept(id: string, _body: unknown, email: string) {
     // TODO: check that the batch belongs to the current user
     const batch = await this.batchRepository.findOne({ where: { id } });
-    if (!batch.parentLotNumber) {
-      this.logger.error(`Batch ${id} has no parent`);
-      throw new Error(`You can only send sub-batches`);
-    }
+    // if (!batch.parentLotNumber) {
+    //   this.logger.error(`Batch ${id} has no parent`);
+    //   throw new Error(`You can only send sub-batches`);
+    // }
     const updatedBatch = await this.batchRepository.save({
       ...batch,
       status: Status.ACCEPTED,
@@ -116,7 +137,10 @@ export class BatchesService {
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} batch`;
+    return this.batchRepository.findOne({
+      where: { id },
+      relations: ['subBatches'],
+    });
   }
 
   update(id: string, updateBatchDto: UpdateBatchDto) {

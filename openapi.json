@@ -477,6 +477,9 @@
           "parentLotNumber": {
             "type": "string"
           },
+          "parentId": {
+            "type": "string"
+          },
           "leadContent": {
             "type": "number"
           },
@@ -496,6 +499,7 @@
         "required": [
           "lotNumber",
           "parentLotNumber",
+          "parentId",
           "leadContent",
           "mercuryContent",
           "cadmiumContent",
@@ -510,6 +514,9 @@
             "type": "string"
           },
           "parentLotNumber": {
+            "type": "string"
+          },
+          "parentId": {
             "type": "string"
           },
           "leadContent": {
