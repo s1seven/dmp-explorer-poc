@@ -17,6 +17,7 @@ export class InvitationsService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>
   ) {}
+
   async create(createInvitationDto: CreateInvitationDto, email: string) {
     const user = await this.userRepository.findOne({
       where: { email },
@@ -26,18 +27,21 @@ export class InvitationsService {
       throw new Error('You must be part of a company to create an invitation');
     }
     const { company } = user;
-    if (company.VAT !== createInvitationDto.VAT) {
+    if (company.id !== createInvitationDto.companyId) {
       throw new Error(
         'You can only create invitations for companies that you are part of'
       );
     }
+
+    const { emailToInvite } = createInvitationDto;
     const createdInvitation = this.invitationRespository.create({
-      ...createInvitationDto,
+      emailToInvite,
       company,
     });
     return this.invitationRespository.save(createdInvitation);
   }
 
+  // TODO: rename to respondToInvitation
   async acceptInvitation(
     id: string,
     acceptInvitationDto: AcceptInvitationDto,
@@ -73,7 +77,7 @@ export class InvitationsService {
 
   findAll(email: string) {
     return this.invitationRespository.find({
-      where: { emailToInvite: email },
+      where: { emailToInvite: email }, relations: ['company'],
     });
   }
 

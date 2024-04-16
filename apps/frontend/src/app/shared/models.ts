@@ -1,7 +1,12 @@
 export interface InvitationDto {
-  id: string;
+  id?: string;
   emailToInvite: string;
   company: CompanyDto;
+}
+
+export interface CreateInvitationDto {
+  emailToInvite: string;
+  companyId: string;
 }
 
 export interface CompanyDto {

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { CompanyDto, InvitationDto } from '../shared/models';
+import { CompanyDto, CreateInvitationDto, InvitationDto } from '../shared/models';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
@@ -19,6 +19,10 @@ export class ProfileService {
 
   createCompany(company: CompanyDto): Observable<CompanyDto> {
     return this.httpClient.post<CompanyDto>('/api/companies', company);
+  }
+
+  createInvitation(invitation: CreateInvitationDto): Observable<InvitationDto> {
+    return this.httpClient.post<InvitationDto>('/api/invitations', invitation);
   }
 
   getInvitations(): Observable<InvitationDto[]> {
