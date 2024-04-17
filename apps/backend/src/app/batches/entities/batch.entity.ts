@@ -1,8 +1,15 @@
 import { BaseEntity } from '../../../common/entities/base-entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Tree, TreeChildren, TreeParent } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 import { Unit } from '../../../common/constants/constants';
 import { CompanyEntity } from '../../companies/entities/company.entity';
 import { Type } from 'class-transformer';
+import { OmitType } from '@nestjs/mapped-types';
 
 export enum Status {
   PENDING = 'pending',
@@ -11,9 +18,8 @@ export enum Status {
 }
 
 @Entity()
-@Tree('closure-table')
-export class BatchEntity extends BaseEntity {
-  @Column({ type: 'varchar', unique: true })
+export class BatchEntity extends OmitType(BaseEntity, ['id']) {
+  @PrimaryColumn({ type: 'varchar', unique: true })
   lotNumber: string;
 
   @Column()
@@ -41,9 +47,9 @@ export class BatchEntity extends BaseEntity {
   @Column({ type: 'enum', enum: Status })
   status: Status = Status.ACCEPTED;
 
-  @TreeChildren()
-  subBatches: BatchEntity[];
-
-  @TreeParent()
+  @ManyToOne(() => BatchEntity, { nullable: true })
   parent: BatchEntity;
+
+  @OneToMany(() => BatchEntity, (batch) => batch.parent)
+  subBatches: BatchEntity[];
 }

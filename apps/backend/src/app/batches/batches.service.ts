@@ -3,7 +3,7 @@ import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { BatchEntity, Status } from './entities/batch.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import { UserEntity } from '../users/entities/user.entity';
 import { SendBatchDto } from './dto/send-batch.dto';
 import { CompanyEntity } from '../companies/entities/company.entity';
@@ -35,21 +35,21 @@ export class BatchesService {
     const isRoHSCompliant = this.isRoHSCompliant(createBatchDto);
     const user = await this.checkUserExists(email);
     await this.checkBatchDoesNotExist(createBatchDto.lotNumber);
+    let parent = null;
+
     if (createBatchDto.parentLotNumber) {
       await this.checkParentBatchBelongsToUser(
         createBatchDto.parentLotNumber,
         user.id
       );
-    }
-    // TODO: ensure that this error does not crash the app
-    this.checkUserHasCompany(user);
-
-    let parent = null;
-    if (createBatchDto.parentLotNumber) {
       parent = await this.batchRepository.findOne({
         where: { lotNumber: createBatchDto.parentLotNumber },
       });
     }
+
+    // TODO: ensure that this error does not crash the app
+    this.checkUserHasCompany(user);
+
     // TODO: inherit isRoHSCompliant from parent batch
     const newBatch = this.batchRepository.create({
       ...createBatchDto,
@@ -80,34 +80,42 @@ export class BatchesService {
       relations: ['company'],
     });
     const { company } = user;
-    const batchRepository = this.dataSource.getTreeRepository(BatchEntity);
 
-    const [roots, total] = await batchRepository.findAndCount({
-      where: { company: { id: company.id } },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    // roots - all batches owned by your company
+    // and they don't have a parent
+    // or the parent is not owned by your company
+    const batchRepository = this.dataSource.getRepository(BatchEntity);
 
-    const treePromises = roots.map((root) =>
-      batchRepository.findDescendantsTree(root, { depth: 1 })
-    );
-    const trees = await Promise.all(treePromises);
+    const [batches, totalCount] = await batchRepository
+      .createQueryBuilder('batch')
+      .leftJoin('batch.parent', 'parent')
+      .where('batch.companyId = :companyId', { companyId: company.id })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('parent.companyId != :companyId', {
+            companyId: company.id,
+          }).orWhere('parent.parentLotNumber IS NULL');
+        })
+      )
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
 
     return {
-      items: trees,
+      items: batches,
       meta: {
-        itemCount: trees.length,
-        totalItems: total,
+        itemCount: batches.length,
+        totalItems: totalCount,
         itemsPerPage: limit,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(totalCount / limit),
         currentPage: page,
       },
     };
   }
 
-  async send(id: string, sendBatchDto: SendBatchDto) {
+  async send(lotNumber: string, sendBatchDto: SendBatchDto) {
     // TODO: check that the batch belongs to the current user
-    const batch = await this.batchRepository.findOne({ where: { id } });
+    const batch = await this.batchRepository.findOne({ where: { lotNumber } });
     // check that the vat is not the current company?
     // TODO: add better error handling
     const company = await this.companyRepository.findOneOrFail({
@@ -121,9 +129,9 @@ export class BatchesService {
     return newBatch;
   }
 
-  async accept(id: string, _body: unknown, email: string) {
+  async accept(lotNumber: string, _body: unknown, email: string) {
     // TODO: check that the batch belongs to the current user
-    const batch = await this.batchRepository.findOne({ where: { id } });
+    const batch = await this.batchRepository.findOne({ where: { lotNumber } });
     // if (!batch.parentLotNumber) {
     //   this.logger.error(`Batch ${id} has no parent`);
     //   throw new Error(`You can only send sub-batches`);
@@ -135,9 +143,9 @@ export class BatchesService {
     return updatedBatch;
   }
 
-  async decline(id: string, body: unknown) {
+  async decline(lotNumber: string, body: unknown) {
     // TODO: check that the batch belongs to the current user
-    const batch = await this.batchRepository.findOne({ where: { id } });
+    const batch = await this.batchRepository.findOne({ where: { lotNumber } });
     const updatedBatch = await this.batchRepository.save({
       ...batch,
       status: Status.DECLINED,
@@ -146,9 +154,9 @@ export class BatchesService {
     return updatedBatch;
   }
 
-  async reclaim(id: string, body: unknown) {
+  async reclaim(lotNumber: string, body: unknown) {
     // TODO: check that the batch belongs to the current user
-    const batch = await this.batchRepository.findOne({ where: { id } });
+    const batch = await this.batchRepository.findOne({ where: { lotNumber } });
     const updatedBatch = await this.batchRepository.save({
       ...batch,
       status: Status.ACCEPTED,
@@ -156,9 +164,10 @@ export class BatchesService {
     return updatedBatch;
   }
 
-  findOne(id: string) {
+  findOne(lotNumber: string) {
+    // attach all children 1 level deep
     return this.batchRepository.findOne({
-      where: { id },
+      where: { lotNumber },
       relations: ['subBatches'],
     });
   }
