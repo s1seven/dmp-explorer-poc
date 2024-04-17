@@ -1,22 +1,25 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { BatchDto, PaginationResponseDto } from '../shared/models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class BatchService {
+  // TODO: persist data in service
   private readonly httpClient = inject(HttpClient);
+  readonly batchesMeta = signal<PaginationResponseDto<BatchDto> | null>(null);
 
   async getBatches(
     page = 1,
     limit = 10
   ): Promise<PaginationResponseDto<BatchDto>> {
-    const batches = await firstValueFrom(
+    const batchesMeta = await firstValueFrom(
       this.httpClient.get<PaginationResponseDto<BatchDto>>(
         `/api/batches?page=${page}&limit=${limit}`
       )
     );
-    return batches;
+    this.batchesMeta.set(batchesMeta);
+    return batchesMeta;
   }
 
   // If a parentLotNumber was provided:

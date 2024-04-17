@@ -1,11 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { CompanyDto, CreateInvitationDto, InvitationDto } from '../shared/models';
+import {
+  CompanyDto,
+  CreateInvitationDto,
+  InvitationDto,
+} from '../shared/models';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
   readonly companies = signal<CompanyDto[]>([]);
+  readonly company = computed(() => this.companies()?.[0]);
   readonly invitations = signal<InvitationDto[]>([]);
   private readonly httpClient = inject(HttpClient);
 

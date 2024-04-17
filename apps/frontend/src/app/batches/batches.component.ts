@@ -4,11 +4,10 @@ import {
   OnInit,
   computed,
   inject,
-  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { BatchDto, PaginationResponseDto, Status } from '../shared/models';
+import { BatchDto, Status } from '../shared/models';
 import { ProfileService } from '../profile/profile.service';
 import { BatchService } from './batch.service';
 import { BatchesTableComponent } from './batches-table.component';
@@ -40,41 +39,40 @@ export interface BatchInbox {
       [batches]="inbox()"
     ></app-batches-table>
     <p *ngIf="!inbox().length">Your inbox is currently empty.</p>
-    <h2>Batches</h2>
-    <app-batches-table [batches]="batchesMeta().items"></app-batches-table>
-    <mat-paginator
-      [length]="batchesMeta().meta.totalItems"
-      [pageSize]="batchesMeta().meta.itemsPerPage"
-      [pageIndex]="batchesMeta().meta.currentPage - 1"
-      [pageSizeOptions]="[5, 10, 25, 100]"
-      aria-label="Select page"
-      (page)="onPageChange($event)"
-    >
-    </mat-paginator>
+    <ng-container *ngIf="batchesMeta() as batchesMeta; loading">
+      <h2>Batches</h2>
+      <!-- TODO: display subbatches as a new route -->
+      <app-batches-table [batches]="batchesMeta.items"></app-batches-table>
+      <mat-paginator
+        [length]="batchesMeta.meta.totalItems"
+        [pageSize]="batchesMeta.meta.itemsPerPage"
+        [pageIndex]="batchesMeta.meta.currentPage - 1"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        aria-label="Select page"
+        (page)="changePage($event)"
+      >
+      </mat-paginator>
+    </ng-container>
+    <!-- // TODO: check if angular material has skeletons -->
+    <ng-template #loading>Loading...</ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BatchesComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
-  readonly company = computed(() => this.profileService.companies()?.[0]);
-  readonly batchesMeta = signal<PaginationResponseDto<BatchDto>>({
-    items: [],
-    meta: {
-      page: 1,
-      totalItems: 0,
-      itemsPerPage: 10,
-      currentPage: 1,
-      totalPages: 0,
-    },
-  });
+  private readonly batchService = inject(BatchService);
+  readonly company = this.profileService.company();
+  readonly batchesMeta = this.batchService.batchesMeta;
 
   // Batches that:
   // - have been sent to you but not accepted
   // - you sent to someone but they have declined
   // TODO: return BatchInbox[]
   readonly inbox = computed<BatchDto[]>(() => {
-    return this.batchesMeta().items.filter(
-      (batch) => batch.status !== Status.ACCEPTED
+    return (
+      this.batchesMeta()?.items.filter(
+        (batch) => batch.status !== Status.ACCEPTED
+      ) || []
     );
     // .map((batch) => ({
     //   batch,
@@ -85,19 +83,14 @@ export class BatchesComponent implements OnInit {
     // }));
   });
 
-  private readonly batchService = inject(BatchService);
-
-  async onPageChange(event: PageEvent) {
+  async changePage(event: PageEvent) {
     const page = event.pageIndex + 1;
     const limit = event.pageSize;
-    const batches = await this.batchService.getBatches(page, limit);
-    this.batchesMeta.set(batches);
+    await this.batchService.getBatches(page, limit);
   }
 
-  async ngOnInit() {
-    const page = this.batchesMeta().meta.currentPage;
-    const limit = this.batchesMeta().meta.itemsPerPage;
-    const batches = await this.batchService.getBatches(page, limit);
-    this.batchesMeta.set(batches);
+  ngOnInit() {
+    // TODO: use constants
+    this.batchService.getBatches(1, 10);
   }
 }

@@ -16,8 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 import { CreateCompanyComponent } from './create-company.component';
 import {
-  FormControl,
-  FormGroup,
+  NonNullableFormBuilder,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -111,8 +110,8 @@ export class CompanyComponent {
   readonly company = computed(() => this.profileService.companies()?.[0]);
   readonly invitation = signal<InvitationDto | null>(null);
   private readonly dialog = inject(MatDialog);
-  readonly inviteToCompanyForm = new FormGroup({
-    emailToInvite: new FormControl('', [Validators.required, Validators.email]),
+  readonly inviteToCompanyForm = inject(NonNullableFormBuilder).group({
+    emailToInvite: ['' as string, Validators.required, Validators.email],
   });
 
   constructor() {
@@ -153,13 +152,13 @@ export class CompanyComponent {
     if (this.inviteToCompanyForm.invalid) {
       return;
     }
-    const emailToInvite = this.inviteToCompanyForm.value;
+    const { emailToInvite } = this.inviteToCompanyForm.value;
     const company = this.company();
     // TODO: fix types
     await firstValueFrom(
       this.profileService
         .createInvitation({
-          ...emailToInvite,
+          emailToInvite,
           companyId: company.id,
         } as CreateInvitationDto)
         .pipe(
@@ -172,23 +171,23 @@ export class CompanyComponent {
     );
   }
 
-  declineDialog(invitation: InvitationDto): void {
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        width: '250px',
-        data: {
-          title: 'Decline Invitation',
-          message: 'Are you sure you want to decline this invitation?',
-          cancel: 'Cancel',
-          confirm: 'Confirm',
-          invitation,
-        },
-      })
-      .afterClosed()
-      .subscribe((result) => {
-        if (result === true) {
-          this.declineInvitation(invitation);
-        }
-      });
+  async declineDialog(invitation: InvitationDto): Promise<void> {
+    const result = await firstValueFrom(
+      this.dialog
+        .open(ConfirmDialogComponent, {
+          width: '250px',
+          data: {
+            title: 'Decline Invitation',
+            message: 'Are you sure you want to decline this invitation?',
+            cancel: 'Cancel',
+            confirm: 'Confirm',
+            invitation,
+          },
+        })
+        .afterClosed()
+    );
+    if (result === true) {
+      this.declineInvitation(invitation);
+    }
   }
 }
