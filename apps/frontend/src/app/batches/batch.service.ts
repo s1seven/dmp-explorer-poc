@@ -1,15 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { BatchDto } from '../shared/models';
+import { BatchDto, PaginationResponseDto } from '../shared/models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class BatchService {
   private readonly httpClient = inject(HttpClient);
 
-  async getBatches(): Promise<BatchDto[]> {
+  async getBatches(
+    page = 1,
+    limit = 10
+  ): Promise<PaginationResponseDto<BatchDto>> {
     const batches = await firstValueFrom(
-      this.httpClient.get<BatchDto[]>('/api/batches')
+      this.httpClient.get<PaginationResponseDto<BatchDto>>(
+        `/api/batches?page=${page}&limit=${limit}`
+      )
     );
     return batches;
   }

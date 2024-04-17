@@ -3,10 +3,11 @@ import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { BatchEntity, Status } from './entities/batch.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, getTreeRepository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from '../users/entities/user.entity';
 import { SendBatchDto } from './dto/send-batch.dto';
 import { CompanyEntity } from '../companies/entities/company.entity';
+import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
 
 const MAX_LEAD_CONTENT = 0.1;
 const MAX_MERCURY_CONTENT = 0.1;
@@ -34,10 +35,12 @@ export class BatchesService {
     const isRoHSCompliant = this.isRoHSCompliant(createBatchDto);
     const user = await this.checkUserExists(email);
     await this.checkBatchDoesNotExist(createBatchDto.lotNumber);
-    await this.checkParentBatchBelongsToUser(
-      createBatchDto.parentLotNumber,
-      user.id
-    );
+    if (createBatchDto.parentLotNumber) {
+      await this.checkParentBatchBelongsToUser(
+        createBatchDto.parentLotNumber,
+        user.id
+      );
+    }
     // TODO: ensure that this error does not crash the app
     this.checkUserHasCompany(user);
 
@@ -66,7 +69,11 @@ export class BatchesService {
     );
   }
 
-  async findAll(email: string) {
+  async findAll(
+    email: string,
+    page: number,
+    limit: number
+  ): Promise<PaginationResponseDto<BatchEntity>> {
     this.logger.log(`Fetching batches for ${email}`);
     const user = await this.userRepository.findOne({
       where: { email },
@@ -75,14 +82,27 @@ export class BatchesService {
     const { company } = user;
     const batchRepository = this.dataSource.getTreeRepository(BatchEntity);
 
-    const roots = await batchRepository.find({
+    const [roots, total] = await batchRepository.findAndCount({
       where: { company: { id: company.id } },
+      skip: (page - 1) * limit,
+      take: limit,
     });
+
     const treePromises = roots.map((root) =>
       batchRepository.findDescendantsTree(root, { depth: 1 })
     );
+    const trees = await Promise.all(treePromises);
 
-    return Promise.all(treePromises);
+    return {
+      items: trees,
+      meta: {
+        itemCount: trees.length,
+        totalItems: total,
+        itemsPerPage: limit,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+      },
+    };
   }
 
   async send(id: string, sendBatchDto: SendBatchDto) {

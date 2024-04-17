@@ -9,6 +9,19 @@ export interface CreateInvitationDto {
   companyId: string;
 }
 
+export interface CustomMeta {
+  page: number;
+  totalItems: number;
+  itemsPerPage: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+export interface PaginationResponseDto<T> {
+  items: T[];
+  meta: CustomMeta;
+}
+
 export interface CompanyDto {
   id?: string;
   VAT: string;
