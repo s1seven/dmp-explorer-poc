@@ -1,12 +1,18 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { BatchDto } from '../shared/models';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-batches-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule],
+  imports: [CommonModule, MatTableModule, RouterLink],
   template: `
     <table mat-table [dataSource]="batches()">
       <!-- Lot Number Column -->
@@ -39,23 +45,32 @@ import { BatchDto } from '../shared/models';
         <td mat-cell *matCellDef="let batch">{{ batch.isRoHSCompliant }}</td>
       </ng-container>
 
-      // TODO: combine quantity and unit
       <!-- Quantity Column -->
       <ng-container matColumnDef="quantity">
         <th mat-header-cell *matHeaderCellDef>Quantity</th>
-        <td mat-cell *matCellDef="let batch">{{ batch.quantity }}</td>
-      </ng-container>
-
-      <!-- Cadmium Content Column -->
-      <ng-container matColumnDef="unit">
-        <th mat-header-cell *matHeaderCellDef>Unit</th>
-        <td mat-cell *matCellDef="let batch">{{ batch.unit }}</td>
+        <td mat-cell *matCellDef="let batch">
+          {{ batch.quantity }} {{ batch.unit }}
+        </td>
       </ng-container>
 
       <!-- Status Column -->
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let batch">{{ batch.status }}</td>
+      </ng-container>
+
+      <!-- Subbatch Column -->
+      <ng-container matColumnDef="subbatch-button">
+        <th mat-header-cell *matHeaderCellDef>subbatch</th>
+        <td mat-cell *matCellDef="let batch">
+          <a
+            class="text-inherit"
+            mat-button
+            (click)="goToBatch(batch)"
+            routerLinkActive="bg-primary-100"
+            >View Batch</a
+          >
+        </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -65,16 +80,22 @@ import { BatchDto } from '../shared/models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BatchesTableComponent {
-  batches = input.required<BatchDto[]>();
-
-  displayedColumns: string[] = [
+  readonly batches = input.required<BatchDto[]>();
+  private readonly router = inject(Router);
+  readonly displayedColumns: string[] = [
     'lotNumber',
     'leadContent',
     'mercuryContent',
     'cadmiumContent',
     'isRoHSCompliant',
     'quantity',
-    'unit',
     'status',
+    'subbatch-button',
   ];
+
+  goToBatch(batch: BatchDto) {
+    void this.router.navigate(['/batches', batch.lotNumber], {
+      state: { fromBatches: true },
+    });
+  }
 }

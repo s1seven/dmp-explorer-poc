@@ -4,10 +4,12 @@ import { BatchDto, PaginationResponseDto } from '../shared/models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
-export class BatchService {
+export class BatchesService {
   // TODO: persist data in service
   private readonly httpClient = inject(HttpClient);
   readonly batchesMeta = signal<PaginationResponseDto<BatchDto> | null>(null);
+  readonly batch = signal<BatchDto | null>(null);
+  readonly currentSubBatch = signal<BatchDto | null>(null);
 
   async getBatches(
     page = 1,
@@ -20,6 +22,14 @@ export class BatchService {
     );
     this.batchesMeta.set(batchesMeta);
     return batchesMeta;
+  }
+
+  async getBatch(id: string): Promise<BatchDto> {
+    const batch = await firstValueFrom(
+      this.httpClient.get<BatchDto>(`/api/batches/${id}`)
+    );
+    this.batch.set(batch);
+    return batch;
   }
 
   // If a parentLotNumber was provided:
@@ -36,12 +46,14 @@ export class BatchService {
   // 2. Changes the vat to the vat provided
   // - if the company is registered
   // - and it is not the current company
-  sendBatch(batch: BatchDto, vatId: string): Promise<BatchDto> {
-    return firstValueFrom(
-      this.httpClient.patch<BatchDto>(`/api/batches/${batch.id}/send`, {
-        vatId,
+  async sendBatch(batchId: string, VAT: string): Promise<BatchDto> {
+    const updatedBatch = await firstValueFrom(
+      this.httpClient.patch<BatchDto>(`/api/batches/${batchId}/send`, {
+        VAT,
       })
     );
+    this.currentSubBatch.set(updatedBatch);
+    return updatedBatch;
   }
 
   // Changes status from `pending` to `accepted`
