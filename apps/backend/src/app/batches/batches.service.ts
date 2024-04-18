@@ -86,15 +86,22 @@ export class BatchesService {
     // or the parent is not owned by your company
     const batchRepository = this.dataSource.getRepository(BatchEntity);
 
+    // TODO: if parent is not owned, remove parentLotNumber?
     const [batches, totalCount] = await batchRepository
       .createQueryBuilder('batch')
-      .leftJoin('batch.parent', 'parent')
-      .where('batch.companyId = :companyId', { companyId: company.id })
+      .leftJoin(
+        'batch_entity',
+        'parent',
+        'batch.parentLotNumber = parent.lotNumber'
+      )
+      .where('batch.companyId = :companyId', {
+        companyId: company.id,
+      })
       .andWhere(
         new Brackets((qb) => {
-          qb.where('parent.companyId != :companyId', {
-            companyId: company.id,
-          }).orWhere('parent.parentLotNumber IS NULL');
+          qb.where('parent.companyId IS NULL').orWhere(
+            'parent.companyId != batch.companyId'
+          );
         })
       )
       .skip((page - 1) * limit)
@@ -113,9 +120,23 @@ export class BatchesService {
     };
   }
 
-  async send(lotNumber: string, sendBatchDto: SendBatchDto) {
+  async send(lotNumber: string, sendBatchDto: SendBatchDto, email: string) {
+    this.logger.log(
+      `Sending batch ${lotNumber} for user ${email} to company ${sendBatchDto.VAT}`
+    );
     // TODO: check that the batch belongs to the current user
-    const batch = await this.batchRepository.findOne({ where: { lotNumber } });
+    const user = await this.userRepository.findOneOrFail({
+      where: { email },
+      relations: ['company'],
+    });
+    const batch = await this.batchRepository.findOne({
+      where: { lotNumber },
+      relations: ['company'],
+    });
+    if (batch.company.id !== user.company.id) {
+      this.logger.error(`Batch ${lotNumber} does not belong to user ${email}`);
+      throw new Error(`Batch ${lotNumber} does not belong to user ${email}`);
+    }
     // check that the vat is not the current company?
     // TODO: add better error handling
     const company = await this.companyRepository.findOneOrFail({
@@ -166,10 +187,12 @@ export class BatchesService {
 
   findOne(lotNumber: string) {
     // attach all children 1 level deep
-    return this.batchRepository.findOne({
-      where: { lotNumber },
-      relations: ['subBatches'],
-    });
+    return this.batchRepository
+      .createQueryBuilder('batch')
+      .where('batch.lotNumber = :lotNumber', { lotNumber })
+      .leftJoinAndSelect('batch.subBatches', 'subBatches')
+      .leftJoinAndSelect('subBatches.company', 'company')
+      .getOne();
   }
 
   update(id: string, updateBatchDto: UpdateBatchDto) {

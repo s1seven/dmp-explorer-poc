@@ -70,8 +70,14 @@ export class BatchesController {
   }
 
   @Patch(':id/send')
-  send(@Param('id') id: string, @Body() sendBatchDto: SendBatchDto) {
-    return this.batchesService.send(id, sendBatchDto);
+  send(
+    @Param('id') id: string,
+    @Body() sendBatchDto: SendBatchDto,
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.batchesService.send(id, sendBatchDto, email);
   }
 
   @Patch(':id/decline')
