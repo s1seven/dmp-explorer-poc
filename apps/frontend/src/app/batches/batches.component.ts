@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { BatchDto, Status } from '../shared/models';
 import { ProfileService } from '../profile/profile.service';
-import { BatchService } from './batch.service';
+import { BatchesService } from './batch.service';
 import { BatchesTableComponent } from './batches-table.component';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
@@ -60,7 +60,7 @@ export interface BatchInbox {
 })
 export class BatchesComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
-  private readonly batchService = inject(BatchService);
+  private readonly batchService = inject(BatchesService);
   readonly company = this.profileService.company();
   readonly batchesMeta = this.batchService.batchesMeta;
 

@@ -49,6 +49,7 @@ export interface BatchDto {
   unit: Unit;
   status: Status;
   parentLotNumber?: string;
+  subBatches?: BatchDto[];
 }
 
 export interface CreateBatchDto {
