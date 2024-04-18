@@ -8,6 +8,7 @@ export class BatchesService {
   // TODO: persist data in service
   private readonly httpClient = inject(HttpClient);
   readonly batchesMeta = signal<PaginationResponseDto<BatchDto> | null>(null);
+  readonly inboxMeta = signal<PaginationResponseDto<BatchDto> | null>(null);
   readonly batch = signal<BatchDto | null>(null);
   readonly currentSubBatch = signal<BatchDto | null>(null);
 
@@ -22,6 +23,19 @@ export class BatchesService {
     );
     this.batchesMeta.set(batchesMeta);
     return batchesMeta;
+  }
+
+  async getInbox(
+    page = 1,
+    limit = 10
+  ): Promise<PaginationResponseDto<BatchDto>> {
+    const inboxMeta = await firstValueFrom(
+      this.httpClient.get<PaginationResponseDto<BatchDto>>(
+        `/api/batches/inbox?page=${page}&limit=${limit}`
+      )
+    );
+    this.inboxMeta.set(inboxMeta);
+    return inboxMeta;
   }
 
   async getBatch(id: string): Promise<BatchDto> {
@@ -57,24 +71,106 @@ export class BatchesService {
   }
 
   // Changes status from `pending` to `accepted`
-  acceptBatch(batch: BatchDto): Promise<BatchDto> {
-    return firstValueFrom(
-      this.httpClient.patch<BatchDto>(`/api/batches/${batch.id}/accept`, {})
+  async acceptBatch(batch: BatchDto): Promise<BatchDto> {
+    const acceptedBatch = await firstValueFrom(
+      this.httpClient.patch<BatchDto>(
+        `/api/batches/${batch.lotNumber}/accept`,
+        {}
+      )
     );
+
+    // TODO: refactor this to functions
+    const currentInboxMeta = this.inboxMeta();
+    if (currentInboxMeta) {
+      this.inboxMeta.set({
+        ...currentInboxMeta,
+        items: currentInboxMeta?.items.filter(
+          (b) => b.lotNumber !== acceptedBatch.lotNumber
+        ),
+        meta: {
+          ...currentInboxMeta?.meta,
+          totalItems: currentInboxMeta?.meta.totalItems - 1,
+          // TODO: handle case where less pages are needed
+        },
+      });
+    }
+    const currentBatchesMeta = this.batchesMeta();
+    if (currentBatchesMeta) {
+      this.batchesMeta.set({
+        ...currentBatchesMeta,
+        items: [...currentBatchesMeta.items, acceptedBatch],
+        meta: {
+          ...currentBatchesMeta.meta,
+          totalItems: currentBatchesMeta.meta.totalItems + 1,
+        },
+      });
+    }
+
+    return acceptedBatch;
   }
 
   // 1. Changes status from `pending` to `declined`
   // 2. Changes the vat to the vat of the parent batch
-  declineBatch(batch: BatchDto): Promise<BatchDto> {
-    return firstValueFrom(
-      this.httpClient.patch<BatchDto>(`/api/batches/${batch.id}/decline`, {})
+  async declineBatch(batch: BatchDto): Promise<BatchDto> {
+    const declinedBatch = await firstValueFrom(
+      this.httpClient.patch<BatchDto>(
+        `/api/batches/${batch.lotNumber}/decline`,
+        {}
+      )
     );
+
+    const currentInboxMeta = this.inboxMeta();
+    if (currentInboxMeta) {
+      this.inboxMeta.set({
+        ...currentInboxMeta,
+        items: currentInboxMeta.items.filter(
+          (b) => b.lotNumber !== batch.lotNumber
+        ),
+        meta: {
+          ...currentInboxMeta.meta,
+          totalItems: currentInboxMeta?.meta.totalItems - 1,
+          // TODO: handle case where less pages are needed
+        },
+      });
+    }
+
+    return declinedBatch;
   }
 
   // Changes status from `declined` to `accepted`
-  reclaimBatch(batch: BatchDto): Promise<BatchDto> {
-    return firstValueFrom(
-      this.httpClient.get<BatchDto>(`/api/batches/${batch.id}/reclaim`)
+  async reclaimBatch(batch: BatchDto): Promise<BatchDto> {
+    const reclaimedBatch = await firstValueFrom(
+      this.httpClient.patch<BatchDto>(
+        `/api/batches/${batch.lotNumber}/reclaim`,
+        {}
+      )
     );
+
+    const currentInboxMeta = this.inboxMeta();
+    if (currentInboxMeta) {
+      this.inboxMeta.set({
+        ...currentInboxMeta,
+        items: currentInboxMeta?.items.filter(
+          (b) => b.lotNumber !== batch.lotNumber
+        ),
+        meta: {
+          ...currentInboxMeta?.meta,
+          totalItems: currentInboxMeta?.meta.totalItems - 1,
+          // TODO: handle case where less pages are needed
+        },
+      });
+    }
+    const currentBatchesMeta = this.batchesMeta();
+    if (currentBatchesMeta) {
+      this.batchesMeta.set({
+        ...currentBatchesMeta,
+        items: [...currentBatchesMeta.items, reclaimedBatch],
+        meta: {
+          ...currentBatchesMeta.meta,
+          totalItems: currentBatchesMeta.meta.totalItems + 1,
+        },
+      });
+    }
+    return reclaimedBatch;
   }
 }

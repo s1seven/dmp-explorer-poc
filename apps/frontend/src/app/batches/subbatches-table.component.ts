@@ -19,83 +19,102 @@ import { Subject, map, takeUntil } from 'rxjs';
   standalone: true,
   imports: [CommonModule, MatTableModule, RouterLink],
   template: `
-    <table mat-table [dataSource]="batches()">
-      <!-- Lot Number Column -->
-      <ng-container matColumnDef="parentLotNumber">
-        <th mat-header-cell *matHeaderCellDef>Parent Lot Number</th>
-        <td mat-cell *matCellDef="let batch">{{ batch?.parentLotNumber }}</td>
-      </ng-container>
+    <div
+      class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full ng-untouched ng-pristine ng-invalid"
+    >
+      <table mat-table [dataSource]="batches()">
+        <!-- Lot Number Column -->
+        <ng-container matColumnDef="parentLotNumber">
+          <th mat-header-cell *matHeaderCellDef>Parent Lot Number</th>
+          <td mat-cell *matCellDef="let batch">{{ batch?.parentLotNumber }}</td>
+        </ng-container>
 
-      <!-- Lot Number Column -->
-      <ng-container matColumnDef="lotNumber">
-        <th mat-header-cell *matHeaderCellDef>Lot Number</th>
-        <td mat-cell *matCellDef="let batch">{{ batch.lotNumber }}</td>
-      </ng-container>
+        <!-- Lot Number Column -->
+        <ng-container matColumnDef="lotNumber">
+          <th mat-header-cell *matHeaderCellDef>Lot Number</th>
+          <td mat-cell *matCellDef="let batch">{{ batch.lotNumber }}</td>
+        </ng-container>
 
-      <!-- Lead Content Column -->
-      <ng-container matColumnDef="leadContent">
-        <th mat-header-cell *matHeaderCellDef>Lead Content</th>
-        <td mat-cell *matCellDef="let batch">{{ batch.leadContent }}</td>
-      </ng-container>
+        <!-- Lead Content Column -->
+        <ng-container matColumnDef="leadContent">
+          <th mat-header-cell *matHeaderCellDef>Lead Content</th>
+          <td mat-cell *matCellDef="let batch">{{ batch.leadContent }}</td>
+        </ng-container>
 
-      <!-- Mercury Content Column -->
-      <ng-container matColumnDef="mercuryContent">
-        <th mat-header-cell *matHeaderCellDef>Mercury Content</th>
-        <td mat-cell *matCellDef="let batch">{{ batch.mercuryContent }}</td>
-      </ng-container>
+        <!-- Mercury Content Column -->
+        <ng-container matColumnDef="mercuryContent">
+          <th mat-header-cell *matHeaderCellDef>Mercury Content</th>
+          <td mat-cell *matCellDef="let batch">{{ batch.mercuryContent }}</td>
+        </ng-container>
 
-      <!-- Cadmium Content Column -->
-      <ng-container matColumnDef="cadmiumContent">
-        <th mat-header-cell *matHeaderCellDef>Cadmium Content</th>
-        <td mat-cell *matCellDef="let batch">{{ batch.cadmiumContent }}</td>
-      </ng-container>
+        <!-- Cadmium Content Column -->
+        <ng-container matColumnDef="cadmiumContent">
+          <th mat-header-cell *matHeaderCellDef>Cadmium Content</th>
+          <td mat-cell *matCellDef="let batch">{{ batch.cadmiumContent }}</td>
+        </ng-container>
 
-      <!-- RoHS Compliance Column -->
-      <ng-container matColumnDef="isRoHSCompliant">
-        <th mat-header-cell *matHeaderCellDef>RoHS Compliant</th>
-        <td mat-cell *matCellDef="let batch">{{ batch.isRoHSCompliant }}</td>
-      </ng-container>
+        <!-- RoHS Compliance Column -->
+        <ng-container matColumnDef="isRoHSCompliant">
+          <th mat-header-cell *matHeaderCellDef>RoHS Compliant</th>
+          <td mat-cell *matCellDef="let batch">{{ batch.isRoHSCompliant }}</td>
+        </ng-container>
 
-      <!-- Quantity Column -->
-      <ng-container matColumnDef="quantity">
-        <th mat-header-cell *matHeaderCellDef>Quantity</th>
-        <td mat-cell *matCellDef="let batch">
-          {{ batch.quantity }} {{ batch.unit }}
-        </td>
-      </ng-container>
+        <!-- Quantity Column -->
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef>Quantity</th>
+          <td mat-cell *matCellDef="let batch">
+            {{ batch.quantity }} {{ batch.unit }}
+          </td>
+        </ng-container>
 
-      <!-- Status Column -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let batch">{{ batch.status }}</td>
-      </ng-container>
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let batch">{{ batch.status }}</td>
+        </ng-container>
 
-      <!-- Owner Column -->
-      <ng-container matColumnDef="owner">
-        <th mat-header-cell *matHeaderCellDef>owner</th>
-        <td mat-cell *matCellDef="let batch">{{ batch?.company?.VAT }}</td>
-      </ng-container>
+        <!-- Owner Column -->
+        <ng-container matColumnDef="owner">
+          <th mat-header-cell *matHeaderCellDef>owner</th>
+          <td mat-cell *matCellDef="let batch">{{ batch?.company?.VAT }}</td>
+        </ng-container>
 
-      <!-- Subbatch Column -->
-      <ng-container matColumnDef="assign-button">
-        <th mat-header-cell *matHeaderCellDef>Assign</th>
-        <td mat-cell *matCellDef="let batch">
-          <a
-            *ngIf="
-              batch?.parentLotNumber && batch?.company?.VAT === company()?.VAT
-            "
-            class="text-inherit"
-            mat-button
-            routerLinkActive="bg-primary-100"
-            (click)="setCurrentSubBatch(batch)"
-            >Assign Batch</a
-          >
-        </td>
-      </ng-container>
+        <!-- Subbatch Column -->
+        <ng-container matColumnDef="assign-button">
+          <th mat-header-cell *matHeaderCellDef>Assign</th>
+          <td mat-cell *matCellDef="let batch">
+            <a
+              *ngIf="
+                batch?.parentLotNumber && batch?.company?.VAT === company()?.VAT
+              "
+              class="text-inherit"
+              mat-button
+              routerLinkActive="bg-primary-100"
+              (click)="setCurrentSubBatch(batch)"
+              >Assign Batch</a
+            >
+          </td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+        <!-- Subbatch Column -->
+        <ng-container matColumnDef="create-button">
+          <th mat-header-cell *matHeaderCellDef>Create SubBatch</th>
+          <td mat-cell *matCellDef="let batch">
+            <a
+              *ngIf="!batch?.parentLotNumber"
+              class="text-inherit"
+              mat-button
+              routerLinkActive="bg-primary-100"
+              (click)="createSubbatch(batch)"
+              >Create SubBatch</a
+            >
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
 
     <ng-container>
       <button
@@ -129,6 +148,7 @@ export class SubBatchesTableComponent implements OnDestroy, OnInit {
     'status',
     'owner',
     'assign-button',
+    'create-button',
   ];
   fromBatches = false;
 
@@ -146,10 +166,17 @@ export class SubBatchesTableComponent implements OnDestroy, OnInit {
     );
   }
 
+  createSubbatch(batch: BatchDto) {
+    this.currentSubBatch.set(batch);
+    void this.router.navigate(['/batches', this.currentRouteId, 'create'], {
+      state: { fromSubBatches: true },
+    });
+  }
+
   goBack(): void {
     this.fromBatches
       ? this.location.back()
-      : void this.router.navigate(['/batches', this.currentSubBatch()?.id]);
+      : void this.router.navigate(['/batches', this.currentSubBatch()?.lotNumber]);
   }
 
   ngOnInit() {

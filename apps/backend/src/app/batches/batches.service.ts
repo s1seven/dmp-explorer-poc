@@ -94,7 +94,7 @@ export class BatchesService {
         'parent',
         'batch.parentLotNumber = parent.lotNumber'
       )
-      .where('batch.companyId = :companyId', {
+      .where("batch.companyId = :companyId AND batch.status = 'accepted'", {
         companyId: company.id,
       })
       .andWhere(
@@ -104,6 +104,56 @@ export class BatchesService {
           );
         })
       )
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      items: batches,
+      meta: {
+        itemCount: batches.length,
+        totalItems: totalCount,
+        itemsPerPage: limit,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+      },
+    };
+  }
+
+  async inbox(
+    email: string,
+    page: number,
+    limit: number
+  ): Promise<PaginationResponseDto<BatchEntity>> {
+    this.logger.log(`Fetching batches from inbox for ${email}`);
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['company'],
+    });
+    const { company } = user;
+
+    // roots - all batches owned by your company
+    // and they don't have a parent
+    // or the parent is not owned by your company
+    const batchRepository = this.dataSource.getRepository(BatchEntity);
+
+    // TODO: if parent is not owned, remove parentLotNumber?
+    const [batches, totalCount] = await batchRepository
+      .createQueryBuilder('batch')
+      .leftJoin(
+        'batch_entity',
+        'parent',
+        'batch.parentLotNumber = parent.lotNumber'
+      )
+      .leftJoinAndSelect(
+        'batch.company',
+        'company',
+        'batch.companyId = company.id'
+      )
+      .where('batch.companyId = :companyId', {
+        companyId: company.id,
+      })
+      .andWhere("batch.status != 'accepted'")
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
@@ -166,16 +216,27 @@ export class BatchesService {
 
   async decline(lotNumber: string, body: unknown) {
     // TODO: check that the batch belongs to the current user
-    const batch = await this.batchRepository.findOne({ where: { lotNumber } });
+    const batch = await this.batchRepository.findOne({
+      where: { lotNumber },
+      relations: ['parent'],
+    });
+    const parent = await this.batchRepository.findOne({
+      where: { lotNumber: batch.parent.lotNumber },
+      relations: ['company'],
+    });
+
+    const {company} = parent;
     const updatedBatch = await this.batchRepository.save({
       ...batch,
       status: Status.DECLINED,
+      company,
       // TODO: revert to the vat of the parent batch
     });
     return updatedBatch;
   }
 
   async reclaim(lotNumber: string, body: unknown) {
+    this.logger.log(`Reclaiming batch ${lotNumber}`);
     // TODO: check that the batch belongs to the current user
     const batch = await this.batchRepository.findOne({ where: { lotNumber } });
     const updatedBatch = await this.batchRepository.save({

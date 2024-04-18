@@ -10,7 +10,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [CommonModule, CompanyComponent],
   template: `
-    <div class="flex gap-4 items-center mb-10" *ngIf="user() as user">
+    <div class="flex gap-4 items-center mb-10 rounded-md p-4 border border-gray-300 flex-row max-w-3xl ng-untouched ng-pristine ng-invalid" *ngIf="user() as user">
       <img
         class="shadow-sm w-24 h-24 rounded-full"
         [src]="user.picture"
@@ -31,7 +31,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
       </div>
     </div>
 
-    <h2>Company</h2>
     <app-company></app-company>
   `,
 })

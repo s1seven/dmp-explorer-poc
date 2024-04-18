@@ -48,6 +48,17 @@ export class BatchesController {
     return this.batchesService.findAll(email, page, limit);
   }
 
+  @Get('/inbox')
+  inbox(
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10
+  ): Promise<PaginationResponseDto<BatchEntity>> {
+    const { email } = user;
+    return this.batchesService.inbox(email, page, limit);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.batchesService.findOne(id);

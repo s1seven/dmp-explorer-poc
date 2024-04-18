@@ -38,7 +38,6 @@ export enum Status {
 }
 
 export interface BatchDto {
-  id: string;
   lotNumber: string;
   leadContent: number;
   mercuryContent: number;

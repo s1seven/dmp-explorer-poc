@@ -1,11 +1,11 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
-  FormGroup,
   FormControl,
   ReactiveFormsModule,
   Validators,
+  NonNullableFormBuilder,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
@@ -13,9 +13,10 @@ import { Router } from '@angular/router';
 import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { BatchesService } from './batch.service';
 
 @Component({
-  selector: 'app-batch-form',
+  selector: 'app-subbatch-form',
   standalone: true,
   imports: [
     CommonModule,
@@ -29,7 +30,7 @@ import { MatButtonModule } from '@angular/material/button';
     <div
       class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
     >
-      <h2>Create Batch</h2>
+      <h2>Create a SubBatch from{{ this.currentSubBatch()?.lotNumber }}</h2>
 
       <form
         class="flex flex-col max-w-3xl"
@@ -40,6 +41,7 @@ import { MatButtonModule } from '@angular/material/button';
           <mat-label>Parent Lot Number</mat-label>
           <input formControlName="parentLotNumber" matInput />
         </mat-form-field>
+
         <mat-form-field>
           <mat-label>Lot Number</mat-label>
           <input formControlName="lotNumber" matInput />
@@ -79,27 +81,34 @@ import { MatButtonModule } from '@angular/material/button';
           </mat-form-field>
         </div>
         <div class="flex gap-3">
-          <button mat-stroked-button (click)="cancel()">Cancel</button>
+          <button mat-stroked-button (click)="goBack()">Cancel</button>
           <button mat-raised-button color="primary">Create Batch</button>
         </div>
       </form>
     </div>
   `,
 })
-export class CreateBatchComponent implements OnDestroy {
-  // TODO: prefil content from parent lot
-  readonly batchForm = new FormGroup({
+export class CreateSubBatchComponent implements OnDestroy, OnInit {
+  readonly batchForm = inject(NonNullableFormBuilder).group({
     parentLotNumber: new FormControl(''),
     lotNumber: new FormControl('', Validators.required),
-    leadContent: new FormControl('', Validators.required),
-    mercuryContent: new FormControl('', Validators.required),
-    cadmiumContent: new FormControl('', Validators.required),
+    leadContent: new FormControl(0, Validators.required),
+    mercuryContent: new FormControl(0, Validators.required),
+    cadmiumContent: new FormControl(0, Validators.required),
+    // TODO: validate that quantity is less than parent quantity
     quantity: new FormControl('', Validators.required),
     unit: new FormControl('', Validators.required),
   });
   private unsubscribe$ = new Subject<void>();
+  private fromSubBatches = false;
+  readonly batchesService = inject(BatchesService);
+  readonly currentSubBatch = this.batchesService.currentSubBatch;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private location: Location
+  ) {}
 
   submit() {
     if (this.batchForm.invalid) {
@@ -118,10 +127,31 @@ export class CreateBatchComponent implements OnDestroy {
         takeUntil(this.unsubscribe$)
       )
       .subscribe();
+
+    //TODO: route back to parent lot, add new subbatch to subbatches
   }
 
-  cancel() {
-    // TODO: go back to previous page
+  goBack(): void {
+    this.fromSubBatches
+      ? this.location.back()
+      : void this.router.navigate([
+          '/batches',
+          this.currentSubBatch()?.lotNumber,
+        ]);
+  }
+
+  ngOnInit() {
+    this.fromSubBatches =
+      this.router.lastSuccessfulNavigation?.extras?.state?.['fromSubBatches'];
+
+    if (this.currentSubBatch()) {
+      this.batchForm.patchValue({
+        parentLotNumber: this.currentSubBatch()?.lotNumber,
+        leadContent: this.currentSubBatch()?.leadContent,
+        mercuryContent: this.currentSubBatch()?.mercuryContent,
+        cadmiumContent: this.currentSubBatch()?.cadmiumContent,
+      });
+    }
   }
 
   ngOnDestroy() {

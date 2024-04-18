@@ -4,13 +4,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ProfileService } from './profile.service';
+import { MatCardModule } from '@angular/material/card';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { catchError, firstValueFrom, of } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 import { CompanyDto } from '../shared/models';
 
 @Component({
@@ -21,38 +22,45 @@ import { CompanyDto } from '../shared/models';
     MatButtonModule,
     MatIconModule,
     ReactiveFormsModule,
+    MatCardModule,
   ],
   template: `
-    <form
-      class="rounded-md p-4 border border-gray-300 flex flex-col max-w-3xl"
-      [formGroup]="newCompanyForm"
-      (ngSubmit)="createCompany()"
+    <div
+      class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
     >
-      <p class="text-gray-700 mb-6 flex gap-2">
-        <span
-          ><mat-icon fontIcon="info" [inline]="true" class="inline"></mat-icon
-        ></span>
-        If your company is already registered, please contact your administrator
-        to invite you to join the team. If you wish to create a new company,
-        please fill in the following form.
-      </p>
-      <mat-form-field>
-        <mat-label>Company Name</mat-label>
-        <input matInput type="text" formControlName="name" />
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>VAT Id</mat-label>
-        <input
-          type="text"
-          matInput
-          placeholder="e.g. DE123456789"
-          formControlName="VAT"
-        />
-      </mat-form-field>
-      <div class="flex gap-3">
-        <button mat-raised-button color="primary">Create Company</button>
-      </div>
-    </form>
+      <h2>Create a Company</h2>
+
+      <form
+        class="rounded-md p-4 border border-gray-300 flex flex-col max-w-3xl"
+        [formGroup]="newCompanyForm"
+        (ngSubmit)="createCompany()"
+      >
+        <p class="text-gray-700 mb-6 flex gap-2">
+          <span
+            ><mat-icon fontIcon="info" [inline]="true" class="inline"></mat-icon
+          ></span>
+          If your company is already registered, please contact your
+          administrator to invite you to join the team. If you wish to create a
+          new company, please fill in the following form.
+        </p>
+        <mat-form-field>
+          <mat-label>Company Name</mat-label>
+          <input matInput type="text" formControlName="name" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>VAT Id</mat-label>
+          <input
+            type="text"
+            matInput
+            placeholder="e.g. DE123456789"
+            formControlName="VAT"
+          />
+        </mat-form-field>
+        <div class="flex gap-3">
+          <button mat-raised-button color="primary">Create Company</button>
+        </div>
+      </form>
+    </div>
   `,
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,

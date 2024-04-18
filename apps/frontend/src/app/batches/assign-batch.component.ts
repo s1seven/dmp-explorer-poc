@@ -95,7 +95,7 @@ export class AssignBatchComponent implements OnDestroy, OnInit {
   goBack(): void {
     this.fromSubBatches
       ? this.location.back()
-      : void this.router.navigate(['/batches', this.currentSubBatch()?.id]);
+      : void this.router.navigate(['/batches', this.currentSubBatch()?.lotNumber]);
   }
 
   ngOnInit() {

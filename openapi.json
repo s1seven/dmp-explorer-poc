@@ -62,6 +62,17 @@
         }
       }
     },
+    "/api/batches/inbox": {
+      "get": {
+        "operationId": "BatchesController_inbox",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/batches/{id}": {
       "get": {
         "operationId": "BatchesController_findOne",

@@ -64,6 +64,13 @@ export const appRoutes: Route[] = [
                 (mod) => mod.AssignBatchComponent
               ),
           },
+          {
+            path: 'batches/:subBatchId/create',
+            loadComponent: () =>
+              import('./batches/create-subbatch.component').then(
+                (mod) => mod.CreateSubBatchComponent
+              ),
+          },
         ],
       },
     ],

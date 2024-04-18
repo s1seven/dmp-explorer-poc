@@ -41,9 +41,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     ></app-create-company>
 
     <div
-      class="flex gap-4 items-center mb-10"
+      class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
       *ngIf="this.company() as company"
     >
+      <h2>Company</h2>
       <div class="flex flex-col">
         <span><strong>Name:</strong> {{ company.name }}</span>
         <span><strong>VAT:</strong> {{ company.VAT }}</span>
