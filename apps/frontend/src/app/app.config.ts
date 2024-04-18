@@ -1,5 +1,5 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { appRoutes } from './app.routes';
 import { AuthHttpInterceptor, provideAuth0 } from '@auth0/auth0-angular';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -25,7 +25,7 @@ export const appConfig: ApplicationConfig = {
       useClass: AuthHttpInterceptor,
       multi: true,
     },
-    provideRouter(appRoutes),
+    provideRouter(appRoutes, withComponentInputBinding()),
     provideAuth0({
       ...environment.auth0,
       httpInterceptor: {

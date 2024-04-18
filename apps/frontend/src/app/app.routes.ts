@@ -48,6 +48,21 @@ export const appRoutes: Route[] = [
               import('./batches/batches.component').then(
                 (mod) => mod.BatchesComponent
               ),
+            children: [],
+          },
+          {
+            path: 'batches/:batchId',
+            loadComponent: () =>
+              import('./batches/subbatches.component').then(
+                (mod) => mod.SubbatchesComponent
+              ),
+          },
+          {
+            path: 'batches/:parentBatchId/:subBatchId/assign',
+            loadComponent: () =>
+              import('./batches/assign-batch.component').then(
+                (mod) => mod.AssignBatchComponent
+              ),
           },
         ],
       },
