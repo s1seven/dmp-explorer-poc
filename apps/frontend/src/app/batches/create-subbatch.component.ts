@@ -1,19 +1,20 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import {
   FormControl,
   ReactiveFormsModule,
   Validators,
   NonNullableFormBuilder,
+  ValidatorFn,
+  AbstractControl,
 } from '@angular/forms';
 import { CommonModule, Location } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { BatchesService } from './batch.service';
+import { CreateBatchDto } from '../shared/models';
 
 @Component({
   selector: 'app-subbatch-form',
@@ -30,7 +31,12 @@ import { BatchesService } from './batch.service';
     <div
       class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
     >
-      <h2>Create a SubBatch from{{ this.currentSubBatch()?.lotNumber }}</h2>
+      <!-- TODO: handle case where quantityRemaining is null? -->
+      <h2>
+        Create a SubBatch from{{ this.currentSubBatch()?.lotNumber }} -
+        {{ this.quantityRemaining() }}
+        {{ this.currentSubBatch()?.unit }} remaining.
+      </h2>
 
       <form
         class="flex flex-col max-w-3xl"
@@ -88,47 +94,59 @@ import { BatchesService } from './batch.service';
     </div>
   `,
 })
-export class CreateSubBatchComponent implements OnDestroy, OnInit {
+export class CreateSubBatchComponent implements OnInit {
+  // private unsubscribe$ = new Subject<void>();
+  private fromSubBatches = false;
+  readonly batchesService = inject(BatchesService);
+  readonly currentSubBatch = this.batchesService.currentSubBatch;
+  private batch = this.batchesService.batch;
+  readonly quantityRemaining = computed(() => {
+    const totalQuantity = this.batch()?.quantity;
+    const totalSubBatchesQuantity = this.batch()?.subBatches?.reduce(
+      (acc, batch) => acc + batch.quantity,
+      0
+    );
+    if (!totalQuantity || !totalSubBatchesQuantity) {
+      return 0;
+    }
+    return totalQuantity - totalSubBatchesQuantity;
+  });
   readonly batchForm = inject(NonNullableFormBuilder).group({
     parentLotNumber: new FormControl(''),
     lotNumber: new FormControl('', Validators.required),
     leadContent: new FormControl(0, Validators.required),
     mercuryContent: new FormControl(0, Validators.required),
     cadmiumContent: new FormControl(0, Validators.required),
-    // TODO: validate that quantity is less than parent quantity
-    quantity: new FormControl('', Validators.required),
+    // TODO: validate that quantity is less than parent quantity in backend
+    quantity: new FormControl(0, [
+      Validators.required,
+      this.quantityValidator(this.quantityRemaining()),
+    ]),
     unit: new FormControl('', Validators.required),
   });
-  private unsubscribe$ = new Subject<void>();
-  private fromSubBatches = false;
-  readonly batchesService = inject(BatchesService);
-  readonly currentSubBatch = this.batchesService.currentSubBatch;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private location: Location
-  ) {}
+  constructor(private router: Router, private location: Location) {}
 
-  submit() {
+  async submit() {
     if (this.batchForm.invalid) {
       return;
     }
 
-    const newBatch = this.batchForm.value;
-    this.http
-      .post('api/batches', newBatch)
-      .pipe(
-        tap(() => this.router.navigate(['/batches'])),
-        catchError((error) => {
-          console.error(error);
-          return of(null);
-        }),
-        takeUntil(this.unsubscribe$)
-      )
-      .subscribe();
+    const batchToCreate = this.batchForm.value;
+    const newBatch = await this.batchesService.createBatch(
+      batchToCreate as CreateBatchDto
+    );
 
-    //TODO: route back to parent lot, add new subbatch to subbatches
+    // get updated parent batch, or do work on frontend?
+    const currentBatch = this.batch();
+    if (currentBatch && currentBatch.subBatches) {
+      this.batch.set({
+        ...currentBatch,
+        subBatches: [...currentBatch.subBatches, newBatch],
+      });
+    }
+
+    this.goBack();
   }
 
   goBack(): void {
@@ -150,12 +168,15 @@ export class CreateSubBatchComponent implements OnDestroy, OnInit {
         leadContent: this.currentSubBatch()?.leadContent,
         mercuryContent: this.currentSubBatch()?.mercuryContent,
         cadmiumContent: this.currentSubBatch()?.cadmiumContent,
+        unit: this.currentSubBatch()?.unit,
       });
     }
   }
 
-  ngOnDestroy() {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
+  quantityValidator(quantityRemaining: number): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const forbidden = control.value > quantityRemaining;
+      return forbidden ? { forbiddenQuantity: { value: control.value } } : null;
+    };
   }
 }

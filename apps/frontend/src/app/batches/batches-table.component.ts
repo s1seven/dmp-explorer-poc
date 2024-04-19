@@ -64,8 +64,8 @@ import { Router, RouterLink } from '@angular/router';
         <th mat-header-cell *matHeaderCellDef>subbatch</th>
         <td mat-cell *matCellDef="let batch">
           <a
-            class="text-inherit"
-            mat-button
+            class="bg-transparent hover:bg-secondary-400 text-secondary-800 hover:text-white py-2 px-4 border border-secondary-500 hover:border-transparent rounded"
+            mat-stroked-button
             (click)="goToBatch(batch)"
             routerLinkActive="bg-primary-100"
             >View Batch</a

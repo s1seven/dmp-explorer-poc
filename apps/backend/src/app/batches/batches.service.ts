@@ -38,13 +38,10 @@ export class BatchesService {
     let parent = null;
 
     if (createBatchDto.parentLotNumber) {
-      await this.checkParentBatchBelongsToUser(
+      parent = await this.checkParentBatchBelongsToUser(
         createBatchDto.parentLotNumber,
-        user.id
+        user
       );
-      parent = await this.batchRepository.findOne({
-        where: { lotNumber: createBatchDto.parentLotNumber },
-      });
     }
 
     // TODO: ensure that this error does not crash the app
@@ -225,7 +222,7 @@ export class BatchesService {
       relations: ['company'],
     });
 
-    const {company} = parent;
+    const { company } = parent;
     const updatedBatch = await this.batchRepository.save({
       ...batch,
       status: Status.DECLINED,
@@ -289,19 +286,28 @@ export class BatchesService {
     }
   }
 
-  async checkParentBatchBelongsToUser(parentLotNumber: string, userId: string) {
+  async checkParentBatchBelongsToUser(
+    parentLotNumber: string,
+    user: UserEntity
+  ) {
     const parentBatch = await this.batchRepository.findOne({
       where: { lotNumber: parentLotNumber },
+      relations: ['company'],
     });
 
-    if (parentBatch && parentBatch.company.id !== userId) {
+    const { company, email } = user;
+    const { id: userCompanyId } = company;
+
+    if (parentBatch && parentBatch.company.id !== userCompanyId) {
       this.logger.error(
-        `Parent batch ${parentLotNumber} does not belong to user ${userId}`
+        `Parent batch ${parentLotNumber} does not belong to user ${email}`
       );
       throw new Error(
-        `Parent batch ${parentLotNumber} does not belong to user ${userId}`
+        `Parent batch ${parentLotNumber} does not belong to user ${email}`
       );
     }
+
+    return parentBatch;
   }
 
   async checkUserHasCompany(user) {

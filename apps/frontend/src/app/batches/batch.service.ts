@@ -1,6 +1,6 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { BatchDto, PaginationResponseDto } from '../shared/models';
+import { BatchDto, CreateBatchDto, PaginationResponseDto } from '../shared/models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
@@ -11,7 +11,16 @@ export class BatchesService {
   readonly inboxMeta = signal<PaginationResponseDto<BatchDto> | null>(null);
   readonly batch = signal<BatchDto | null>(null);
   readonly currentSubBatch = signal<BatchDto | null>(null);
-
+  readonly batches = computed(() => {
+    if (!this.batch()) return [];
+    const { lotNumber: parentLotNumber } = this.batch() || {};
+    const subBatches = this.batch()?.subBatches || [];
+    return [
+      this.batch(),
+      ...subBatches.map((batch) => ({ ...batch, parentLotNumber })),
+    ] as BatchDto[];
+  });
+  
   async getBatches(
     page = 1,
     limit = 10
@@ -50,7 +59,7 @@ export class BatchesService {
   // 1. Throw an error if the parent is not mine
   // Finally:
   // 2. Create the batch for my company
-  createBatch(batch: BatchDto): Promise<BatchDto> {
+  createBatch(batch: CreateBatchDto): Promise<BatchDto> {
     return firstValueFrom(
       this.httpClient.post<BatchDto>('/api/batches', batch)
     );

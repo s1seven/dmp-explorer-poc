@@ -19,15 +19,7 @@ export class SubbatchesComponent implements OnInit, OnDestroy {
   private readonly batchService = inject(BatchesService);
   private destroy$ = new Subject<void>();
   readonly batch = this.batchService.batch;
-  readonly batches = computed(() => {
-    if (!this.batch()) return [];
-    const { lotNumber: parentLotNumber } = this.batch() || {};
-    const subBatches = this.batch()?.subBatches || [];
-    return [
-      this.batch(),
-      ...subBatches.map((batch) => ({ ...batch, parentLotNumber })),
-    ] as BatchDto[];
-  });
+  readonly batches = this.batchService.batches;
 
   constructor(private route: ActivatedRoute) {}
 

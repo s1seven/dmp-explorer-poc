@@ -42,10 +42,10 @@ export interface BatchInbox {
         <div *ngIf="inboxMeta() as inboxMeta; loading" class="py-2">
           <h2>Inbox</h2>
           <app-inbox-table
-            *ngIf="inboxBatches.length; loading"
+            *ngIf="inboxMeta.items.length; loading"
             [batches]="inboxMeta.items"
           ></app-inbox-table>
-          <p *ngIf="!inboxBatches.length">Your inbox is currently empty.</p>
+          <p *ngIf="!inboxMeta.items.length">Your inbox is currently empty.</p>
           <mat-paginator
             *ngIf="inboxMeta.items.length"
             [length]="inboxMeta.meta.totalItems"

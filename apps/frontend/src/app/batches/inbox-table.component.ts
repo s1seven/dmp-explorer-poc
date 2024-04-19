@@ -9,11 +9,12 @@ import { MatTableModule } from '@angular/material/table';
 import { BatchDto } from '../shared/models';
 import { RouterLink } from '@angular/router';
 import { BatchesService } from './batch.service';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-inbox-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, RouterLink],
+  imports: [CommonModule, MatTableModule, RouterLink, MatButtonModule],
   template: `
     <table mat-table [dataSource]="batches()">
       <!-- Lot Number Column -->
@@ -74,8 +75,8 @@ import { BatchesService } from './batch.service';
         <th mat-header-cell *matHeaderCellDef>Accept</th>
         <td mat-cell *matCellDef="let batch">
           <a
-            class="text-inherit"
             mat-button
+            color="secondary"
             *ngIf="batch.status !== 'declined'"
             (click)="acceptBatch(batch)"
             routerLinkActive="bg-primary-100"
@@ -88,14 +89,15 @@ import { BatchesService } from './batch.service';
       <ng-container matColumnDef="reject-button">
         <th mat-header-cell *matHeaderCellDef>Reject</th>
         <td mat-cell *matCellDef="let batch">
-          <a
-            class="text-inherit"
+          <button
             *ngIf="batch.status !== 'declined'"
             mat-button
+            color="warn"
             (click)="rejectBatch(batch)"
             routerLinkActive="bg-primary-100"
-            >Reject Batch</a
           >
+            Reject Batch
+          </button>
         </td>
       </ng-container>
 
@@ -108,6 +110,7 @@ import { BatchesService } from './batch.service';
             class="text-inherit"
             *ngIf="batch.status === 'declined'"
             mat-button
+            color="primary"
             (click)="reclaimBatch(batch)"
             routerLinkActive="bg-primary-100"
             >Reclaim Batch</a

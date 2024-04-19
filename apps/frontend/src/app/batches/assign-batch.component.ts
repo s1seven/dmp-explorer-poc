@@ -28,8 +28,6 @@ import { ProfileService } from '../profile/profile.service';
     MatInputModule,
   ],
   template: `
-    {{ this.company().VAT | json }}
-    {{ this.currentSubBatch()?.company?.VAT | json }}
     <!-- TODO: ensure currentSubBatch and the route id match -->
     <div *ngIf="this.company()?.VAT === this.currentSubBatch()?.company?.VAT">
       >
