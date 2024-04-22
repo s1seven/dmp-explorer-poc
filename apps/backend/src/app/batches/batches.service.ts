@@ -54,7 +54,7 @@ export class BatchesService {
       parent,
       company: user.company,
     });
-    this.logger.log(`Creating batch: `, JSON.stringify(newBatch));
+    this.logger.log(`Creating batch: `, JSON.stringify(newBatch, null, 2));
     return this.batchRepository.save(newBatch);
   }
 

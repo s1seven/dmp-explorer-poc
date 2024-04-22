@@ -33,13 +33,13 @@ export class BatchEntity {
   })
   updatedAt?: Date;
 
-  @Column()
+  @Column({ type: 'float' })
   leadContent: number;
 
-  @Column()
+  @Column({ type: 'float' })
   mercuryContent: number;
 
-  @Column()
+  @Column({ type: 'float' })
   cadmiumContent: number;
 
   @ManyToOne(() => CompanyEntity, { nullable: false })
