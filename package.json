@@ -76,16 +76,16 @@
     "@angular/material": "^17.3.3",
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.0.2",
-    "@nx/angular": "^18.2.1",
-    "@nx/eslint": "18.2.1",
-    "@nx/eslint-plugin": "18.2.1",
-    "@nx/jest": "18.2.1",
-    "@nx/js": "18.2.1",
-    "@nx/nest": "18.2.1",
-    "@nx/node": "18.2.1",
-    "@nx/web": "18.2.1",
-    "@nx/webpack": "18.2.1",
-    "@nx/workspace": "18.2.1",
+    "@nx/angular": "18.3.3",
+    "@nx/eslint": "18.3.3",
+    "@nx/eslint-plugin": "18.3.3",
+    "@nx/jest": "18.3.3",
+    "@nx/js": "18.3.3",
+    "@nx/nest": "18.3.3",
+    "@nx/node": "18.3.3",
+    "@nx/web": "18.3.3",
+    "@nx/webpack": "18.3.3",
+    "@nx/workspace": "18.3.3",
     "@schematics/angular": "~17.3.0",
     "@swc-node/register": "~1.8.0",
     "@swc/core": "~1.3.85",
@@ -102,7 +102,7 @@
     "jest-environment-jsdom": "^29.4.1",
     "jest-environment-node": "^29.4.1",
     "jest-preset-angular": "~14.0.3",
-    "nx": "18.2.1",
+    "nx": "18.3.3",
     "postcss": "^8.4.5",
     "prettier": "^2.6.2",
     "tailwindcss": "^3.0.2",
@@ -113,8 +113,9 @@
   },
   "lint-staged": {
     "src/**/*.{js,ts}": [
-      "prettier --write --ignore-unknown",
+      "npm run format",
       "git add"
     ]
   }
 }
+

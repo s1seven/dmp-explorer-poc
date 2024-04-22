@@ -27,9 +27,7 @@
             }
           }
         },
-        "tags": [
-          "users"
-        ]
+        "tags": ["users"]
       }
     },
     "/api/batches": {
@@ -456,9 +454,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "email"
-        ]
+        "required": ["email"]
       },
       "TokenUserDto": {
         "type": "object",
@@ -473,11 +469,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "email",
-          "id",
-          "accessToken"
-        ]
+        "required": ["email", "id", "accessToken"]
       },
       "CreateBatchDto": {
         "type": "object",
