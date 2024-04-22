@@ -79,7 +79,7 @@ import { MatButtonModule } from '@angular/material/button';
           </mat-form-field>
         </div>
         <div class="flex gap-3">
-          <button mat-stroked-button (click)="cancel()">Cancel</button>
+          <button mat-stroked-button (click)="goBack()">Cancel</button>
           <button mat-raised-button color="primary">Create Batch</button>
         </div>
       </form>
@@ -120,8 +120,8 @@ export class CreateBatchComponent implements OnDestroy {
       .subscribe();
   }
 
-  cancel() {
-    // TODO: go back to previous page
+  goBack(): void {
+    void this.router.navigate(['/batches']);
   }
 
   ngOnDestroy() {
