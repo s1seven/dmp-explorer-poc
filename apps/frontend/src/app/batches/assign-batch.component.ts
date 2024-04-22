@@ -30,7 +30,6 @@ import { ProfileService } from '../profile/profile.service';
   template: `
     <!-- TODO: ensure currentSubBatch and the route id match -->
     <div *ngIf="this.company()?.VAT === this.currentSubBatch()?.company?.VAT">
-      >
       <form
         class="rounded-md p-4 border border-gray-300 flex flex-col max-w-3xl"
         [formGroup]="assignToCompanyForm"
@@ -48,10 +47,10 @@ import { ProfileService } from '../profile/profile.service';
           <input matInput type="text" formControlName="companyVAT" />
         </mat-form-field>
         <div class="flex gap-3">
-          <button mat-raised-button color="primary">Assign to Company</button>
-          <button mat-raised-button (click)="goBack()" color="secondary">
-            Go Back
+          <button mat-stroked-button (click)="goBack()" color="secondary">
+            Cancel
           </button>
+          <button mat-raised-button color="primary">Assign to Company</button>
         </div>
       </form>
     </div>
@@ -60,7 +59,7 @@ import { ProfileService } from '../profile/profile.service';
         Batch: {{ this.batchId() }} has been sent to
         {{ this.currentSubBatch()?.company?.VAT }}.
       </p>
-      <button mat-raised-button color="primary" (click)="goBack()">
+      <button mat-stroked-button color="primary" (click)="goBack()">
         Go Back
       </button>
     </div>
@@ -93,7 +92,10 @@ export class AssignBatchComponent implements OnDestroy, OnInit {
   goBack(): void {
     this.fromSubBatches
       ? this.location.back()
-      : void this.router.navigate(['/batches', this.currentSubBatch()?.lotNumber]);
+      : void this.router.navigate([
+          '/batches',
+          this.currentSubBatch()?.lotNumber,
+        ]);
   }
 
   ngOnInit() {

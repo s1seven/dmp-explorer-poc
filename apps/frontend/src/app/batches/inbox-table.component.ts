@@ -67,6 +67,8 @@ import { MatButtonModule } from '@angular/material/button';
         <td mat-cell *matCellDef="let batch">{{ batch?.company?.VAT }}</td>
       </ng-container>
 
+  <!-- TODO: combine all 3 buttons into 1 column -->
+
       <!-- Accept Column -->
       <ng-container
         $ngIf="batch.status !== 'declined'"
@@ -74,13 +76,13 @@ import { MatButtonModule } from '@angular/material/button';
       >
         <th mat-header-cell *matHeaderCellDef>Accept</th>
         <td mat-cell *matCellDef="let batch">
-          <a
-            mat-button
+          <button
+            mat-stroked-button
             color="secondary"
             *ngIf="batch.status !== 'declined'"
             (click)="acceptBatch(batch)"
             routerLinkActive="bg-primary-100"
-            >Accept Batch</a
+            >Accept</button
           >
         </td>
       </ng-container>
@@ -91,12 +93,12 @@ import { MatButtonModule } from '@angular/material/button';
         <td mat-cell *matCellDef="let batch">
           <button
             *ngIf="batch.status !== 'declined'"
-            mat-button
+            mat-stroked-button
             color="warn"
             (click)="rejectBatch(batch)"
             routerLinkActive="bg-primary-100"
           >
-            Reject Batch
+            Reject
           </button>
         </td>
       </ng-container>
@@ -109,11 +111,11 @@ import { MatButtonModule } from '@angular/material/button';
           <a
             class="text-inherit"
             *ngIf="batch.status === 'declined'"
-            mat-button
+            mat-stroked-button
             color="primary"
             (click)="reclaimBatch(batch)"
             routerLinkActive="bg-primary-100"
-            >Reclaim Batch</a
+            >Reclaim</a
           >
         </td>
       </ng-container>
@@ -137,8 +139,8 @@ export class InboxTableComponent {
     'quantity',
     'owner',
     'status',
-    'accept-button',
     'reject-button',
+    'accept-button',
     'reclaim-button',
   ];
 

@@ -8,11 +8,12 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { BatchDto } from '../shared/models';
 import { Router, RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-batches-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, RouterLink],
+  imports: [CommonModule, MatTableModule, RouterLink, MatButtonModule],
   template: `
     <table mat-table [dataSource]="batches()">
       <!-- Lot Number Column -->
@@ -64,7 +65,6 @@ import { Router, RouterLink } from '@angular/router';
         <th mat-header-cell *matHeaderCellDef>subbatch</th>
         <td mat-cell *matCellDef="let batch">
           <a
-            class="bg-transparent hover:bg-secondary-400 text-secondary-800 hover:text-white py-2 px-4 border border-secondary-500 hover:border-transparent rounded"
             mat-stroked-button
             (click)="goToBatch(batch)"
             routerLinkActive="bg-primary-100"

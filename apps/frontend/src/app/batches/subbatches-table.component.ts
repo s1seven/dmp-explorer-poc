@@ -13,11 +13,12 @@ import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { ProfileService } from '../profile/profile.service';
 import { BatchesService } from './batch.service';
 import { Subject, map, takeUntil } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-subbatches-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, RouterLink],
+  imports: [CommonModule, MatTableModule, RouterLink, MatButtonModule],
   template: `
     <div
       class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full ng-untouched ng-pristine ng-invalid"
@@ -88,10 +89,10 @@ import { Subject, map, takeUntil } from 'rxjs';
                 batch?.parentLotNumber && batch?.company?.VAT === company()?.VAT
               "
               class="text-inherit"
-              mat-button
+              mat-stroked-button
               routerLinkActive="bg-primary-100"
               (click)="setCurrentSubBatch(batch)"
-              >Assign Batch</a
+              >Assign</a
             >
           </td>
         </ng-container>
@@ -103,10 +104,10 @@ import { Subject, map, takeUntil } from 'rxjs';
             <a
               *ngIf="!batch?.parentLotNumber"
               class="text-inherit"
-              mat-button
+              mat-stroked-button
               routerLinkActive="bg-primary-100"
               (click)="createSubbatch(batch)"
-              >Create SubBatch</a
+              >Create</a
             >
           </td>
         </ng-container>
@@ -118,8 +119,7 @@ import { Subject, map, takeUntil } from 'rxjs';
 
     <ng-container>
       <button
-        mat-raised-button
-        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+      mat-stroked-button
         (click)="goBack()"
       >
         Go Back
@@ -176,7 +176,10 @@ export class SubBatchesTableComponent implements OnDestroy, OnInit {
   goBack(): void {
     this.fromBatches
       ? this.location.back()
-      : void this.router.navigate(['/batches', this.currentSubBatch()?.lotNumber]);
+      : void this.router.navigate([
+          '/batches',
+          this.currentSubBatch()?.lotNumber,
+        ]);
   }
 
   ngOnInit() {
