@@ -40,7 +40,7 @@ import { ProfileService } from '../profile/profile.service';
             ><mat-icon fontIcon="info" [inline]="true" class="inline"></mat-icon
           ></span>
           Enter the VAT number of the company you wish to assign batch:
-          {{ this.batchId() }} to.
+          <strong>{{ this.batchId() }}</strong> to.
         </p>
         <mat-form-field>
           <mat-label>Company VAT</mat-label>

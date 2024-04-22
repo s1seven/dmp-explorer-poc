@@ -80,35 +80,29 @@ import { MatButtonModule } from '@angular/material/button';
           <td mat-cell *matCellDef="let batch">{{ batch?.company?.VAT }}</td>
         </ng-container>
 
-        <!-- Subbatch Column -->
-        <ng-container matColumnDef="assign-button">
-          <th mat-header-cell *matHeaderCellDef>Assign</th>
+        <!-- Action Column -->
+        <ng-container matColumnDef="action-button">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
           <td mat-cell *matCellDef="let batch">
             <a
-              *ngIf="
-                batch?.parentLotNumber && batch?.company?.VAT === company()?.VAT
-              "
+              *ngIf="batch?.parentLotNumber; else createSubBatchBlock"
               class="text-inherit"
               mat-stroked-button
               routerLinkActive="bg-primary-100"
               (click)="setCurrentSubBatch(batch)"
-              >Assign</a
             >
-          </td>
-        </ng-container>
-
-        <!-- Subbatch Column -->
-        <ng-container matColumnDef="create-button">
-          <th mat-header-cell *matHeaderCellDef>Create SubBatch</th>
-          <td mat-cell *matCellDef="let batch">
-            <a
-              *ngIf="!batch?.parentLotNumber"
-              class="text-inherit"
-              mat-stroked-button
-              routerLinkActive="bg-primary-100"
-              (click)="createSubbatch(batch)"
-              >Create</a
-            >
+              Assign
+            </a>
+            <ng-template #createSubBatchBlock>
+              <a
+                class="text-inherit"
+                mat-stroked-button
+                routerLinkActive="bg-primary-100"
+                (click)="createSubbatch(batch)"
+              >
+                Create
+              </a>
+            </ng-template>
           </td>
         </ng-container>
 
@@ -118,10 +112,7 @@ import { MatButtonModule } from '@angular/material/button';
     </div>
 
     <ng-container>
-      <button
-      mat-stroked-button
-        (click)="goBack()"
-      >
+      <button mat-stroked-button (click)="goBack()">
         Go Back
       </button></ng-container
     >
@@ -147,8 +138,7 @@ export class SubBatchesTableComponent implements OnDestroy, OnInit {
     'quantity',
     'status',
     'owner',
-    'assign-button',
-    'create-button',
+    'action-button',
   ];
   fromBatches = false;
 

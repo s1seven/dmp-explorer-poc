@@ -62,9 +62,10 @@ import { MatButtonModule } from '@angular/material/button';
 
       <!-- Subbatch Column -->
       <ng-container matColumnDef="subbatch-button">
-        <th mat-header-cell *matHeaderCellDef>subbatch</th>
+        <th mat-header-cell *matHeaderCellDef>SubBatches</th>
         <td mat-cell *matCellDef="let batch">
           <a
+            class="text-nowrap"
             mat-stroked-button
             (click)="goToBatch(batch)"
             routerLinkActive="bg-primary-100"
