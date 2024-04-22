@@ -53,10 +53,9 @@ const envConfigFile = `export const environment = {
     await writeFile(targetPath, envConfigFile);
   } catch (err) {
     if (err.code === 'ENOENT') {
-      await mkdir(resolve(
-        __dirname,
-        'apps/frontend/src/environments'
-      ), { recursive: true });
+      await mkdir(resolve(__dirname, 'apps/frontend/src/environments'), {
+        recursive: true,
+      });
       await writeFile(targetPath, envConfigFile);
     } else {
       console.error(err);

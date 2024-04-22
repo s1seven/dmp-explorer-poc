@@ -18,7 +18,8 @@ export class UsersService {
 
   constructor(
     @InjectDataSource() private readonly connection: DataSource,
-    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly auth0Service: Auth0Service
   ) {}
 
