@@ -8,13 +8,7 @@ export const appRoutes: Route[] = [
     path: '',
     loadComponent: () =>
       import('./layout/shell.component').then((mod) => mod.ShellComponent),
-    canActivate: [AuthGuard],
-    resolve: {
-      companies: async () => {
-        const profileService = inject(ProfileService);
-        return profileService.getCompanies();
-      },
-    },
+    canActivate: [AuthGuard, () => inject(ProfileService).getCompanies(true)],
     children: [
       {
         path: 'profile',
@@ -48,7 +42,6 @@ export const appRoutes: Route[] = [
               import('./batches/batches.component').then(
                 (mod) => mod.BatchesComponent
               ),
-            children: [],
           },
           {
             path: 'batches/:batchId',
@@ -71,6 +64,10 @@ export const appRoutes: Route[] = [
                 (mod) => mod.CreateSubBatchComponent
               ),
           },
+          {
+            path: '**',
+            redirectTo: 'batches',
+          }
         ],
       },
     ],
