@@ -19,69 +19,68 @@ import { MatButtonModule } from '@angular/material/button';
     <mat-table class="overflow-auto" [dataSource]="batches()">
       <!-- Lot Number Column -->
       <ng-container matColumnDef="lotNumber">
-        <mat-header-cell *matHeaderCellDef>Lot Number</mat-header-cell>
-        <mat-cell *matCellDef="let batch">{{ batch.lotNumber }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef>Lot Number</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.lotNumber }}</mat-cell>
       </ng-container>
 
       <!-- Lead Content Column -->
       <ng-container matColumnDef="leadContent">
-        <mat-header-cell *matHeaderCellDef>Lead Content</mat-header-cell>
-        <mat-cell *matCellDef="let batch">{{ batch.leadContent }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef>Lead Content</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.leadContent }}</mat-cell>
       </ng-container>
 
       <!-- Mercury Content Column -->
       <ng-container matColumnDef="mercuryContent">
-        <mat-header-cell *matHeaderCellDef>Mercury Content</mat-header-cell>
-        <mat-cell *matCellDef="let batch">{{ batch.mercuryContent }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef>Mercury Content</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.mercuryContent }}</mat-cell>
       </ng-container>
 
       <!-- Cadmium Content Column -->
       <ng-container matColumnDef="cadmiumContent">
-        <mat-header-cell *matHeaderCellDef>Cadmium Content</mat-header-cell>
-        <mat-cell *matCellDef="let batch">{{ batch.cadmiumContent }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef>Cadmium Content</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.cadmiumContent }}</mat-cell>
       </ng-container>
 
       <!-- RoHS Compliance Column -->
       <ng-container matColumnDef="isRoHSCompliant">
-        <mat-header-cell *matHeaderCellDef>RoHS Compliant</mat-header-cell>
-        <mat-cell *matCellDef="let batch">{{ batch.isRoHSCompliant }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef>RoHS Compliant</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.isRoHSCompliant }}</mat-cell>
       </ng-container>
 
       <!-- Quantity Column -->
       <ng-container matColumnDef="quantity">
-        <mat-header-cell *matHeaderCellDef>Quantity</mat-header-cell>
-        <mat-cell *matCellDef="let batch">
+        <mat-header-cell class="px-2" *matHeaderCellDef>Quantity</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let batch">
           {{ batch.quantity }} {{ batch.unit }}
         </mat-cell>
       </ng-container>
 
       <!-- Status Column -->
       <ng-container matColumnDef="status">
-        <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
-        <mat-cell *matCellDef="let batch">{{ batch.status }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef>Status</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.status }}</mat-cell>
       </ng-container>
 
       <!-- Owner Column -->
       <ng-container matColumnDef="owner">
-        <mat-header-cell *matHeaderCellDef>Owner VAT</mat-header-cell>
-        <mat-cell *matCellDef="let batch">{{ batch?.company?.VAT }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef>Owner VAT</mat-header-cell>
+        <mat-cell class="px-2"  *matCellDef="let batch">{{ batch?.company?.VAT }}</mat-cell>
       </ng-container>
-
-      <!-- TODO: combine all 3 buttons into 1 column -->
 
       <!-- Action Column -->
       <ng-container
         $ngIf="batch.status !== 'declined'"
         matColumnDef="action-button"
-        class="flex-2"
+        class="col-span-2 "
       >
-        <mat-header-cell class="flex-2" *matHeaderCellDef
+        <mat-header-cell class="px-2" class="col-span-2 justify-between" *matHeaderCellDef
           >Accept</mat-header-cell
         >
-        <mat-cell class="flex-2" *matCellDef="let batch">
+        <mat-cell class="px-2" class="col-span-2 justify-between" *matCellDef="let batch">
           <button
             *ngIf="batch.status !== 'declined'"
             mat-stroked-button
+            class="w-20 "
             color="warn"
             (click)="rejectBatch(batch)"
             routerLinkActive="bg-primary-100"
@@ -90,6 +89,7 @@ import { MatButtonModule } from '@angular/material/button';
           </button>
           <button
             mat-stroked-button
+            class="w-20 "
             color="secondary"
             *ngIf="batch.status !== 'declined'"
             (click)="acceptBatch(batch)"
@@ -98,7 +98,7 @@ import { MatButtonModule } from '@angular/material/button';
             Accept
           </button>
           <a
-            class="text-inherit"
+            class="text-inherit w-20 "
             *ngIf="batch.status === 'declined'"
             mat-stroked-button
             color="primary"
@@ -112,12 +112,12 @@ import { MatButtonModule } from '@angular/material/button';
 
       <tr
         mat-header-row
-        class="flex flex-row items-left"
+        class="grid grid-cols-10 px-0"
         *matHeaderRowDef="displayedColumns"
       ></tr>
       <tr
         mat-row
-        class="flex flex-row items-center"
+        class="grid grid-cols-10 px-0"
         *matRowDef="let row; columns: displayedColumns"
       ></tr>
     </mat-table>
