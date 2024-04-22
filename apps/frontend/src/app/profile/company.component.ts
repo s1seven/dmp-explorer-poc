@@ -22,6 +22,7 @@ import {
 } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   standalone: true,
@@ -108,11 +109,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 })
 export class CompanyComponent {
   private readonly profileService = inject(ProfileService);
+  private readonly matSnackBar = inject(MatSnackBar);
   readonly company = computed(() => this.profileService.companies()?.[0]);
   readonly invitation = signal<InvitationDto | null>(null);
   private readonly dialog = inject(MatDialog);
   readonly inviteToCompanyForm = inject(NonNullableFormBuilder).group({
-    emailToInvite: ['' as string, Validators.required, Validators.email],
+    emailToInvite: ['' as string, [Validators.required, Validators.email]],
   });
 
   constructor() {
@@ -170,6 +172,12 @@ export class CompanyComponent {
           })
         )
     );
+    this.matSnackBar.open(
+      `${emailToInvite} has been invited to your company.`,
+      'Close',
+      { panelClass: ['mat-primary'] }
+    );
+    this.inviteToCompanyForm.reset();
   }
 
   async declineDialog(invitation: InvitationDto): Promise<void> {
