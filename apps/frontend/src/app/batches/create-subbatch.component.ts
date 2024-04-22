@@ -33,7 +33,8 @@ import { CreateBatchDto } from '../shared/models';
     >
       <!-- TODO: handle case where quantityRemaining is null? -->
       <h2>
-        Create a SubBatch from{{ this.currentSubBatch()?.lotNumber }} -
+        Create a SubBatch from
+        <strong>{{ this.currentSubBatch()?.lotNumber }}</strong> -
         {{ this.quantityRemaining() }}
         {{ this.currentSubBatch()?.unit }} remaining.
       </h2>
@@ -95,7 +96,6 @@ import { CreateBatchDto } from '../shared/models';
   `,
 })
 export class CreateSubBatchComponent implements OnInit {
-  // private unsubscribe$ = new Subject<void>();
   private fromSubBatches = false;
   readonly batchesService = inject(BatchesService);
   readonly currentSubBatch = this.batchesService.currentSubBatch;
@@ -106,7 +106,12 @@ export class CreateSubBatchComponent implements OnInit {
       (acc, batch) => acc + batch.quantity,
       0
     );
-    if (!totalQuantity || !totalSubBatchesQuantity) {
+    if (
+      totalQuantity === null ||
+      totalQuantity === undefined ||
+      totalSubBatchesQuantity === null ||
+      totalSubBatchesQuantity === undefined
+    ) {
       return 0;
     }
     return totalQuantity - totalSubBatchesQuantity;
