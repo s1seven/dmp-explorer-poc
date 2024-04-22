@@ -1,11 +1,29 @@
 export interface InvitationDto {
-  id: string;
+  id?: string;
   emailToInvite: string;
   company: CompanyDto;
 }
 
+export interface CreateInvitationDto {
+  emailToInvite: string;
+  companyId: string;
+}
+
+export interface CustomMeta {
+  page: number;
+  totalItems: number;
+  itemsPerPage: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+export interface PaginationResponseDto<T> {
+  items: T[];
+  meta: CustomMeta;
+}
+
 export interface CompanyDto {
-  id: string;
+  id?: string;
   VAT: string;
   name: string;
   batches?: BatchDto;
@@ -20,7 +38,6 @@ export enum Status {
 }
 
 export interface BatchDto {
-  id: string;
   lotNumber: string;
   leadContent: number;
   mercuryContent: number;
@@ -31,6 +48,7 @@ export interface BatchDto {
   unit: Unit;
   status: Status;
   parentLotNumber?: string;
+  subBatches?: BatchDto[];
 }
 
 export interface CreateBatchDto {

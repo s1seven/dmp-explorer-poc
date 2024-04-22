@@ -7,5 +7,5 @@ export class CreateInvitationDto {
 
   @IsString()
   @IsNotEmpty()
-  VAT: string;
+  companyId: string;
 }

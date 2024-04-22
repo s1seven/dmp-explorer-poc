@@ -8,6 +8,9 @@ import {
   Delete,
   UseGuards,
   ValidationPipe,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { BatchesService } from './batches.service';
 import { CreateBatchDto } from './dto/create-batch.dto';
@@ -16,6 +19,8 @@ import { AuthorizationGuard } from '../../common/guards/authorization.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ReqUser } from '../../common/constants/constants';
 import { SendBatchDto } from './dto/send-batch.dto';
+import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
+import { BatchEntity } from './entities/batch.entity';
 
 @Controller('batches')
 @UseGuards(AuthorizationGuard)
@@ -35,10 +40,23 @@ export class BatchesController {
   @Get()
   findAll(
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
-    user: ReqUser
-  ) {
+    user: ReqUser,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10
+  ): Promise<PaginationResponseDto<BatchEntity>> {
     const { email } = user;
-    return this.batchesService.findAll(email);
+    return this.batchesService.findAll(email, page, limit);
+  }
+
+  @Get('/inbox')
+  inbox(
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10
+  ): Promise<PaginationResponseDto<BatchEntity>> {
+    const { email } = user;
+    return this.batchesService.inbox(email, page, limit);
   }
 
   @Get(':id')
@@ -63,8 +81,14 @@ export class BatchesController {
   }
 
   @Patch(':id/send')
-  send(@Param('id') id: string, @Body() sendBatchDto: SendBatchDto) {
-    return this.batchesService.send(id, sendBatchDto);
+  send(
+    @Param('id') id: string,
+    @Body() sendBatchDto: SendBatchDto,
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.batchesService.send(id, sendBatchDto, email);
   }
 
   @Patch(':id/decline')

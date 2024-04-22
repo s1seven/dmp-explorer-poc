@@ -23,13 +23,23 @@ import { MatButtonModule } from '@angular/material/button';
       {{ data.message }}
     </mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-button mat-dialog-close>{{ data.cancel }}</button>
-      <button mat-button mat-dialog-close cdkFocusInitial>{{ data.confirm }}</button>
+      <button mat-button mat-dialog-close>
+        {{ data.cancel }}
+      </button>
+      <button mat-button [mat-dialog-close]="true" cdkFocusInitial>
+        {{ data.confirm }}
+      </button>
     </mat-dialog-actions>`,
 })
 export class ConfirmDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string, message: string, cancel: string, confirm: string }
-    ) { }
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      title: string;
+      message: string;
+      cancel: string;
+      confirm: string;
+    }
+  ) {}
 }

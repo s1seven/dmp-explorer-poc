@@ -1,7 +1,15 @@
-import { BaseEntity } from '../../../common/entities/base-entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Unit } from '../../../common/constants/constants';
 import { CompanyEntity } from '../../companies/entities/company.entity';
+import { Type } from 'class-transformer';
 
 export enum Status {
   PENDING = 'pending',
@@ -10,12 +18,20 @@ export enum Status {
 }
 
 @Entity()
-export class BatchEntity extends BaseEntity {
-  @Column({ type: 'varchar', unique: true })
+// TODO: fix issue with typeorm migrations and OmitType
+export class BatchEntity {
+  @PrimaryColumn({ type: 'varchar', unique: true })
   lotNumber: string;
 
-  @Column({ nullable: true })
-  parentLotNumber: string;
+  @CreateDateColumn({
+    type: 'timestamptz',
+  })
+  createdAt?: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamptz',
+  })
+  updatedAt?: Date;
 
   @Column()
   leadContent: number;
@@ -26,7 +42,8 @@ export class BatchEntity extends BaseEntity {
   @Column()
   cadmiumContent: number;
 
-  @ManyToOne(() => CompanyEntity, (company) => company.batches)
+  @ManyToOne(() => CompanyEntity, { nullable: false })
+  @Type(() => CompanyEntity)
   company: CompanyEntity;
 
   @Column()
@@ -40,4 +57,10 @@ export class BatchEntity extends BaseEntity {
 
   @Column({ type: 'enum', enum: Status })
   status: Status = Status.ACCEPTED;
+
+  @ManyToOne(() => BatchEntity, { nullable: true })
+  parent: BatchEntity;
+
+  @OneToMany(() => BatchEntity, (batch) => batch.parent)
+  subBatches: BatchEntity[];
 }

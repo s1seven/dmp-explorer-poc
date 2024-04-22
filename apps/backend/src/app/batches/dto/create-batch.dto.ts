@@ -19,6 +19,11 @@ export class CreateBatchDto {
   @ApiProperty()
   parentLotNumber: string;
 
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  parentId: string;
+
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty()

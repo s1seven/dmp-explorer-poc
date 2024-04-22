@@ -4,13 +4,15 @@ import {
   OnInit,
   computed,
   inject,
-  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { BatchDto, Status } from '../shared/models';
+import { BatchDto } from '../shared/models';
 import { ProfileService } from '../profile/profile.service';
-import { BatchService } from './batch.service';
+import { BatchesService } from './batch.service';
+import { BatchesTableComponent } from './batches-table.component';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { InboxTableComponent } from './inbox-table.component';
 
 export enum BatchInboxType {
   RECLAIM = 'RECLAIM',
@@ -25,96 +27,78 @@ export interface BatchInbox {
 @Component({
   selector: 'app-batches',
   standalone: true,
-  imports: [CommonModule, MatTableModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    BatchesTableComponent,
+    MatPaginatorModule,
+    InboxTableComponent,
+  ],
   template: `
-    <h2>Inbox</h2>
-    {{ inbox() | json }}
-    <h2>Batches</h2>
-    {{ batches() | json }}
+    <ng-container class="flex flex-col">
+      <div
+        class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full ng-untouched ng-pristine ng-invalid"
+      >
+        <div *ngIf="inboxMeta() as inboxMeta; loading" class="py-2">
+          <h2>Inbox</h2>
+          <app-inbox-table
+            *ngIf="inboxMeta.items.length; loading"
+            [batches]="inboxMeta.items"
+          ></app-inbox-table>
+          <p *ngIf="!inboxMeta.items.length">Your inbox is currently empty.</p>
+          <mat-paginator
+            *ngIf="inboxMeta.items.length"
+            [length]="inboxMeta.meta.totalItems"
+            [pageSize]="inboxMeta.meta.itemsPerPage"
+            [pageIndex]="inboxMeta.meta.currentPage - 1"
+            [pageSizeOptions]="[5, 10, 25, 100]"
+            aria-label="Select page"
+            (page)="changePage($event)"
+          >
+          </mat-paginator>
+        </div>
+      </div>
+
+      <div
+        class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full ng-untouched ng-pristine ng-invalid"
+      >
+        <div *ngIf="batchesMeta() as batchesMeta; loading" class="py-2">
+          <h2>Batches</h2>
+          <app-batches-table [batches]="batchesMeta.items"></app-batches-table>
+          <mat-paginator
+            [length]="batchesMeta.meta.totalItems"
+            [pageSize]="batchesMeta.meta.itemsPerPage"
+            [pageIndex]="batchesMeta.meta.currentPage - 1"
+            [pageSizeOptions]="[5, 10, 25, 100]"
+            aria-label="Select page"
+            (page)="changePage($event)"
+          >
+          </mat-paginator>
+        </div>
+      </div>
+      <!-- // TODO: check if angular material has skeletons -->
+      <ng-template #loading>Loading...</ng-template>
+    </ng-container>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BatchesComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
-  readonly company = computed(() => this.profileService.companies()?.[0]);
-  readonly batches = signal<BatchDto[]>([]);
+  private readonly batchService = inject(BatchesService);
+  readonly company = this.profileService.company();
+  readonly batchesMeta = this.batchService.batchesMeta;
+  readonly inboxMeta = this.batchService.inboxMeta;
+  readonly inboxBatches = computed(() => this.inboxMeta()?.items);
 
-  // Batches that:
-  // - have been sent to you but not accepted
-  // - you sent to someone but they have declined
-  readonly inbox = computed<BatchInbox[]>(() =>
-    this.batches()
-      .filter((batch) => batch.status !== Status.ACCEPTED)
-      .map((batch) => ({
-        batch,
-        type:
-          batch.status === Status.PENDING
-            ? BatchInboxType.ACCEPT
-            : BatchInboxType.RECLAIM,
-      }))
-  );
-
-  private readonly batchService = inject(BatchService);
+  async changePage(event: PageEvent) {
+    const page = event.pageIndex + 1;
+    const limit = event.pageSize;
+    await this.batchService.getBatches(page, limit);
+  }
 
   ngOnInit() {
-    this.batchService.getBatches();
+    // TODO: use constants
+    this.batchService.getBatches(1, 10);
+    this.batchService.getInbox(1, 10);
   }
 }
-
-// displayedColumns: string[] = [
-//   'lotNumber',
-//   'leadContent',
-//   'mercuryContent',
-//   'cadmiumContent',
-//   'isRoHSCompliant',
-//   'quantity',
-//   'unit',
-// ];
-
-// <table mat-table [dataSource]="batchesArray$">
-// <!-- Lot Number Column -->
-// <ng-container matColumnDef="lotNumber">
-//   <th mat-header-cell *matHeaderCellDef>Lot Number</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.lotNumber }}</td>
-// </ng-container>
-
-// <!-- Lead Content Column -->
-// <ng-container matColumnDef="leadContent">
-//   <th mat-header-cell *matHeaderCellDef>Lead Content</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.leadContent }}</td>
-// </ng-container>
-
-// <!-- Mercury Content Column -->
-// <ng-container matColumnDef="mercuryContent">
-//   <th mat-header-cell *matHeaderCellDef>Mercury Content</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.mercuryContent }}</td>
-// </ng-container>
-
-// <!-- Cadmium Content Column -->
-// <ng-container matColumnDef="cadmiumContent">
-//   <th mat-header-cell *matHeaderCellDef>Cadmium Content</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.cadmiumContent }}</td>
-// </ng-container>
-
-// <!-- RoHS Compliance Column -->
-// <ng-container matColumnDef="isRoHSCompliant">
-//   <th mat-header-cell *matHeaderCellDef>RoHS Compliance</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.isRoHSCompliant }}</td>
-// </ng-container>
-
-// // TODO: combine quantity and unit
-// <!-- Quantity Column -->
-// <ng-container matColumnDef="quantity">
-//   <th mat-header-cell *matHeaderCellDef>Quantity</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.quantity }}</td>
-// </ng-container>
-
-// <!-- Cadmium Content Column -->
-// <ng-container matColumnDef="unit">
-//   <th mat-header-cell *matHeaderCellDef>Unit</th>
-//   <td mat-cell *matCellDef="let batch">{{ batch.unit }}</td>
-// </ng-container>
-
-// <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-// <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-// </table>

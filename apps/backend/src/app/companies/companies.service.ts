@@ -16,7 +16,10 @@ export class CompaniesService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>
   ) {}
-  async create(createCompanyDto: CreateCompanyDto, email: string) {
+  async create(
+    createCompanyDto: CreateCompanyDto,
+    email: string
+  ): Promise<CompanyEntity> {
     this.logger.log(
       `Creating company:  ${createCompanyDto.VAT} for user ${email}`
     );
@@ -32,10 +35,13 @@ export class CompaniesService {
       throw new NotFoundException(`User with email ${email} not found`);
     }
 
-    return this.userRepository.save({
+    await this.userRepository.save({
       ...user,
       company: createdCompany,
     });
+
+    // TODO: return list of users on the company?
+    return createdCompany;
   }
 
   async findAll(email: string): Promise<CompanyEntity[]> {
@@ -44,8 +50,11 @@ export class CompaniesService {
       where: { email },
       relations: ['company'],
     });
-    console.log(foundUser);
-    if (!foundUser.company) {
+    if (!foundUser) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    if (!foundUser?.company) {
       return [];
     }
     return this.companyRepository.find({

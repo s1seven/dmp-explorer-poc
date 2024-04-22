@@ -52,7 +52,11 @@
       "unitTestRunner": "jest"
     },
     "@nx/angular:component": {
-      "style": "css"
+      "style": "scss",
+      "directory": "apps/frontend/src/app/",
+      "inlineStyle": true,
+      "inlineTemplate": true,
+      "skipTests": true
     }
   }
 }
