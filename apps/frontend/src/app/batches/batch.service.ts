@@ -1,6 +1,10 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { BatchDto, CreateBatchDto, PaginationResponseDto } from '../shared/models';
+import {
+  BatchDto,
+  CreateBatchDto,
+  PaginationResponseDto,
+} from '../shared/models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
@@ -20,7 +24,7 @@ export class BatchesService {
       ...subBatches.map((batch) => ({ ...batch, parentLotNumber })),
     ] as BatchDto[];
   });
-  
+
   async getBatches(
     page = 1,
     limit = 10

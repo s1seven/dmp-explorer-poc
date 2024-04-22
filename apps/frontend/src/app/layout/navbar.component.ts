@@ -28,7 +28,9 @@ import { ProfileService } from '../profile/profile.service';
   ],
   standalone: true,
   template: `
-    <mat-toolbar class="bg-primary-50/50 text-primary-500 shadow-sm border-b border-primary-100/80">
+    <mat-toolbar
+      class="bg-primary-50/50 text-primary-500 shadow-sm border-b border-primary-100/80"
+    >
       <mat-toolbar-row class="flex flex-row justify-between">
         <a class="flex gap-2 items-center" href="/">
           <svg
@@ -55,11 +57,10 @@ import { ProfileService } from '../profile/profile.service';
         </a>
 
         <!-- TODO: Change this styling. This is just for demo purposes... -->
-        <span
-          style="margin-left: 2rem;"
-          >{{ this.companyName() ? this.companyName() : 'No Company'}}</span
-        >
-        
+        <span style="margin-left: 2rem;">{{
+          this.companyName() ? this.companyName() : 'No Company'
+        }}</span>
+
         <span class="flex-1"></span>
         <a
           class="text-inherit"
@@ -96,7 +97,9 @@ import { ProfileService } from '../profile/profile.service';
 export class NavbarComponent {
   private readonly auth = inject(AuthService);
   private readonly profileService = inject(ProfileService);
-  readonly companyName = computed(() => this.profileService.companies()[0]?.name);
+  readonly companyName = computed(
+    () => this.profileService.companies()[0]?.name
+  );
   readonly user = toSignal(this.auth.user$);
 
   logout() {

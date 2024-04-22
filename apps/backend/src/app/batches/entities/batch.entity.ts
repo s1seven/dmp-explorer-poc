@@ -1,11 +1,5 @@
 import { BaseEntity } from '../../../common/entities/base-entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { Unit } from '../../../common/constants/constants';
 import { CompanyEntity } from '../../companies/entities/company.entity';
 import { Type } from 'class-transformer';

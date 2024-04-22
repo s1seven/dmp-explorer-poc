@@ -77,7 +77,8 @@ export class InvitationsService {
 
   findAll(email: string) {
     return this.invitationRespository.find({
-      where: { emailToInvite: email }, relations: ['company'],
+      where: { emailToInvite: email },
+      relations: ['company'],
     });
   }
 
