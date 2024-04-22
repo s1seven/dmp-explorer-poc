@@ -56,8 +56,7 @@ import { ProfileService } from '../profile/profile.service';
           <span class="font-thin -ml-1">Explorer</span>
         </a>
 
-        <!-- TODO: Change this styling. This is just for demo purposes... -->
-        <span style="margin-left: 2rem;">{{
+        <span class="mx-2 hidden sm:block">{{
           this.companyName() ? this.companyName() : 'No Company'
         }}</span>
 
@@ -75,13 +74,6 @@ import { ProfileService } from '../profile/profile.service';
           routerLink="/batches"
           routerLinkActive="bg-primary-100"
           >Batches</a
-        >
-        <a
-          class="text-inherit"
-          mat-button
-          routerLink="/create-batch"
-          routerLinkActive="bg-primary-100"
-          >Create a Batch</a
         >
         <button class="text-inherit" mat-button [matMenuTriggerFor]="menu">
           <mat-icon fontIcon="arrow_drop_down"></mat-icon>
