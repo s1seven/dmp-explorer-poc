@@ -32,4 +32,4 @@ jobs:
 
       # - run: npx nx-cloud record -- nx format:check
       # - run: npx nx affected -t lint test build
-      - run: npx nx affected -t lint build
+      - run: npm run env && npx nx affected -t lint build
