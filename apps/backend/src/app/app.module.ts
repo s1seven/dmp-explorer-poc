@@ -14,6 +14,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { InvitationsModule } from './invitations/invitations.module';
 import { CreateCompaniesAndInvitations1712846805692 } from '../migrations/1712846805692-CreateCompaniesAndInvitations';
 import { AddStatusToBatches1712920767138 } from '../migrations/1712920767138-AddStatusToBatches';
+import { LatestUpdates1713788117360 } from '../migrations/1713788117360-LatestUpdates';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { AddStatusToBatches1712920767138 } from '../migrations/1712920767138-Add
           UpdateBatches1712836157665,
           CreateCompaniesAndInvitations1712846805692,
           AddStatusToBatches1712920767138,
+          LatestUpdates1713788117360,
         ],
         migrationsRun: true,
       }),

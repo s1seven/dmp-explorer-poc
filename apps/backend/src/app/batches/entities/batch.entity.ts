@@ -1,9 +1,15 @@
-import { BaseEntity } from '../../../common/entities/base-entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Unit } from '../../../common/constants/constants';
 import { CompanyEntity } from '../../companies/entities/company.entity';
 import { Type } from 'class-transformer';
-import { OmitType } from '@nestjs/mapped-types';
 
 export enum Status {
   PENDING = 'pending',
@@ -12,9 +18,20 @@ export enum Status {
 }
 
 @Entity()
-export class BatchEntity extends OmitType(BaseEntity, ['id']) {
+// TODO: fix issue with typeorm migrations and OmitType
+export class BatchEntity {
   @PrimaryColumn({ type: 'varchar', unique: true })
   lotNumber: string;
+
+  @CreateDateColumn({
+    type: 'timestamptz',
+  })
+  createdAt?: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamptz',
+  })
+  updatedAt?: Date;
 
   @Column()
   leadContent: number;
