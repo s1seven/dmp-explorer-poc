@@ -78,8 +78,10 @@ export interface BatchInbox {
               >Create a new Batch</a
             >
           </div>
-          <app-batches-table [batches]="batchesMeta.items"></app-batches-table>
+          <app-batches-table *ngIf="batchesMeta.items.length" [batches]="batchesMeta.items"></app-batches-table>
+          <p *ngIf="!batchesMeta.items.length">There are currently no Batches. Please create one.</p>
           <mat-paginator
+            *ngIf="batchesMeta.items.length"
             [length]="batchesMeta.meta.totalItems"
             [pageSize]="batchesMeta.meta.itemsPerPage"
             [pageIndex]="batchesMeta.meta.currentPage - 1"

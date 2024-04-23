@@ -57,8 +57,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     </div>
     <div *ngIf="this.company()?.VAT !== this.currentSubBatch()?.company?.VAT">
       <p>
-        Batch: {{ this.batchId() }} has been sent to
-        {{ this.currentSubBatch()?.company?.VAT }}.
+        Batch number <strong>{{ this.batchId() }}</strong> has been sent to
+        <strong>{{ this.currentSubBatch()?.company?.VAT }}</strong>.
       </p>
       <button mat-stroked-button color="primary" (click)="goBack()">
         Go Back

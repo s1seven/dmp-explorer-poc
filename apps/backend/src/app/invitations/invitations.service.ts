@@ -64,12 +64,10 @@ export class InvitationsService {
         where: { email },
       });
       // TODO: handle case where multiple companies are present
-      const updatedUser = await this.userRepository.save({
+      await this.userRepository.save({
         ...user,
         company,
       });
-      // eslint-disable-next-line no-console
-      console.log('updatedUser', updatedUser);
     }
 
     return this.invitationRespository.delete(id);
@@ -80,6 +78,23 @@ export class InvitationsService {
       where: { emailToInvite: email },
       relations: ['company'],
     });
+  }
+
+  async findAllInvitationsByCompany(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['company'],
+    });
+    // eslint-disable-next-line no-console
+    console.log('user', user);
+    if (!user.company) {
+      throw new Error('You must be part of a company to see invitations');
+    }
+    const { company } = user;
+    const invitations = await this.invitationRespository.find({
+      where: { company: { id: company.id } },
+    });
+    return invitations;
   }
 
   async findOne(id: string, email: string) {

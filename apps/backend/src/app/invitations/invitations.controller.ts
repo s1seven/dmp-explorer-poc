@@ -29,6 +29,7 @@ export class InvitationsController {
     user: ReqUser
   ) {
     const { email } = user;
+    // TODO: handle duplicate key error
     return this.invitationsService.create(createInvitationDto, email);
   }
 
@@ -54,6 +55,15 @@ export class InvitationsController {
   ) {
     const { email } = user;
     return this.invitationsService.findAll(email);
+  }
+
+  @Get('/all')
+  findAllInvitationsByCompany(
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.invitationsService.findAllInvitationsByCompany(email);
   }
 
   @Get(':id')
