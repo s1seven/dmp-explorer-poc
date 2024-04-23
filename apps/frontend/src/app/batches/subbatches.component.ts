@@ -1,17 +1,16 @@
-import { Component, OnDestroy, OnInit, computed, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BatchesService } from './batch.service';
 import { Subject, map, takeUntil } from 'rxjs';
-import { BatchDto } from '../shared/models';
 import { SubBatchesTableComponent } from './subbatches-table.component';
 
 @Component({
   selector: 'app-subbatches',
   standalone: true,
   imports: [CommonModule, SubBatchesTableComponent],
-  template: ` <ng-container *ngIf="this.batches(); loading">
-    <app-subbatches-table [batches]="this.batches()"></app-subbatches-table>
+  template: ` <ng-container *ngIf="this.subbatches(); loading">
+    <app-subbatches-table [batches]="this.subbatches()"></app-subbatches-table>
   </ng-container>`,
   styles: ``,
 })
@@ -19,7 +18,7 @@ export class SubbatchesComponent implements OnInit, OnDestroy {
   private readonly batchService = inject(BatchesService);
   private destroy$ = new Subject<void>();
   readonly batch = this.batchService.batch;
-  readonly batches = this.batchService.batches;
+  readonly subbatches = this.batchService.subbatches;
 
   constructor(private route: ActivatedRoute) {}
 

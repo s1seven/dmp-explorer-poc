@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { BatchEntity, Status } from './entities/batch.entity';
@@ -172,7 +172,7 @@ export class BatchesService {
       `Sending batch ${lotNumber} for user ${email} to company ${sendBatchDto.VAT}`
     );
     // TODO: check that the batch belongs to the current user
-    const user = await this.userRepository.findOneOrFail({
+    const user = await this.userRepository.findOne({
       where: { email },
       relations: ['company'],
     });
@@ -186,9 +186,16 @@ export class BatchesService {
     }
     // check that the vat is not the current company?
     // TODO: add better error handling
-    const company = await this.companyRepository.findOneOrFail({
+    const company = await this.companyRepository.findOne({
       where: { VAT: sendBatchDto.VAT },
     });
+    if (!company) {
+      this.logger.error(`Company with VAT ${sendBatchDto.VAT} not found`);
+      throw new HttpException(
+        `Company with VAT ${sendBatchDto.VAT} not found`,
+        HttpStatus.NOT_FOUND
+      );
+    }
     const newBatch = await this.batchRepository.save({
       ...batch,
       company,

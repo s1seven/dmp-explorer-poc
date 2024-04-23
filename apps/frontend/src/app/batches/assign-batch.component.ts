@@ -14,6 +14,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subject, map, takeUntil } from 'rxjs';
 import { BatchesService } from './batch.service';
 import { ProfileService } from '../profile/profile.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-assign-batch',
@@ -70,6 +71,7 @@ export class AssignBatchComponent implements OnDestroy, OnInit {
   readonly assignToCompanyForm = inject(NonNullableFormBuilder).group({
     companyVAT: ['' as string, Validators.required],
   });
+  private readonly matSnackBar = inject(MatSnackBar);
   private readonly route = inject(ActivatedRoute);
   private readonly batchesService = inject(BatchesService);
   readonly company = inject(ProfileService).company;
@@ -86,7 +88,17 @@ export class AssignBatchComponent implements OnDestroy, OnInit {
       return;
     }
     const { companyVAT } = this.assignToCompanyForm.value;
-    await this.batchesService.sendBatch(this.batchId(), companyVAT as string);
+    try {
+      await this.batchesService.sendBatch(this.batchId(), companyVAT as string);
+      // Handle success, e.g. show a toast
+    } catch (error: any) {
+      // TODO: handle error properly
+      this.matSnackBar.open(
+        error?.error?.message || 'An error occurred, please try again.',
+        'Close',
+        { panelClass: ['mat-primary'] }
+      );
+    }
   }
 
   goBack(): void {

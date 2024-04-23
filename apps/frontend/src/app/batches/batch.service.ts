@@ -15,12 +15,11 @@ export class BatchesService {
   readonly inboxMeta = signal<PaginationResponseDto<BatchDto> | null>(null);
   readonly batch = signal<BatchDto | null>(null);
   readonly currentSubBatch = signal<BatchDto | null>(null);
-  readonly batches = computed(() => {
+  readonly subbatches = computed(() => {
     if (!this.batch()) return [];
     const { lotNumber: parentLotNumber } = this.batch() || {};
     const subBatches = this.batch()?.subBatches || [];
     return [
-      this.batch(),
       ...subBatches.map((batch) => ({ ...batch, parentLotNumber })),
     ] as BatchDto[];
   });
@@ -74,13 +73,18 @@ export class BatchesService {
   // - if the company is registered
   // - and it is not the current company
   async sendBatch(batchId: string, VAT: string): Promise<BatchDto> {
-    const updatedBatch = await firstValueFrom(
-      this.httpClient.patch<BatchDto>(`/api/batches/${batchId}/send`, {
-        VAT,
-      })
-    );
-    this.currentSubBatch.set(updatedBatch);
-    return updatedBatch;
+    try {
+      const updatedBatch = await firstValueFrom(
+        this.httpClient.patch<BatchDto>(`/api/batches/${batchId}/send`, {
+          VAT,
+        })
+      );
+      this.currentSubBatch.set(updatedBatch);
+      return updatedBatch;
+    } catch (error) {
+      console.error('error', error);
+      throw error;
+    }
   }
 
   // Changes status from `pending` to `accepted`
@@ -159,6 +163,7 @@ export class BatchesService {
       )
     );
 
+    // TODO: only add to inbox if it is not a subbatch of a currently owned batch
     const currentInboxMeta = this.inboxMeta();
     if (currentInboxMeta) {
       this.inboxMeta.set({

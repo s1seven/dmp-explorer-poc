@@ -23,14 +23,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
         <span><strong>Name:</strong> {{ user.name }}</span>
         <span><strong>Nickname:</strong> {{ user.nickname }}</span>
         <span><strong>Email:</strong> {{ user.email }}</span>
-        <!-- <p class="text-gray-700 mb-0">
-          If you need to update your information, please
-          <a
-            class="underline underline-offset-2"
-            href="mailto: contact@s1seven.com"
-            >contact S1SEVEN</a
-          >.
-        </p> -->
       </div>
     </div>
 
@@ -43,8 +35,6 @@ export class UserProfileComponent {
   user$ = this.auth.user$;
   code$ = this.user$.pipe(
     map((user) => {
-      // eslint-disable-next-line no-console
-      console.log('User: ', user);
       return JSON.stringify(user, null, 2);
     })
   );
