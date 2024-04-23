@@ -178,17 +178,6 @@ export class BatchesService {
         },
       });
     }
-    const currentBatchesMeta = this.batchesMeta();
-    if (currentBatchesMeta) {
-      this.batchesMeta.set({
-        ...currentBatchesMeta,
-        items: [...currentBatchesMeta.items, reclaimedBatch],
-        meta: {
-          ...currentBatchesMeta.meta,
-          totalItems: currentBatchesMeta.meta.totalItems + 1,
-        },
-      });
-    }
     return reclaimedBatch;
   }
 }
