@@ -56,7 +56,8 @@
       "directory": "apps/frontend/src/app/",
       "inlineStyle": true,
       "inlineTemplate": true,
-      "skipTests": true
+      "skipTests": true,
+      "changeDetection": "OnPush"
     }
   }
 }
