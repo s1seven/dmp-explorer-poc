@@ -85,8 +85,6 @@ export class InvitationsService {
       where: { email },
       relations: ['company'],
     });
-    // eslint-disable-next-line no-console
-    console.log('user', user);
     if (!user.company) {
       throw new Error('You must be part of a company to see invitations');
     }

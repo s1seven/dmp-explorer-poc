@@ -26,7 +26,7 @@ import { CompanyDto } from '../shared/models';
   ],
   template: `
     <div
-      class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
+      class="flex gap-4 items-left rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
     >
       <h2>Create a Company</h2>
 

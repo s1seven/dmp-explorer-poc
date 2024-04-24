@@ -432,6 +432,17 @@
           }
         }
       }
+    },
+    "/api/invitations/all": {
+      "get": {
+        "operationId": "InvitationsController_findAllInvitationsByCompany",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "info": {

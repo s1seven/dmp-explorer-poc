@@ -11,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   imports: [CommonModule, CompanyComponent],
   template: `
     <div
-      class="flex gap-4 items-center mb-10 rounded-md p-4 border border-gray-300 flex-row max-w-3xl ng-untouched ng-pristine ng-invalid"
+      class="flex gap-4 mb-8 items-center rounded-md p-4 border border-gray-300 flex-row max-w-3xl ng-untouched ng-pristine ng-invalid"
       *ngIf="user() as user"
     >
       <img

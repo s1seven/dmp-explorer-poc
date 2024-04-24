@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   effect,
   inject,
@@ -23,6 +24,7 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PendingInvitationsComponent } from './pending-invitations.component';
 
 @Component({
   standalone: true,
@@ -34,80 +36,90 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    PendingInvitationsComponent,
   ],
   selector: 'app-company',
   template: `
-    <app-create-company
-      *ngIf="!company() && !this.invitation()"
-    ></app-create-company>
+    <div class="flex flex-col gap-8">
+      <app-create-company
+        *ngIf="!company() && !this.invitation()"
+      ></app-create-company>
 
-    <div
-      class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
-      *ngIf="this.company() as company"
-    >
-      <h2>Company</h2>
-      <div class="flex flex-col">
-        <span><strong>Name:</strong> {{ company.name }}</span>
-        <span><strong>VAT:</strong> {{ company.VAT }}</span>
-      </div>
-    </div>
-    <!-- invite a user to company form -->
-    <div *ngIf="this.company()">
-      <form
-        class="rounded-md p-4 border border-gray-300 flex flex-col max-w-3xl"
-        [formGroup]="inviteToCompanyForm"
-        (ngSubmit)="inviteToCompany()"
+      <div
+        class="flex gap-4 items-left rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
+        *ngIf="this.company() as company"
       >
-        <p class="text-gray-700 mb-6 flex gap-2">
-          <span
-            ><mat-icon fontIcon="info" [inline]="true" class="inline"></mat-icon
-          ></span>
-          If you wish to invite a user to join your company, enter their email
-          in the following form.
-        </p>
-        <mat-form-field>
-          <mat-label>Email</mat-label>
-          <input matInput type="text" formControlName="emailToInvite" />
-        </mat-form-field>
-        <div class="flex gap-3">
-          <button mat-raised-button color="primary">Invite to Company</button>
+        <h2>Company</h2>
+        <div class="flex flex-col">
+          <span><strong>Name:</strong> {{ company.name }}</span>
+          <span><strong>VAT:</strong> {{ company.VAT }}</span>
         </div>
-      </form>
-    </div>
-    <!-- invitation: -->
-    <!-- TODO: list pending invitations -->
-    <div
-      *ngIf="this.invitation() as invitation"
-      class="rounded-md p-4 border max-w-3xl border-orange-400 bg-orange-50 grid grid-cols-[min-content_1fr] items-center gap-4"
-    >
-      <mat-icon fontIcon="mail"></mat-icon>
-      <div class="flex-1">
-        <h3 class="mat-h4 font-bold mb-0">Company Invitation</h3>
-        <p class="mat-body-2 mb-0">
-          The company
-          <strong>{{ invitation.company.name }}</strong> with the VAT number
-          <strong>{{ invitation.company.VAT }}</strong> has invited you to join
-          their team.
-        </p>
       </div>
-      <div></div>
-      <div class="flex gap-3">
-        <button mat-stroked-button (click)="declineDialog(invitation)">
-          Decline
-        </button>
-        <button
-          (click)="acceptInvitation(invitation)"
-          mat-raised-button
-          color="primary"
+      <!-- invite a user to company form -->
+      <div *ngIf="this.company()">
+        <form
+          class="rounded-md p-4 border border-gray-300 flex flex-col max-w-3xl"
+          [formGroup]="inviteToCompanyForm"
+          (ngSubmit)="inviteToCompany()"
         >
-          Accept
-        </button>
+          <p class="text-gray-700 mb-6 flex gap-2">
+            <span
+              ><mat-icon
+                fontIcon="info"
+                [inline]="true"
+                class="inline"
+              ></mat-icon
+            ></span>
+            If you wish to invite a user to join your company, enter their email
+            in the following form.
+          </p>
+          <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput type="text" formControlName="emailToInvite" />
+          </mat-form-field>
+          <div class="flex gap-3">
+            <button mat-raised-button color="primary">Invite to Company</button>
+          </div>
+        </form>
       </div>
+      <!-- invitation: -->
+      <div
+        *ngIf="this.invitation() as invitation"
+        class="rounded-md p-4 border max-w-3xl border-orange-400 bg-orange-50 grid grid-cols-[min-content_1fr] items-center gap-4"
+      >
+        <mat-icon fontIcon="mail"></mat-icon>
+        <div class="flex-1">
+          <h3 class="mat-h4 font-bold mb-0">Company Invitation</h3>
+          <p class="mat-body-2 mb-0">
+            The company
+            <strong>{{ invitation.company.name }}</strong> with the VAT number
+            <strong>{{ invitation.company.VAT }}</strong> has invited you to
+            join their team.
+          </p>
+        </div>
+        <div></div>
+        <div class="flex gap-3">
+          <button mat-stroked-button (click)="declineDialog(invitation)">
+            Decline
+          </button>
+          <button
+            (click)="acceptInvitation(invitation)"
+            mat-raised-button
+            color="primary"
+          >
+            Accept
+          </button>
+        </div>
+      </div>
+      <app-pending-invitations
+        *ngIf="pendingInvitations().length"
+        [invitations]="pendingInvitations()"
+      ></app-pending-invitations>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CompanyComponent {
+export class CompanyComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly matSnackBar = inject(MatSnackBar);
   readonly company = computed(() => this.profileService.companies()?.[0]);
@@ -116,6 +128,7 @@ export class CompanyComponent {
   readonly inviteToCompanyForm = inject(NonNullableFormBuilder).group({
     emailToInvite: ['' as string, [Validators.required, Validators.email]],
   });
+  readonly pendingInvitations = this.profileService.pendingInvitations;
 
   constructor() {
     effect(
@@ -198,5 +211,9 @@ export class CompanyComponent {
     if (result === true) {
       this.declineInvitation(invitation);
     }
+  }
+
+  ngOnInit() {
+    this.profileService.getAllInvitations();
   }
 }

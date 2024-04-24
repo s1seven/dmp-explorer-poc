@@ -13,7 +13,7 @@ export class ProfileService {
   readonly company = computed(() => this.companies()?.[0]);
   readonly invitations = signal<InvitationDto[]>([]);
   private readonly httpClient = inject(HttpClient);
-
+  readonly pendingInvitations = signal<InvitationDto[]>([]);
   private companiesCache?: Promise<CompanyDto[]>;
 
   async getCompanies(useCache = true): Promise<CompanyDto[]> {
@@ -37,6 +37,14 @@ export class ProfileService {
 
   getInvitations(): Observable<InvitationDto[]> {
     return this.httpClient.get<InvitationDto[]>('/api/invitations');
+  }
+
+  async getAllInvitations(): Promise<InvitationDto[]> {
+    const pendingInvitations = await firstValueFrom(
+      this.httpClient.get<InvitationDto[]>('/api/invitations/all')
+    );
+    this.pendingInvitations.set(pendingInvitations);
+    return pendingInvitations;
   }
 
   respondToInvitation(invitation: InvitationDto, accepted: boolean) {
