@@ -13,6 +13,9 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { BatchesService } from './batches.service';
 import { CreateBatchDto } from './dto/create-batch.dto';
@@ -35,7 +38,15 @@ export class BatchesController {
   @Post()
   @UseInterceptors(FileInterceptor('json'))
   create(
-    @UploadedFile() json: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5mb
+          new FileTypeValidator({ fileType: 'application/json' }),
+        ],
+      })
+    )
+    json: Express.Multer.File,
     @Body() createBatchDto: CreateBatchDto,
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
     user: ReqUser

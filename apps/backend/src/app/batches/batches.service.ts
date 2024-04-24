@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Inject,
@@ -60,6 +61,12 @@ export class BatchesService {
       `Creating batch:  ${createBatchDto.lotNumber} for user ${email}`
     );
     if (json) {
+      try {
+        JSON.parse(json.buffer.toString());
+      } catch (error) {
+        this.logger.error(`Error parsing JSON: ${error}`);
+        throw new BadRequestException('Error parsing JSON');
+      }
       const { lotNumber } = createBatchDto;
       const { buffer } = json;
       await this.storeInS3(buffer, `${lotNumber}.json`);
