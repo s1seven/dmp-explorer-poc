@@ -10,6 +10,7 @@ import { BatchDto } from '../shared/models';
 import { RouterLink } from '@angular/router';
 import { BatchesService } from './batch.service';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-inbox-table',
@@ -19,37 +20,59 @@ import { MatButtonModule } from '@angular/material/button';
     <mat-table class="overflow-auto" [dataSource]="batches()">
       <!-- Lot Number Column -->
       <ng-container matColumnDef="lotNumber">
-        <mat-header-cell class="px-2" *matHeaderCellDef>Lot Number</mat-header-cell>
-        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.lotNumber }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef
+          >Lot Number</mat-header-cell
+        >
+        <mat-cell class="px-2" *matCellDef="let batch">{{
+          batch.lotNumber
+        }}</mat-cell>
       </ng-container>
 
       <!-- Lead Content Column -->
       <ng-container matColumnDef="leadContent">
-        <mat-header-cell class="px-2" *matHeaderCellDef>Lead Content</mat-header-cell>
-        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.leadContent }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef
+          >Lead Content</mat-header-cell
+        >
+        <mat-cell class="px-2" *matCellDef="let batch">{{
+          batch.leadContent
+        }}</mat-cell>
       </ng-container>
 
       <!-- Mercury Content Column -->
       <ng-container matColumnDef="mercuryContent">
-        <mat-header-cell class="px-2" *matHeaderCellDef>Mercury Content</mat-header-cell>
-        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.mercuryContent }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef
+          >Mercury Content</mat-header-cell
+        >
+        <mat-cell class="px-2" *matCellDef="let batch">{{
+          batch.mercuryContent
+        }}</mat-cell>
       </ng-container>
 
       <!-- Cadmium Content Column -->
       <ng-container matColumnDef="cadmiumContent">
-        <mat-header-cell class="px-2" *matHeaderCellDef>Cadmium Content</mat-header-cell>
-        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.cadmiumContent }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef
+          >Cadmium Content</mat-header-cell
+        >
+        <mat-cell class="px-2" *matCellDef="let batch">{{
+          batch.cadmiumContent
+        }}</mat-cell>
       </ng-container>
 
       <!-- RoHS Compliance Column -->
       <ng-container matColumnDef="isRoHSCompliant">
-        <mat-header-cell class="px-2" *matHeaderCellDef>RoHS Compliant</mat-header-cell>
-        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.isRoHSCompliant }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef
+          >RoHS Compliant</mat-header-cell
+        >
+        <mat-cell class="px-2" *matCellDef="let batch">{{
+          batch.isRoHSCompliant
+        }}</mat-cell>
       </ng-container>
 
       <!-- Quantity Column -->
       <ng-container matColumnDef="quantity">
-        <mat-header-cell class="px-2" *matHeaderCellDef>Quantity</mat-header-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef
+          >Quantity</mat-header-cell
+        >
         <mat-cell class="px-2" *matCellDef="let batch">
           {{ batch.quantity }} {{ batch.unit }}
         </mat-cell>
@@ -58,13 +81,19 @@ import { MatButtonModule } from '@angular/material/button';
       <!-- Status Column -->
       <ng-container matColumnDef="status">
         <mat-header-cell class="px-2" *matHeaderCellDef>Status</mat-header-cell>
-        <mat-cell class="px-2" *matCellDef="let batch">{{ batch.status }}</mat-cell>
+        <mat-cell class="px-2" *matCellDef="let batch">{{
+          batch.status
+        }}</mat-cell>
       </ng-container>
 
       <!-- Owner Column -->
       <ng-container matColumnDef="owner">
-        <mat-header-cell class="px-2" *matHeaderCellDef>Owner VAT</mat-header-cell>
-        <mat-cell class="px-2"  *matCellDef="let batch">{{ batch?.company?.VAT }}</mat-cell>
+        <mat-header-cell class="px-2" *matHeaderCellDef
+          >Owner VAT</mat-header-cell
+        >
+        <mat-cell class="px-2" *matCellDef="let batch">{{
+          batch?.company?.VAT
+        }}</mat-cell>
       </ng-container>
 
       <!-- Action Column -->
@@ -73,10 +102,17 @@ import { MatButtonModule } from '@angular/material/button';
         matColumnDef="action-button"
         class="col-span-2 "
       >
-        <mat-header-cell class="px-2" class="col-span-2 justify-between" *matHeaderCellDef
+        <mat-header-cell
+          class="px-2"
+          class="col-span-2 justify-between"
+          *matHeaderCellDef
           >Accept</mat-header-cell
         >
-        <mat-cell class="px-2" class="col-span-2 justify-between" *matCellDef="let batch">
+        <mat-cell
+          class="px-2"
+          class="col-span-2 justify-between"
+          *matCellDef="let batch"
+        >
           <button
             *ngIf="batch.status !== 'declined'"
             mat-stroked-button
@@ -125,6 +161,7 @@ import { MatButtonModule } from '@angular/material/button';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InboxTableComponent {
+  private readonly matSnackBar = inject(MatSnackBar);
   readonly batches = input.required<BatchDto[]>();
   readonly batchesService = inject(BatchesService);
   readonly displayedColumns: string[] = [
@@ -140,14 +177,27 @@ export class InboxTableComponent {
   ];
 
   async acceptBatch(batch: BatchDto) {
-    await this.batchesService.acceptBatch(batch);
+    const acceptedBatch = await this.batchesService.acceptBatch(batch);
+    this.openSnackbar(
+      `Batch number ${acceptedBatch.lotNumber} has been accepted.`
+    );
   }
 
   async rejectBatch(batch: BatchDto) {
-    await this.batchesService.declineBatch(batch);
+    const rejectedBatch = await this.batchesService.declineBatch(batch);
+    this.openSnackbar(
+      `Batch number ${rejectedBatch.lotNumber} has been rejected.`
+    );
   }
 
   async reclaimBatch(batch: BatchDto) {
-    await this.batchesService.reclaimBatch(batch);
+    const reclaimedBatch = await this.batchesService.reclaimBatch(batch);
+    this.openSnackbar(
+      `Batch number ${reclaimedBatch.lotNumber} has been reclaimed.`
+    );
+  }
+
+  openSnackbar(message: string) {
+    this.matSnackBar.open(message, 'Close', { panelClass: ['mat-primary'] });
   }
 }

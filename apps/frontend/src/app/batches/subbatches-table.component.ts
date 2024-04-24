@@ -154,7 +154,7 @@ import { MatCardModule } from '@angular/material/card';
                 <a
                   *ngIf="
                     batch?.parentLotNumber &&
-                    batch?.company?.VAT === company()?.VAT
+                    batch?.company?.VAT === company()?.VAT && batch?.status !== 'declined'
                   "
                   class="text-inherit"
                   mat-stroked-button
@@ -170,7 +170,7 @@ import { MatCardModule } from '@angular/material/card';
             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
           </table>
           <p *ngIf="!batches().length">
-            There are currently no SubBatches. Create one above.
+            There are currently no SubBatches.
           </p>
         </div>
       </div>
