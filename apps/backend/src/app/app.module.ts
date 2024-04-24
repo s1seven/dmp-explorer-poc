@@ -17,6 +17,7 @@ import { AddStatusToBatches1712920767138 } from '../migrations/1712920767138-Add
 import { LatestUpdates1713788117360 } from '../migrations/1713788117360-LatestUpdates';
 import { BatchIntsToFloats1713790482652 } from '../migrations/1713790482652-BatchIntsToFloats';
 import { AddFilestoBatches1713955905280 } from '../migrations/1713955905280-AddFilestoBatches';
+import { Environment } from '../common/constants/constants';
 
 @Module({
   imports: [
@@ -32,14 +33,15 @@ import { AddFilestoBatches1713955905280 } from '../migrations/1713955905280-AddF
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
-        ssl: configService.get<string>('NODE_ENV') === 'production',
-        extra: configService.get<string>('NODE_ENV') === 'production' && {
+        ssl: configService.get<string>('NODE_ENV') !== Environment.Local,
+        extra: configService.get<string>('NODE_ENV') !==
+          Environment.Local && {
           ssl: {
             rejectUnauthorized: false,
           },
         },
         synchronize: false,
-        logging: true,
+        logging: configService.get<string>('NODE_ENV') === Environment.Local,
         migrationsTableName: 'typeorm_migrations',
         migrations: [
           InitialMigration1712761023143,
