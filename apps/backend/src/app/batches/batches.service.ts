@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   HttpException,
   HttpStatus,
   Inject,
@@ -54,23 +55,23 @@ export class BatchesService {
   async create(
     createBatchDto: CreateBatchDto,
     email: string,
-    json: Express.Multer.File
+    json: Express.Multer.File,
+    pdf: Express.Multer.File
   ) {
     // TODO: verify that the quantity of all sub-batches is equal to or less than the parent batch
     this.logger.log(
       `Creating batch:  ${createBatchDto.lotNumber} for user ${email}`
     );
     if (json) {
-      try {
-        JSON.parse(json.buffer.toString());
-      } catch (error) {
-        this.logger.error(`Error parsing JSON: ${error}`);
-        throw new BadRequestException('Error parsing JSON');
-      }
       const { lotNumber } = createBatchDto;
       const { buffer } = json;
       await this.storeInS3(buffer, `${lotNumber}.json`);
       // URL format - 'https://<bucketname>.s3.<region>.amazonaws.com/<lotNumber>.json'
+    }
+    if (pdf) {
+      const { lotNumber } = createBatchDto;
+      const { buffer } = pdf;
+      await this.storeInS3(buffer, `${lotNumber}.pdf`);
     }
 
     const isRoHSCompliant = this.isRoHSCompliant(createBatchDto);
@@ -95,6 +96,7 @@ export class BatchesService {
       parent,
       company: user.company,
       hasJson: Boolean(json),
+      hasPDF: Boolean(pdf),
     });
     this.logger.log(`Creating batch: `, JSON.stringify(newBatch, null, 2));
     return this.batchRepository.save(newBatch);
@@ -331,7 +333,9 @@ export class BatchesService {
 
     if (existingBatch) {
       this.logger.error(`Batch with lot number ${lotNumber} already exists`);
-      throw new Error(`Batch with lot number ${lotNumber} already exists`);
+      throw new ConflictException(
+        `Batch with lot number ${lotNumber} already exists`
+      );
     }
   }
 

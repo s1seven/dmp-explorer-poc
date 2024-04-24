@@ -77,14 +77,26 @@ import { MatButtonModule } from '@angular/material/button';
             <mat-label>Unit</mat-label>
             <input matInput type="text" formControlName="unit" />
           </mat-form-field>
-          <mat-label>Upload JSON Certificate</mat-label>
-          <input
-            id="fileInput"
-            type="file"
-            (change)="onFileChange($event)"
-            accept=".json"
-            [multiple]="false"
-          />
+          <div>
+            <mat-label>Upload JSON Certificate</mat-label>
+            <input
+              id="jsonInput"
+              type="file"
+              (change)="onJSONChange($event)"
+              accept=".json"
+              [multiple]="false"
+            />
+          </div>
+          <div>
+            <mat-label>Upload PDF Certificate</mat-label>
+            <input
+              id="pdfInput"
+              type="file"
+              (change)="onPDFChange($event)"
+              accept=".pdf"
+              [multiple]="false"
+            />
+          </div>
         </div>
         <div class="flex gap-3">
           <button mat-stroked-button (click)="goBack()">Cancel</button>
@@ -105,17 +117,27 @@ export class CreateBatchComponent implements OnDestroy {
     quantity: new FormControl('', Validators.required),
     unit: new FormControl('', Validators.required),
     json: new FormControl<File | null>(null),
+    pdf: new FormControl<File | null>(null),
   });
   private unsubscribe$ = new Subject<void>();
   constructor(private http: HttpClient, private router: Router) {}
 
-  onFileChange(event: Event) {
+  onJSONChange(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) {
       return;
     }
     this.batchForm.patchValue({ json: file });
+  }
+
+  onPDFChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+    this.batchForm.patchValue({ pdf: file });
   }
 
   submit() {
