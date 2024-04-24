@@ -16,6 +16,7 @@ import { CreateCompaniesAndInvitations1712846805692 } from '../migrations/171284
 import { AddStatusToBatches1712920767138 } from '../migrations/1712920767138-AddStatusToBatches';
 import { LatestUpdates1713788117360 } from '../migrations/1713788117360-LatestUpdates';
 import { BatchIntsToFloats1713790482652 } from '../migrations/1713790482652-BatchIntsToFloats';
+import { AddFilestoBatches1713955905280 } from '../migrations/1713955905280-AddFilestoBatches';
 
 @Module({
   imports: [
@@ -46,7 +47,8 @@ import { BatchIntsToFloats1713790482652 } from '../migrations/1713790482652-Batc
           CreateCompaniesAndInvitations1712846805692,
           AddStatusToBatches1712920767138,
           LatestUpdates1713788117360,
-          BatchIntsToFloats1713790482652
+          BatchIntsToFloats1713790482652,
+          AddFilestoBatches1713955905280,
         ],
         migrationsRun: true,
       }),

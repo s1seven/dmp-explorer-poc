@@ -77,6 +77,14 @@ import { MatButtonModule } from '@angular/material/button';
             <mat-label>Unit</mat-label>
             <input matInput type="text" formControlName="unit" />
           </mat-form-field>
+          <mat-label>Upload JSON Certificate</mat-label>
+          <input
+            id="fileInput"
+            type="file"
+            (change)="onFileChange($event)"
+            accept=".json"
+            [multiple]="false"
+          />
         </div>
         <div class="flex gap-3">
           <button mat-stroked-button (click)="goBack()">Cancel</button>
@@ -96,19 +104,32 @@ export class CreateBatchComponent implements OnDestroy {
     cadmiumContent: new FormControl('', Validators.required),
     quantity: new FormControl('', Validators.required),
     unit: new FormControl('', Validators.required),
+    json: new FormControl<File | null>(null),
   });
   private unsubscribe$ = new Subject<void>();
-
   constructor(private http: HttpClient, private router: Router) {}
+
+  onFileChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+    this.batchForm.patchValue({ json: file });
+  }
 
   submit() {
     if (this.batchForm.invalid) {
       return;
     }
 
-    const newBatch = this.batchForm.value;
+    const formData = new FormData();
+    Object.entries(this.batchForm.value).forEach(([key, value]) => {
+      if (value !== null) formData.append(key, value);
+    });
+
     this.http
-      .post('api/batches', newBatch)
+      .post('api/batches', formData)
       .pipe(
         tap(() => this.router.navigate(['/batches'])),
         catchError((error) => {

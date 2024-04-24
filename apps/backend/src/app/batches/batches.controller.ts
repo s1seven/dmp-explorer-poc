@@ -11,6 +11,8 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { BatchesService } from './batches.service';
 import { CreateBatchDto } from './dto/create-batch.dto';
@@ -21,6 +23,9 @@ import { ReqUser } from '../../common/constants/constants';
 import { SendBatchDto } from './dto/send-batch.dto';
 import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
 import { BatchEntity } from './entities/batch.entity';
+import { type Express } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import 'multer';
 
 @Controller('batches')
 @UseGuards(AuthorizationGuard)
@@ -28,13 +33,15 @@ export class BatchesController {
   constructor(private readonly batchesService: BatchesService) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('json'))
   create(
+    @UploadedFile() json: Express.Multer.File,
     @Body() createBatchDto: CreateBatchDto,
     @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
     user: ReqUser
   ) {
     const { email } = user;
-    return this.batchesService.create(createBatchDto, email);
+    return this.batchesService.create(createBatchDto, email, json);
   }
 
   @Get()
