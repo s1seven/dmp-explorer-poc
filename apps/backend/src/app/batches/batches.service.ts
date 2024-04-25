@@ -93,8 +93,8 @@ export class BatchesService {
       isRoHSCompliant,
       parent,
       company: user.company,
-      hasJson: Boolean(json),
-      hasPDF: Boolean(pdf),
+      json: Boolean(json),
+      PDF: Boolean(pdf),
     });
     this.logger.log(`Creating batch: `, JSON.stringify(newBatch, null, 2));
     return this.batchRepository.save(newBatch);

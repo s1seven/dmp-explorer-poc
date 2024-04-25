@@ -50,10 +50,10 @@ export class BatchEntity {
   isRoHSCompliant: boolean;
 
   @Column({ nullable: true })
-  hasJson?: boolean;
+  json?: boolean;
 
   @Column({ nullable: true })
-  hasPDF?: boolean;
+  PDF?: boolean;
 
   @Column()
   quantity: number;

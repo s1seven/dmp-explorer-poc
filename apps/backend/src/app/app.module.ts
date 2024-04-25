@@ -18,6 +18,7 @@ import { LatestUpdates1713788117360 } from '../migrations/1713788117360-LatestUp
 import { BatchIntsToFloats1713790482652 } from '../migrations/1713790482652-BatchIntsToFloats';
 import { AddFilestoBatches1713955905280 } from '../migrations/1713955905280-AddFilestoBatches';
 import { Environment } from '../common/constants/constants';
+import { UpdateBatchJsonPDF1714035890165 } from '../migrations/1714035890165-UpdateBatchJsonPDF';
 
 @Module({
   imports: [
@@ -34,8 +35,7 @@ import { Environment } from '../common/constants/constants';
         url: configService.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
         ssl: configService.get<string>('NODE_ENV') !== Environment.Local,
-        extra: configService.get<string>('NODE_ENV') !==
-          Environment.Local && {
+        extra: configService.get<string>('NODE_ENV') !== Environment.Local && {
           ssl: {
             rejectUnauthorized: false,
           },
@@ -51,6 +51,7 @@ import { Environment } from '../common/constants/constants';
           LatestUpdates1713788117360,
           BatchIntsToFloats1713790482652,
           AddFilestoBatches1713955905280,
+          UpdateBatchJsonPDF1714035890165,
         ],
         migrationsRun: true,
       }),
