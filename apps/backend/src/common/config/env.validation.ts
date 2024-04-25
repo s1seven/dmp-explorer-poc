@@ -1,4 +1,5 @@
-import { plainToInstance, Transform } from 'class-transformer';
+import { ConfigService } from '@nestjs/config';
+import { Expose, plainToInstance, Transform } from 'class-transformer';
 import {
   IsInt,
   IsNotEmpty,
@@ -10,6 +11,8 @@ import {
   MinLength,
   validateSync,
 } from 'class-validator';
+
+export type AppConfigService = ConfigService<EnvironmentVariables>;
 
 class EnvironmentVariables {
   @IsInt()
@@ -55,6 +58,26 @@ class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   AUTH0_NAMESPACE = 'https://receiver-product.s1seven.com';
+
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  S3_BUCKET: string;
+
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  S3_ACCESS_KEY_ID: string;
+
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  S3_SECRET_ACCESS_KEY: string;
+
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  S3_REGION = 'eu-central-1';
 }
 
 export function validate(

@@ -1,4 +1,10 @@
-import { Component, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+  signal,
+} from '@angular/core';
 import {
   FormGroup,
   FormControl,
@@ -77,6 +83,96 @@ import { MatButtonModule } from '@angular/material/button';
             <mat-label>Unit</mat-label>
             <input matInput type="text" formControlName="unit" />
           </mat-form-field>
+          <div
+            class="mat-mdc-form-field mat-mdc-form-field-type-mat-input mat-form-field-appearance-fill mat-form-field-hide-placeholder mat-primary ng-untouched ng-pristine ng-valid ng-tns-c3736059725-1"
+          >
+            <div class="flex flex-row items-center gap-4 text-center">
+              <mat-label hidden>Upload JSON Certificate</mat-label>
+
+              <button
+                type="button"
+                mat-stroked-button
+                color="primary-300"
+                class="w-38"
+                (click)="jsonFileInput.click()"
+              >
+              <div class="w-full text-center">Upload JSON</div>
+              </button>
+              <input
+                hidden
+                id="jsonInput"
+                type="file"
+                #jsonFileInput
+                (change)="onJSONChange($event)"
+                accept=".json"
+                [multiple]="false"
+              />
+              <span class="file-name">{{
+                selectedJSON()?.name || 'No file chosen'
+              }}</span>
+              <button
+                *ngIf="selectedJSON()"
+                type="button"
+                mat-icon-button
+                aria-label="Remove selected file"
+                (click)="removeSelectedJSON()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div
+            class="mat-mdc-form-field-subscript-wrapper mat-mdc-form-field-bottom-align"
+          >
+            <div
+              class="mat-mdc-form-field-hint-wrapper ng-trigger ng-trigger-transitionMessages"
+            ></div>
+          </div>
+
+          <div
+            class="mat-mdc-form-field mat-mdc-form-field-type-mat-input mat-form-field-appearance-fill mat-form-field-hide-placeholder mat-primary ng-untouched ng-pristine ng-valid ng-tns-c3736059725-1"
+          >
+          <!-- TODO: make both buttons the same width -->
+            <div class="flex flex-row items-center gap-4 text-center">
+              <mat-label hidden>Upload PDF Certificate</mat-label>
+              <button
+                type="button"
+                mat-stroked-button
+                (click)="pdfFileInput.click()"
+                class="w-38"
+              >
+              <div class="w-full text-center">Upload PDF</div>
+              </button>
+              <input
+                id="pdfInput"
+                type="file"
+                hidden
+                #pdfFileInput
+                (change)="onPDFChange($event)"
+                accept=".pdf"
+                [multiple]="false"
+              />
+              <span class="file-name">{{
+                selectedPDF()?.name || 'No file chosen'
+              }}</span>
+              <button
+                *ngIf="selectedPDF()"
+                type="button"
+                mat-icon-button
+                aria-label="Remove selected file"
+                (click)="removeSelectedPDF()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div
+            class="mat-mdc-form-field-subscript-wrapper mat-mdc-form-field-bottom-align"
+          >
+            <div
+              class="mat-mdc-form-field-hint-wrapper ng-trigger ng-trigger-transitionMessages"
+            ></div>
+          </div>
         </div>
         <div class="flex gap-3">
           <button mat-stroked-button (click)="goBack()">Cancel</button>
@@ -96,19 +192,61 @@ export class CreateBatchComponent implements OnDestroy {
     cadmiumContent: new FormControl('', Validators.required),
     quantity: new FormControl('', Validators.required),
     unit: new FormControl('', Validators.required),
+    json: new FormControl<File | null>(null),
+    pdf: new FormControl<File | null>(null),
   });
   private unsubscribe$ = new Subject<void>();
+  readonly selectedJSON = signal<File | null>(null);
+  readonly selectedPDF = signal<File | null>(null);
+  @ViewChild('pdfFileInput') pdfFileInput!: ElementRef;
+  @ViewChild('jsonFileInput') jsonFileInput!: ElementRef;
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  onJSONChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+    this.selectedJSON.set(file);
+    this.batchForm.patchValue({ json: file });
+  }
+
+  onPDFChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+    this.selectedPDF.set(file);
+    this.batchForm.patchValue({ pdf: file });
+  }
+
+  removeSelectedPDF() {
+    this.selectedPDF.set(null);
+    this.batchForm.patchValue({ pdf: null });
+    this.pdfFileInput.nativeElement.value = '';
+  }
+
+  removeSelectedJSON() {
+    this.selectedJSON.set(null);
+    this.batchForm.patchValue({ json: null });
+    this.jsonFileInput.nativeElement.value = '';
+  }
 
   submit() {
     if (this.batchForm.invalid) {
       return;
     }
 
-    const newBatch = this.batchForm.value;
+    const formData = new FormData();
+    Object.entries(this.batchForm.value).forEach(([key, value]) => {
+      if (value !== null) formData.append(key, value);
+    });
+
     this.http
-      .post('api/batches', newBatch)
+      .post('api/batches', formData)
       .pipe(
         tap(() => this.router.navigate(['/batches'])),
         catchError((error) => {

@@ -49,6 +49,12 @@ export class BatchEntity {
   @Column()
   isRoHSCompliant: boolean;
 
+  @Column({ nullable: true })
+  hasJson?: boolean;
+
+  @Column({ nullable: true })
+  hasPDF?: boolean;
+
   @Column()
   quantity: number;
 

@@ -1,4 +1,12 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { BatchEntity, Status } from './entities/batch.entity';
@@ -8,6 +16,10 @@ import { UserEntity } from '../users/entities/user.entity';
 import { SendBatchDto } from './dto/send-batch.dto';
 import { CompanyEntity } from '../companies/entities/company.entity';
 import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
+import { S3 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
+import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from '../../common/config/env.validation';
 
 const MAX_LEAD_CONTENT = 0.1;
 const MAX_MERCURY_CONTENT = 0.1;
@@ -16,8 +28,16 @@ const MAX_CADMIUM_CONTENT = 0.01;
 @Injectable()
 export class BatchesService {
   private readonly logger = new Logger(BatchesService.name);
+  private readonly credentials = {
+    accessKeyId: this.configService.get('S3_ACCESS_KEY_ID'),
+    secretAccessKey: this.configService.get('S3_SECRET_ACCESS_KEY'),
+  };
+  private readonly region = this.configService.get('S3_REGION');
+  private readonly bucket = this.configService.get('S3_BUCKET');
+  private readonly s3Instance: S3;
 
   constructor(
+    @Inject(ConfigService) private readonly configService: AppConfigService,
     @InjectRepository(BatchEntity)
     private readonly batchRepository: Repository<BatchEntity>,
     @InjectRepository(UserEntity)
@@ -25,13 +45,35 @@ export class BatchesService {
     @InjectRepository(CompanyEntity)
     private readonly companyRepository: Repository<CompanyEntity>,
     private dataSource: DataSource
-  ) {}
+  ) {
+    this.s3Instance = new S3({
+      credentials: this.credentials,
+      region: this.region,
+    });
+  }
 
-  async create(createBatchDto: CreateBatchDto, email: string) {
+  async create(
+    createBatchDto: CreateBatchDto,
+    email: string,
+    json: Express.Multer.File,
+    pdf: Express.Multer.File
+  ) {
     // TODO: verify that the quantity of all sub-batches is equal to or less than the parent batch
     this.logger.log(
       `Creating batch:  ${createBatchDto.lotNumber} for user ${email}`
     );
+    if (json) {
+      const { lotNumber } = createBatchDto;
+      const { buffer } = json;
+      await this.storeInS3(buffer, `${lotNumber}.json`);
+      // URL format - 'https://<bucketname>.s3.<region>.amazonaws.com/<lotNumber>.json'
+    }
+    if (pdf) {
+      const { lotNumber } = createBatchDto;
+      const { buffer } = pdf;
+      await this.storeInS3(buffer, `${lotNumber}.pdf`);
+    }
+
     const isRoHSCompliant = this.isRoHSCompliant(createBatchDto);
     const user = await this.checkUserExists(email);
     await this.checkBatchDoesNotExist(createBatchDto.lotNumber);
@@ -53,6 +95,8 @@ export class BatchesService {
       isRoHSCompliant,
       parent,
       company: user.company,
+      hasJson: Boolean(json),
+      hasPDF: Boolean(pdf),
     });
     this.logger.log(`Creating batch: `, JSON.stringify(newBatch, null, 2));
     return this.batchRepository.save(newBatch);
@@ -289,7 +333,9 @@ export class BatchesService {
 
     if (existingBatch) {
       this.logger.error(`Batch with lot number ${lotNumber} already exists`);
-      throw new Error(`Batch with lot number ${lotNumber} already exists`);
+      throw new ConflictException(
+        `Batch with lot number ${lotNumber} already exists`
+      );
     }
   }
 
@@ -321,6 +367,27 @@ export class BatchesService {
     if (!user.company) {
       this.logger.error(`User with email ${user.email} has no company`);
       throw new Error(`User with email ${user.email} has no company`);
+    }
+  }
+
+  async storeInS3(file: Buffer, fileName: string): Promise<void> {
+    try {
+      const result = await new Upload({
+        client: this.s3Instance,
+        params: {
+          Bucket: this.bucket,
+          Key: fileName,
+          Body: file,
+        },
+      }).done();
+      const { Location } = result;
+      this.logger.log(`${fileName} uploaded to ${Location}`);
+      if (!Location) {
+        throw new Error('Error uploading to S3');
+      }
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error('Error uploading to S3');
     }
   }
 }

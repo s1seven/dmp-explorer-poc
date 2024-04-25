@@ -14,13 +14,6 @@ export class APIInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    // eslint-disable-next-line no-console
-    console.log(
-      'APIInterceptor',
-      req.url,
-      environment.api.serverUrl,
-      new URL(req.url, environment.api.serverUrl).href
-    );
     const apiReq = req.clone({
       url: new URL(req.url, environment.api.serverUrl).href,
     });
