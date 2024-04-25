@@ -41,7 +41,7 @@ import { Environment } from '../common/constants/constants';
           },
         },
         synchronize: false,
-        logging: configService.get<string>('NODE_ENV') === Environment.Local,
+        logging: false,
         migrationsTableName: 'typeorm_migrations',
         migrations: [
           InitialMigration1712761023143,

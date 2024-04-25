@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   HttpException,
   HttpStatus,
@@ -11,7 +10,7 @@ import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { BatchEntity, Status } from './entities/batch.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DataSource, Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { UserEntity } from '../users/entities/user.entity';
 import { SendBatchDto } from './dto/send-batch.dto';
 import { CompanyEntity } from '../companies/entities/company.entity';
@@ -43,8 +42,7 @@ export class BatchesService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(CompanyEntity)
-    private readonly companyRepository: Repository<CompanyEntity>,
-    private dataSource: DataSource
+    private readonly companyRepository: Repository<CompanyEntity>
   ) {
     this.s3Instance = new S3({
       credentials: this.credentials,
@@ -125,10 +123,9 @@ export class BatchesService {
     // roots - all batches owned by your company
     // and they don't have a parent
     // or the parent is not owned by your company
-    const batchRepository = this.dataSource.getRepository(BatchEntity);
 
     // TODO: if parent is not owned, remove parentLotNumber?
-    const [batches, totalCount] = await batchRepository
+    const [batches, totalCount] = await this.batchRepository
       .createQueryBuilder('batch')
       .leftJoin(
         'batch_entity',
@@ -176,10 +173,9 @@ export class BatchesService {
     // roots - all batches owned by your company
     // and they don't have a parent
     // or the parent is not owned by your company
-    const batchRepository = this.dataSource.getRepository(BatchEntity);
 
     // TODO: if parent is not owned, remove parentLotNumber?
-    const [batches, totalCount] = await batchRepository
+    const [batches, totalCount] = await this.batchRepository
       .createQueryBuilder('batch')
       .leftJoin(
         'batch_entity',
@@ -216,18 +212,10 @@ export class BatchesService {
       `Sending batch ${lotNumber} for user ${email} to company ${sendBatchDto.VAT}`
     );
     // TODO: check that the batch belongs to the current user
-    const user = await this.userRepository.findOne({
-      where: { email },
-      relations: ['company'],
-    });
     const batch = await this.batchRepository.findOne({
       where: { lotNumber },
       relations: ['company'],
     });
-    if (batch.company.id !== user.company.id) {
-      this.logger.error(`Batch ${lotNumber} does not belong to user ${email}`);
-      throw new Error(`Batch ${lotNumber} does not belong to user ${email}`);
-    }
     // check that the vat is not the current company?
     // TODO: add better error handling
     const company = await this.companyRepository.findOne({
@@ -249,12 +237,7 @@ export class BatchesService {
   }
 
   async accept(lotNumber: string, _body: unknown, email: string) {
-    // TODO: check that the batch belongs to the current user
     const batch = await this.batchRepository.findOne({ where: { lotNumber } });
-    // if (!batch.parentLotNumber) {
-    //   this.logger.error(`Batch ${id} has no parent`);
-    //   throw new Error(`You can only send sub-batches`);
-    // }
     const updatedBatch = await this.batchRepository.save({
       ...batch,
       status: Status.ACCEPTED,
@@ -263,7 +246,6 @@ export class BatchesService {
   }
 
   async decline(lotNumber: string, body: unknown) {
-    // TODO: check that the batch belongs to the current user
     const batch = await this.batchRepository.findOne({
       where: { lotNumber },
       relations: ['parent'],
@@ -278,14 +260,12 @@ export class BatchesService {
       ...batch,
       status: Status.DECLINED,
       company,
-      // TODO: revert to the vat of the parent batch
     });
     return updatedBatch;
   }
 
   async reclaim(lotNumber: string, body: unknown) {
     this.logger.log(`Reclaiming batch ${lotNumber}`);
-    // TODO: check that the batch belongs to the current user
     const batch = await this.batchRepository.findOne({ where: { lotNumber } });
     const updatedBatch = await this.batchRepository.save({
       ...batch,

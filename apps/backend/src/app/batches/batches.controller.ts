@@ -31,6 +31,7 @@ import {
   FileSizeValidator,
   FileTypeValidator,
 } from '../../common/helpers/validators';
+import { BatchOwnerGuard } from '../../common/guards/batch.guard';
 
 const MAX_FILE_SIZE_IN_BYTES = 5 * 1024 * 1024; // 5mb
 const VALID_UPLOADS_MIME_TYPES = ['application/json', 'application/pdf'];
@@ -73,12 +74,12 @@ export class BatchesController {
     files?: { json?: Express.Multer.File[]; pdf?: Express.Multer.File[] }
   ) {
     const { email } = user;
-    const { json, pdf } = files;
+    const { json = [], pdf = [] } = files || {};
     return this.batchesService.create(
       createBatchDto,
       email,
-      json?.[0],
-      pdf?.[0]
+      json[0],
+      pdf[0]
     );
   }
 
@@ -105,16 +106,19 @@ export class BatchesController {
   }
 
   @Get(':id')
+  @UseGuards(BatchOwnerGuard)
   findOne(@Param('id') id: string) {
     return this.batchesService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(BatchOwnerGuard)
   update(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
     return this.batchesService.update(id, updateBatchDto);
   }
 
   @Patch(':id/accept')
+  @UseGuards(BatchOwnerGuard)
   accept(
     @Param('id') id: string,
     @Body() updateBatchDto: UpdateBatchDto,
@@ -126,6 +130,7 @@ export class BatchesController {
   }
 
   @Patch(':id/send')
+  @UseGuards(BatchOwnerGuard)
   send(
     @Param('id') id: string,
     @Body() sendBatchDto: SendBatchDto,
@@ -137,16 +142,19 @@ export class BatchesController {
   }
 
   @Patch(':id/decline')
+  @UseGuards(BatchOwnerGuard)
   decline(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
     return this.batchesService.decline(id, updateBatchDto);
   }
 
   @Patch(':id/reclaim')
+  @UseGuards(BatchOwnerGuard)
   reclaim(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
     return this.batchesService.reclaim(id, updateBatchDto);
   }
 
   @Delete(':id')
+  @UseGuards(BatchOwnerGuard)
   remove(@Param('id') id: string) {
     return this.batchesService.remove(id);
   }
