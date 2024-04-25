@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { Repository } from 'typeorm';
@@ -24,11 +24,11 @@ export class InvitationsService {
       relations: ['company'],
     });
     if (!user.company) {
-      throw new Error('You must be part of a company to create an invitation');
+      throw new NotFoundException('You must be part of a company to create an invitation');
     }
     const { company } = user;
     if (company.id !== createInvitationDto.companyId) {
-      throw new Error(
+      throw new ForbiddenException(
         'You can only create invitations for companies that you are part of'
       );
     }
@@ -53,10 +53,10 @@ export class InvitationsService {
       relations: ['company'],
     });
     if (foundInvitation.emailToInvite !== email) {
-      throw new Error('You are not allowed to accept this invitation');
+      throw new ForbiddenException('You are not allowed to accept this invitation');
     }
     if (!foundInvitation) {
-      throw new Error('Invitation not found');
+      throw new NotFoundException('Invitation not found');
     }
     const { company } = foundInvitation;
     if (accepted) {
@@ -101,7 +101,7 @@ export class InvitationsService {
       where: { id },
     });
     if (foundInvitation.emailToInvite !== email) {
-      throw new Error('You are not allowed to see this invitation');
+      throw new ForbiddenException('You are not allowed to see this invitation');
     }
     return [foundInvitation];
   }
