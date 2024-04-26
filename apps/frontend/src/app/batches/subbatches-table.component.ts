@@ -78,7 +78,7 @@ import { MatCardModule } from '@angular/material/card';
           >
         </div>
         <div
-          class="flex flex-col gap-4 items-left ng-untouched ng-pristine ng-invalid"
+          class="block overflow-auto"
         >
           <table mat-table *ngIf="batches().length" [dataSource]="batches()">
             <!-- Lot Number Column -->

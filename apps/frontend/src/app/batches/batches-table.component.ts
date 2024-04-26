@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  HostBinding,
   inject,
   input,
 } from '@angular/core';
@@ -81,6 +82,7 @@ import { MatButtonModule } from '@angular/material/button';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BatchesTableComponent {
+  @HostBinding('class') readonly class = 'block overflow-auto';
   readonly batches = input.required<BatchDto[]>();
   private readonly router = inject(Router);
   readonly displayedColumns: string[] = [

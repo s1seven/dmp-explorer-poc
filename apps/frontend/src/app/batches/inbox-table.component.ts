@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  HostBinding,
   inject,
   input,
 } from '@angular/core';
@@ -17,150 +18,100 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   standalone: true,
   imports: [CommonModule, MatTableModule, RouterLink, MatButtonModule],
   template: `
-    <mat-table class="overflow-auto" [dataSource]="batches()">
+    <table mat-table [dataSource]="batches()">
       <!-- Lot Number Column -->
       <ng-container matColumnDef="lotNumber">
-        <mat-header-cell class="px-2" *matHeaderCellDef
-          >Lot Number</mat-header-cell
-        >
-        <mat-cell class="px-2" *matCellDef="let batch">{{
-          batch.lotNumber
-        }}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef>Lot Number</th>
+        <td mat-cell *matCellDef="let batch">{{ batch.lotNumber }}</td>
       </ng-container>
 
       <!-- Lead Content Column -->
       <ng-container matColumnDef="leadContent">
-        <mat-header-cell class="px-2" *matHeaderCellDef
-          >Lead Content</mat-header-cell
-        >
-        <mat-cell class="px-2" *matCellDef="let batch">{{
-          batch.leadContent
-        }}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef>Lead Content</th>
+        <td mat-cell *matCellDef="let batch">{{ batch.leadContent }}</td>
       </ng-container>
 
       <!-- Mercury Content Column -->
       <ng-container matColumnDef="mercuryContent">
-        <mat-header-cell class="px-2" *matHeaderCellDef
-          >Mercury Content</mat-header-cell
-        >
-        <mat-cell class="px-2" *matCellDef="let batch">{{
-          batch.mercuryContent
-        }}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef>Mercury Content</th>
+        <td mat-cell *matCellDef="let batch">{{ batch.mercuryContent }}</td>
       </ng-container>
 
       <!-- Cadmium Content Column -->
       <ng-container matColumnDef="cadmiumContent">
-        <mat-header-cell class="px-2" *matHeaderCellDef
-          >Cadmium Content</mat-header-cell
-        >
-        <mat-cell class="px-2" *matCellDef="let batch">{{
-          batch.cadmiumContent
-        }}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef>Cadmium Content</th>
+        <td mat-cell *matCellDef="let batch">{{ batch.cadmiumContent }}</td>
       </ng-container>
 
       <!-- RoHS Compliance Column -->
       <ng-container matColumnDef="isRoHSCompliant">
-        <mat-header-cell class="px-2" *matHeaderCellDef
-          >RoHS Compliant</mat-header-cell
-        >
-        <mat-cell class="px-2" *matCellDef="let batch">{{
-          batch.isRoHSCompliant
-        }}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef>RoHS Compliant</th>
+        <td mat-cell *matCellDef="let batch">{{ batch.isRoHSCompliant }}</td>
       </ng-container>
 
       <!-- Quantity Column -->
       <ng-container matColumnDef="quantity">
-        <mat-header-cell class="px-2" *matHeaderCellDef
-          >Quantity</mat-header-cell
-        >
-        <mat-cell class="px-2" *matCellDef="let batch">
+        <th mat-header-cell *matHeaderCellDef>Quantity</th>
+        <td mat-cell *matCellDef="let batch">
           {{ batch.quantity }} {{ batch.unit }}
-        </mat-cell>
+        </td>
       </ng-container>
 
       <!-- Status Column -->
       <ng-container matColumnDef="status">
-        <mat-header-cell class="px-2" *matHeaderCellDef>Status</mat-header-cell>
-        <mat-cell class="px-2" *matCellDef="let batch">{{
-          batch.status
-        }}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let batch">{{ batch.status }}</td>
       </ng-container>
 
       <!-- Owner Column -->
       <ng-container matColumnDef="owner">
-        <mat-header-cell class="px-2" *matHeaderCellDef
-          >Owner VAT</mat-header-cell
-        >
-        <mat-cell class="px-2" *matCellDef="let batch">{{
-          batch?.company?.VAT
-        }}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef>Owner VAT</th>
+        <td mat-cell *matCellDef="let batch">{{ batch?.company?.VAT }}</td>
       </ng-container>
 
       <!-- Action Column -->
       <ng-container
         $ngIf="batch.status !== 'declined'"
         matColumnDef="action-button"
-        class="col-span-2 "
       >
-        <mat-header-cell
-          class="px-2"
-          class="col-span-2 justify-between"
-          *matHeaderCellDef
-          >Accept</mat-header-cell
-        >
-        <mat-cell
-          class="px-2"
-          class="col-span-2 justify-between"
-          *matCellDef="let batch"
-        >
-          <button
-            *ngIf="batch.status !== 'declined'"
-            mat-stroked-button
-            class="w-20 "
-            color="warn"
-            (click)="rejectBatch(batch)"
-            routerLinkActive="bg-primary-100"
-          >
-            Reject
-          </button>
-          <button
-            mat-stroked-button
-            class="w-20 "
-            color="secondary"
-            *ngIf="batch.status !== 'declined'"
-            (click)="acceptBatch(batch)"
-            routerLinkActive="bg-primary-100"
-          >
-            Accept
-          </button>
-          <a
-            class="text-inherit w-20 "
-            *ngIf="batch.status === 'declined'"
-            mat-stroked-button
-            color="primary"
-            (click)="reclaimBatch(batch)"
-            routerLinkActive="bg-primary-100"
-            >Reclaim</a
-          >
-        </mat-cell>
+        <th mat-header-cell *matHeaderCellDef>Accept</th>
+        <td mat-cell *matCellDef="let batch">
+          <div class="flex justify-end gap-4">
+            <button
+              *ngIf="batch.status !== 'declined'"
+              mat-stroked-button
+              (click)="rejectBatch(batch)"
+            >
+              Reject
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              *ngIf="batch.status !== 'declined'"
+              (click)="acceptBatch(batch)"
+            >
+              Accept
+            </button>
+            <a
+              *ngIf="batch.status === 'declined'"
+              mat-raised-button
+              color="primary"
+              (click)="reclaimBatch(batch)"
+              >Reclaim</a
+            >
+          </div>
+        </td>
       </ng-container>
       <!-- TODO: handle rejected batches -->
 
-      <tr
-        mat-header-row
-        class="grid grid-cols-10 px-0"
-        *matHeaderRowDef="displayedColumns"
-      ></tr>
-      <tr
-        mat-row
-        class="grid grid-cols-10 px-0"
-        *matRowDef="let row; columns: displayedColumns"
-      ></tr>
-    </mat-table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InboxTableComponent {
+  @HostBinding('class') readonly class = 'block overflow-auto';
   private readonly matSnackBar = inject(MatSnackBar);
   readonly batches = input.required<BatchDto[]>();
   readonly batchesService = inject(BatchesService);
