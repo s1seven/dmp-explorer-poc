@@ -31,7 +31,6 @@ import {
   FileSizeValidator,
   FileTypeValidator,
 } from '../../common/helpers/validators';
-import { BatchOwnerGuard } from '../../common/guards/batch.guard';
 
 const MAX_FILE_SIZE_IN_BYTES = 5 * 1024 * 1024; // 5mb
 const VALID_UPLOADS_MIME_TYPES = ['application/json', 'application/pdf'];
@@ -111,7 +110,6 @@ export class BatchesController {
   }
 
   @Patch(':id')
-  @UseGuards(BatchOwnerGuard)
   update(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
     return this.batchesService.update(id, updateBatchDto);
   }
