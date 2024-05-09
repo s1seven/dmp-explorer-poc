@@ -8,7 +8,7 @@ import { InvitationDto } from '../shared/models';
   imports: [CommonModule],
   template: `
     <div
-      class="flex gap-2 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
+      class="flex gap-2 mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl"
       *ngIf="this.invitations() as invitations"
     >
       <h2>Currently pending invitations:</h2>

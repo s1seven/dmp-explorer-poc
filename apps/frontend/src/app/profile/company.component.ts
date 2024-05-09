@@ -46,7 +46,7 @@ import { PendingInvitationsComponent } from './pending-invitations.component';
       ></app-create-company>
 
       <div
-        class="flex gap-4 items-left rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
+        class="flex gap-4 rounded-md p-4 border border-gray-300 flex-col max-w-3xl"
         *ngIf="this.company() as company"
       >
         <h2>Company</h2>

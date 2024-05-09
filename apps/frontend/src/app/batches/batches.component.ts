@@ -42,7 +42,7 @@ export interface BatchInbox {
   template: `
     <ng-container class="flex flex-col">
       <div
-        class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full ng-untouched ng-pristine ng-invalid"
+        class="flex gap-4 mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full"
       >
         <div *ngIf="inboxMeta() as inboxMeta; loading" class="py-2">
           <h2>Inbox</h2>
@@ -65,7 +65,7 @@ export interface BatchInbox {
       </div>
 
       <div
-        class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full ng-untouched ng-pristine ng-invalid"
+        class="flex gap-4 mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full ng-untouched ng-pristine ng-invalid"
       >
         <div *ngIf="batchesMeta() as batchesMeta; loading" class="py-2">
           <div class="flex justify-between">

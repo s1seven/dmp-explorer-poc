@@ -32,7 +32,7 @@ import { MatCardModule } from '@angular/material/card';
       <div>
         <h2 class="text-2xl font-bold mb-4">Parent Batch</h2>
         <mat-card
-          class="items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full"
+          class="mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-full"
         >
           <mat-card-header class="">
             <mat-card-title class=""

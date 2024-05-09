@@ -29,7 +29,7 @@ import { CreateBatchDto } from '../shared/models';
   ],
   template: `
     <div
-      class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
+      class="flex gap-4 mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl"
     >
       <!-- TODO: handle case where quantityRemaining is null? -->
       <h2>
