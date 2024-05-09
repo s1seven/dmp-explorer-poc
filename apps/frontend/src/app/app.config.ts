@@ -11,6 +11,7 @@ import {
 } from '@angular/common/http';
 import { APIInterceptor } from './shared/api.interceptor';
 import { environment } from '../environments/environment';
+import { ErrorInterceptor } from './shared/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,6 +19,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: APIInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
       multi: true,
     },
     {
