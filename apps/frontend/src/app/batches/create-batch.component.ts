@@ -1,7 +1,6 @@
 import {
   Component,
   ElementRef,
-  OnDestroy,
   ViewChild,
   signal,
 } from '@angular/core';
@@ -16,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -32,16 +31,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
   ],
   template: `
-    <div
-      class="flex gap-4 items-left mb-10 rounded-md p-4 border border-gray-300 flex-col max-w-3xl ng-untouched ng-pristine ng-invalid"
-    >
+    <div class="flex gap-4 flex-col max-w-3xl">
       <h2>Create Batch</h2>
-
-      <form
-        class="flex flex-col max-w-3xl"
-        [formGroup]="batchForm"
-        (ngSubmit)="submit()"
-      >
+      <form class="flex flex-col" [formGroup]="batchForm" (ngSubmit)="submit()">
         <mat-form-field>
           <mat-label>Parent Lot Number</mat-label>
           <input formControlName="parentLotNumber" matInput />
@@ -83,12 +75,9 @@ import { MatButtonModule } from '@angular/material/button';
             <mat-label>Unit</mat-label>
             <input matInput type="text" formControlName="unit" />
           </mat-form-field>
-          <div
-            class="mat-mdc-form-field mat-mdc-form-field-type-mat-input mat-form-field-appearance-fill mat-form-field-hide-placeholder mat-primary ng-untouched ng-pristine ng-valid ng-tns-c3736059725-1"
-          >
+          <div>
             <div class="flex flex-row items-center gap-4 text-center">
               <mat-label hidden>Upload JSON Certificate</mat-label>
-
               <button
                 type="button"
                 mat-stroked-button
@@ -96,7 +85,7 @@ import { MatButtonModule } from '@angular/material/button';
                 class="w-38"
                 (click)="jsonFileInput.click()"
               >
-              <div class="w-full text-center">Upload JSON</div>
+                <div class="w-full text-center">Upload JSON</div>
               </button>
               <input
                 hidden
@@ -129,10 +118,7 @@ import { MatButtonModule } from '@angular/material/button';
             ></div>
           </div>
 
-          <div
-            class="mat-mdc-form-field mat-mdc-form-field-type-mat-input mat-form-field-appearance-fill mat-form-field-hide-placeholder mat-primary ng-untouched ng-pristine ng-valid ng-tns-c3736059725-1"
-          >
-          <!-- TODO: make both buttons the same width -->
+          <div>
             <div class="flex flex-row items-center gap-4 text-center">
               <mat-label hidden>Upload PDF Certificate</mat-label>
               <button
@@ -141,7 +127,7 @@ import { MatButtonModule } from '@angular/material/button';
                 (click)="pdfFileInput.click()"
                 class="w-38"
               >
-              <div class="w-full text-center">Upload PDF</div>
+                <div class="w-full text-center">Upload PDF</div>
               </button>
               <input
                 id="pdfInput"
@@ -174,6 +160,23 @@ import { MatButtonModule } from '@angular/material/button';
             ></div>
           </div>
         </div>
+
+        <div
+          *ngIf="error() as err"
+          class="mb-4 rounded-md p-4 border max-w-3xl border-red-400 bg-red-50 grid grid-cols-[min-content_1fr_min-content] items-center gap-4"
+        >
+          <mat-icon fontIcon="error"></mat-icon>
+          <div class="flex-1">
+            <h3 class="mat-h4 font-bold mb-0">An error occurred</h3>
+            <p class="mat-body-2 mb-0">
+              {{ err }}
+            </p>
+          </div>
+          <button mat-icon-button (click)="error.set(null)">
+            <mat-icon fontIcon="close"></mat-icon>
+          </button>
+        </div>
+
         <div class="flex gap-3">
           <button mat-stroked-button (click)="goBack()">Cancel</button>
           <button mat-raised-button color="primary">Create Batch</button>
@@ -182,8 +185,7 @@ import { MatButtonModule } from '@angular/material/button';
     </div>
   `,
 })
-export class CreateBatchComponent implements OnDestroy {
-  // TODO: prefil content from parent lot
+export class CreateBatchComponent {
   readonly batchForm = new FormGroup({
     parentLotNumber: new FormControl(''),
     lotNumber: new FormControl('', Validators.required),
@@ -195,9 +197,11 @@ export class CreateBatchComponent implements OnDestroy {
     json: new FormControl<File | null>(null),
     pdf: new FormControl<File | null>(null),
   });
-  private unsubscribe$ = new Subject<void>();
   readonly selectedJSON = signal<File | null>(null);
   readonly selectedPDF = signal<File | null>(null);
+  readonly loading = signal<boolean>(false);
+  readonly error = signal<string | null>(null);
+
   @ViewChild('pdfFileInput') pdfFileInput!: ElementRef;
   @ViewChild('jsonFileInput') jsonFileInput!: ElementRef;
 
@@ -235,7 +239,10 @@ export class CreateBatchComponent implements OnDestroy {
     this.jsonFileInput.nativeElement.value = '';
   }
 
-  submit() {
+  async submit() {
+    this.error.set(null);
+    this.loading.set(true);
+
     if (this.batchForm.invalid) {
       return;
     }
@@ -245,25 +252,18 @@ export class CreateBatchComponent implements OnDestroy {
       if (value !== null) formData.append(key, value);
     });
 
-    this.http
-      .post('api/batches', formData)
-      .pipe(
-        tap(() => this.router.navigate(['/batches'])),
-        catchError((error) => {
-          console.error(error);
-          return of(null);
-        }),
-        takeUntil(this.unsubscribe$)
-      )
-      .subscribe();
+    try {
+      await firstValueFrom(this.http.post('api/batches', formData));
+      this.router.navigate(['/batches']);
+    } catch (e: any) {
+      console.error(e);
+      this.error.set(e?.error?.message ?? 'Unknown error');
+    }
+
+    this.loading.set(false);
   }
 
   goBack(): void {
     void this.router.navigate(['/batches']);
-  }
-
-  ngOnDestroy() {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
   }
 }

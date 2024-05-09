@@ -17,6 +17,7 @@ import { SubBatchesTableComponent } from './subbatches-table.component';
 export class SubbatchesComponent implements OnInit, OnDestroy {
   private readonly batchService = inject(BatchesService);
   private destroy$ = new Subject<void>();
+  // TODO: make component state
   readonly batch = this.batchService.batch;
   readonly subbatches = this.batchService.subbatches;
 
