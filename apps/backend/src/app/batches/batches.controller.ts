@@ -75,12 +75,7 @@ export class BatchesController {
   ) {
     const { email } = user;
     const { json = [], pdf = [] } = files || {};
-    return this.batchesService.create(
-      createBatchDto,
-      email,
-      json[0],
-      pdf[0]
-    );
+    return this.batchesService.create(createBatchDto, email, json[0], pdf[0]);
   }
 
   @Get()
@@ -106,9 +101,13 @@ export class BatchesController {
   }
 
   @Get(':id')
-  @UseGuards(BatchOwnerGuard)
-  findOne(@Param('id') id: string) {
-    return this.batchesService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.batchesService.findOne(id, email);
   }
 
   @Patch(':id')
@@ -118,7 +117,6 @@ export class BatchesController {
   }
 
   @Patch(':id/accept')
-  @UseGuards(BatchOwnerGuard)
   accept(
     @Param('id') id: string,
     @Body() updateBatchDto: UpdateBatchDto,
@@ -130,7 +128,6 @@ export class BatchesController {
   }
 
   @Patch(':id/send')
-  @UseGuards(BatchOwnerGuard)
   send(
     @Param('id') id: string,
     @Body() sendBatchDto: SendBatchDto,
@@ -142,19 +139,28 @@ export class BatchesController {
   }
 
   @Patch(':id/decline')
-  @UseGuards(BatchOwnerGuard)
-  decline(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
-    return this.batchesService.decline(id, updateBatchDto);
+  decline(
+    @Param('id') id: string,
+    @Body() updateBatchDto: UpdateBatchDto,
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.batchesService.decline(id, updateBatchDto, email);
   }
 
   @Patch(':id/reclaim')
-  @UseGuards(BatchOwnerGuard)
-  reclaim(@Param('id') id: string, @Body() updateBatchDto: UpdateBatchDto) {
-    return this.batchesService.reclaim(id, updateBatchDto);
+  reclaim(
+    @Param('id') id: string,
+    @Body() updateBatchDto: UpdateBatchDto,
+    @CurrentUser(new ValidationPipe({ validateCustomDecorators: true }))
+    user: ReqUser
+  ) {
+    const { email } = user;
+    return this.batchesService.reclaim(id, updateBatchDto, email);
   }
 
   @Delete(':id')
-  @UseGuards(BatchOwnerGuard)
   remove(@Param('id') id: string) {
     return this.batchesService.remove(id);
   }

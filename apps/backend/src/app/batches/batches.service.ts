@@ -1,10 +1,9 @@
 import {
   ConflictException,
-  HttpException,
-  HttpStatus,
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
@@ -211,45 +210,69 @@ export class BatchesService {
     this.logger.log(
       `Sending batch ${lotNumber} for user ${email} to company ${sendBatchDto.VAT}`
     );
-    // TODO: check that the batch belongs to the current user
-    const batch = await this.batchRepository.findOne({
-      where: { lotNumber },
-      relations: ['company'],
-    });
+    // TODO: only allow sending if we also own the parent batch
+
+    /* find batch if batch belongs to current user, attach to new company if it exists, update status to pending */
+    const foundBatch = await this.batchRepository
+      .createQueryBuilder('batch')
+      .where('batch.lotNumber = :lotNumber', { lotNumber })
+      .innerJoin('batch.company', 'company')
+      .innerJoin('company.users', 'user', 'user.email = :email', { email })
+      .getOne();
+
+    if (!foundBatch) {
+      this.logger.error(`Batch with lot number ${lotNumber} not found`);
+      throw new NotFoundException(
+        `Batch with lot number ${lotNumber} not found`
+      );
+    }
+
     // check that the vat is not the current company?
-    // TODO: add better error handling
     const company = await this.companyRepository.findOne({
       where: { VAT: sendBatchDto.VAT },
     });
     if (!company) {
       this.logger.error(`Company with VAT ${sendBatchDto.VAT} not found`);
-      throw new HttpException(
-        `Company with VAT ${sendBatchDto.VAT} not found`,
-        HttpStatus.NOT_FOUND
+      throw new NotFoundException(
+        `Company with VAT ${sendBatchDto.VAT} not found`
       );
     }
     const newBatch = await this.batchRepository.save({
-      ...batch,
+      ...foundBatch,
       company,
       status: Status.PENDING,
     });
+
     return newBatch;
   }
 
   async accept(lotNumber: string, _body: unknown, email: string) {
-    const batch = await this.batchRepository.findOne({ where: { lotNumber } });
+    const foundBatch = await this.batchRepository
+      .createQueryBuilder('batch')
+      .where('batch.lotNumber = :lotNumber', { lotNumber })
+      .innerJoin('batch.company', 'company')
+      .innerJoin('company.users', 'user', 'user.email = :email', { email })
+      .getOne();
+    if (!foundBatch) {
+      this.logger.error(`Batch with lot number ${lotNumber} not found`);
+      throw new NotFoundException(
+        `Batch with lot number ${lotNumber} not found`
+      );
+    }
     const updatedBatch = await this.batchRepository.save({
-      ...batch,
+      ...foundBatch,
       status: Status.ACCEPTED,
     });
     return updatedBatch;
   }
 
-  async decline(lotNumber: string, body: unknown) {
+  async decline(lotNumber: string, _body: unknown, email: string) {
+    // does not currently belong to user
     const batch = await this.batchRepository.findOne({
       where: { lotNumber },
       relations: ['parent'],
     });
+    // TODO: only allow declining if user owns the parent batch
     const parent = await this.batchRepository.findOne({
       where: { lotNumber: batch.parent.lotNumber },
       relations: ['company'],
@@ -264,23 +287,38 @@ export class BatchesService {
     return updatedBatch;
   }
 
-  async reclaim(lotNumber: string, body: unknown) {
+  async reclaim(lotNumber: string, _body: unknown, email: string) {
     this.logger.log(`Reclaiming batch ${lotNumber}`);
-    const batch = await this.batchRepository.findOne({ where: { lotNumber } });
+    const foundBatch = await this.batchRepository
+      .createQueryBuilder('batch')
+      .where('batch.lotNumber = :lotNumber', { lotNumber })
+      .innerJoin('batch.company', 'company')
+      .innerJoin('company.users', 'user', 'user.email = :email', { email })
+      .getOne();
+
+    if (!foundBatch) {
+      this.logger.error(`Batch with lot number ${lotNumber} not found`);
+      throw new NotFoundException(
+        `Batch with lot number ${lotNumber} not found`
+      );
+    }
+
     const updatedBatch = await this.batchRepository.save({
-      ...batch,
+      ...foundBatch,
       status: Status.ACCEPTED,
     });
     return updatedBatch;
   }
 
-  findOne(lotNumber: string) {
-    // attach all children 1 level deep
+  findOne(lotNumber: string, email: string) {
+    // attaches all children 1 level deep
     return this.batchRepository
       .createQueryBuilder('batch')
       .where('batch.lotNumber = :lotNumber', { lotNumber })
+      .innerJoin('batch.company', 'company')
+      .innerJoin('company.users', 'user', 'user.email = :email', { email })
       .leftJoinAndSelect('batch.subBatches', 'subBatches')
-      .leftJoinAndSelect('subBatches.company', 'company')
+      .leftJoinAndSelect('subBatches.company', 'subbatchCompany')
       .getOne();
   }
 
