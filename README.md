@@ -9,6 +9,7 @@ You may need to login first.
 
 ## Start the application
 
+Run `npm run start:docker` to start the postgres container needed by the backend.
 Run `npx nx serve backend` to start the development server.
 Run `npm run start:frontend` to start the frontend.
 
@@ -59,3 +60,8 @@ erDiagram
 ├── profile
 ├── create-batch
 └── batches 
+
+# Best practices
+
+This project is a proof of concept at S1Seven. The backend uses Auth0 for authentication, and sends a request from Auth0 to our backend when a user is created so that the user is also present in our application database. Another option is to create our own login form, create the user on our backend, and then send a request to Auth0 to create the user on their system.
+
