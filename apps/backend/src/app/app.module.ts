@@ -21,6 +21,7 @@ import { Environment } from '../common/constants/constants';
 import { UpdateBatchJsonPDF1714035890165 } from '../migrations/1714035890165-UpdateBatchJsonPDF';
 import { HttpExceptionFilter } from '../common/errors/ http-exception.filter';
 import { APP_FILTER } from '@nestjs/core';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { APP_FILTER } from '@nestjs/core';
     BatchesModule,
     CompaniesModule,
     InvitationsModule,
+    HealthModule,
   ],
   controllers: [],
   providers: [
