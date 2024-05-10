@@ -214,6 +214,7 @@ export class CompanyComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (!this.company()) return;
     this.profileService.getAllInvitations();
   }
 }
