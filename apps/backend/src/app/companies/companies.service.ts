@@ -29,10 +29,9 @@ export class CompaniesService {
     // adds the new company to the user that created it
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
-      this.logger.error(
+      throw new NotFoundException(
         `User with email ${email} not found when creating company ${createCompanyDto.VAT}`
       );
-      throw new NotFoundException(`User with email ${email} not found`);
     }
 
     await this.userRepository.save({

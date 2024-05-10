@@ -83,7 +83,6 @@ export class BatchesService {
       );
     }
 
-    // TODO: ensure that this error does not crash the app
     this.checkUserHasCompany(user);
 
     // TODO: inherit isRoHSCompliant from parent batch
@@ -221,7 +220,6 @@ export class BatchesService {
       .getOne();
 
     if (!foundBatch) {
-      this.logger.error(`Batch with lot number ${lotNumber} not found`);
       throw new NotFoundException(
         `Batch with lot number ${lotNumber} not found`
       );
@@ -232,7 +230,6 @@ export class BatchesService {
       where: { VAT: sendBatchDto.VAT },
     });
     if (!company) {
-      this.logger.error(`Company with VAT ${sendBatchDto.VAT} not found`);
       throw new NotFoundException(
         `Company with VAT ${sendBatchDto.VAT} not found`
       );
@@ -254,7 +251,6 @@ export class BatchesService {
       .innerJoin('company.users', 'user', 'user.email = :email', { email })
       .getOne();
     if (!foundBatch) {
-      this.logger.error(`Batch with lot number ${lotNumber} not found`);
       throw new NotFoundException(
         `Batch with lot number ${lotNumber} not found`
       );
@@ -297,7 +293,6 @@ export class BatchesService {
       .getOne();
 
     if (!foundBatch) {
-      this.logger.error(`Batch with lot number ${lotNumber} not found`);
       throw new NotFoundException(
         `Batch with lot number ${lotNumber} not found`
       );
@@ -337,7 +332,6 @@ export class BatchesService {
     });
 
     if (!user) {
-      this.logger.error(`User with email ${email} not found`);
       throw new Error(`User with email ${email} not found`);
     }
 
@@ -350,7 +344,6 @@ export class BatchesService {
     });
 
     if (existingBatch) {
-      this.logger.error(`Batch with lot number ${lotNumber} already exists`);
       throw new ConflictException(
         `Batch with lot number ${lotNumber} already exists`
       );
@@ -370,9 +363,6 @@ export class BatchesService {
     const { id: userCompanyId } = company;
 
     if (parentBatch && parentBatch.company.id !== userCompanyId) {
-      this.logger.error(
-        `Parent batch ${parentLotNumber} does not belong to user ${email}`
-      );
       throw new Error(
         `Parent batch ${parentLotNumber} does not belong to user ${email}`
       );
@@ -383,7 +373,6 @@ export class BatchesService {
 
   async checkUserHasCompany(user) {
     if (!user.company) {
-      this.logger.error(`User with email ${user.email} has no company`);
       throw new Error(`User with email ${user.email} has no company`);
     }
   }
@@ -404,7 +393,6 @@ export class BatchesService {
         throw new Error('Error uploading to S3');
       }
     } catch (error) {
-      this.logger.error(error);
       throw new Error('Error uploading to S3');
     }
   }

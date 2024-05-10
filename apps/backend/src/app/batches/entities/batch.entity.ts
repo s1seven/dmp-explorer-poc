@@ -18,7 +18,6 @@ export enum Status {
 }
 
 @Entity()
-// TODO: fix issue with typeorm migrations and OmitType
 export class BatchEntity {
   @PrimaryColumn({ type: 'varchar', unique: true })
   lotNumber: string;

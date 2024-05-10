@@ -19,6 +19,8 @@ import { BatchIntsToFloats1713790482652 } from '../migrations/1713790482652-Batc
 import { AddFilestoBatches1713955905280 } from '../migrations/1713955905280-AddFilestoBatches';
 import { Environment } from '../common/constants/constants';
 import { UpdateBatchJsonPDF1714035890165 } from '../migrations/1714035890165-UpdateBatchJsonPDF';
+import { HttpExceptionFilter } from '../common/errors/ http-exception.filter';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -62,6 +64,11 @@ import { UpdateBatchJsonPDF1714035890165 } from '../migrations/1714035890165-Upd
     InvitationsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}
