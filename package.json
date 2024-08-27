@@ -1,5 +1,5 @@
 {
-  "name": "@receiver-product/source",
+  "name": "dmp-explorer-poc",
   "version": "0.0.1",
   "license": "MIT",
   "engines": {
