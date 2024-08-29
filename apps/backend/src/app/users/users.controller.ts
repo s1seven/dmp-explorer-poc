@@ -30,34 +30,4 @@ export class UsersController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
-
-  // @ApiResponse({
-  //   status: HttpStatus.OK,
-  //   description: 'Get by id',
-  //   type: () => ReturnUserDto,
-  //   isArray: false,
-  // })
-  // @UseGuards(AuthGuard('jwt'))
-  // @Get(':id')
-  // findOneById(
-  //   @Param('id', ParseIntPipe) id: string,
-  //   @CurrentUser() user: ReqUser
-  // ): Promise<ReturnUserDto> {
-  //   return this.usersService.findOneById(id, user);
-  // }
-
-  // @ApiResponse({
-  //   status: HttpStatus.OK,
-  //   description: 'Delete',
-  //   type: () => UserEntity,
-  //   isArray: false,
-  // })
-  // @UseGuards(AuthGuard('jwt'))
-  // @Delete(':id')
-  // remove(
-  //   @Param('id', ParseIntPipe) id: string,
-  //   @CurrentUser() user: ReqUser
-  // ): Promise<ReturnUserDto> {
-  //   return this.usersService.remove(id, user);
-  // }
 }
